@@ -22,7 +22,7 @@ API.getProfile = () => {
 }
 
 API.updateProfile = (account) => {
-    const {phone, code, name} = account
+    const { phone, code, name } = account
     const params = {
         phone,
         code,
@@ -30,6 +30,19 @@ API.updateProfile = (account) => {
         _method: 'PUT'
     }
     return API.instance.post(Endpoint.updateProfile, params)
+}
+
+API.updateDeviceInfo = (data) => {
+    const { action, device_type, device_id, fcm_token } = data
+    params = {
+        action,
+        device_type,
+        device_id,
+        fcm_token,
+        _method: "PUT"
+    }
+    return API.instance.post(Endpoint.updateDeviceInfo, params)
+
 }
 
 /* Export Component ==================================================================== */

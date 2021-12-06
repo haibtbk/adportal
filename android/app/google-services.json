@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "826777219449",
+    "project_id": "adportal-de46a",
+    "storage_bucket": "adportal-de46a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:826777219449:android:ee9ee3a1f9fd18737b7fa8",
+        "android_client_info": {
+          "package_name": "com.baoviet.ad.portal"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "826777219449-deojsghdpoe1m6rjv875vjl0gqj6gsf7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAMqT1SOtZnWTu0gOd3H6MbeKnDFHuEBBc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "826777219449-deojsghdpoe1m6rjv875vjl0gqj6gsf7.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "826777219449-0ms63c52fame5ma085jaidgtfkv4pvpg.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.baoviet.ad.portal"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

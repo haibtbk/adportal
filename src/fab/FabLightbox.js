@@ -44,7 +44,7 @@ class FabLightbox extends Component {
 
   lightBoxItems = {
     addCustomer: {
-      text: 'addProduct',
+      text: 'Tạo giấy mời',
       iconSource: require('@images/floatbutton/ic_float_customer.png'),
       onPress: () => {
         FabManager.reset();
@@ -53,7 +53,7 @@ class FabLightbox extends Component {
       }
     },
     addOrder: {
-      text: 'addOrder',
+      text: 'Tạo khảo sát',
       iconSource: require('@images/floatbutton/ic_float_order.png'),
       onPress: () => {
         FabManager.reset();
@@ -62,7 +62,7 @@ class FabLightbox extends Component {
       }
     },
     productScreen: {
-      text: 'productList',
+      text: 'Gửi tin nhắn',
       iconSource: require('@images/floatbutton/ic_float_product.png'),
       onPress: () => {
         FabManager.reset();
@@ -96,7 +96,7 @@ class FabLightbox extends Component {
 
     return (
       <View style={styles.container}>
-        <Animatable.View ref="container" animation="fadeIn" duration={300} style={[styles.content, { backgroundColor: 'rgba(52, 64, 82, 0.85)' }]}>
+        <Animatable.View ref="container" animation="fadeIn" duration={300} style={[styles.content, { backgroundColor: 'rgba(52, 64, 82, 0.5)' }]}>
           <Animatable.View animation="fadeIn" duration={500} style={[styles.lightBox, { bottom: bottom.bottom + AppStyles.fabButton.height * 1.2 + AppSizes.paddingSmall }]}>
             <View style={[styles.lightBoxRow, { marginRight: 32 }]}>
               <FabItem item={lightBoxItems.addCustomer} />

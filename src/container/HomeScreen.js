@@ -12,12 +12,20 @@ import {
 } from 'react-native';
 import FabManager from '@fab/FabManager';
 import { useFocusEffect } from '@react-navigation/native';
-import { ButtonIconComponent } from '@component';
+import { ButtonIconComponent, BaseDashboardItemComponent } from '@component';
 import { AppSizes, AppColors, AppStyles } from '@theme';
 import flatListData from '../data/flatListData';
 import NavigationBar from '@navigation/NavigationBar';
 import AwesomeListComponent from "react-native-awesome-list";
 import { useSelector, useDispatch } from 'react-redux';
+import {
+  LineChart,
+  BarChart,
+  PieChart,
+  ProgressChart,
+  ContributionGraph,
+  StackedBarChart
+} from "react-native-chart-kit";
 
 const HomeScreen = (props) => {
   const account = useSelector(state => state.user)
@@ -36,73 +44,59 @@ const HomeScreen = (props) => {
     }, []),
   );
 
-  const refreshData = () => {
-    listRef.refresh()
-  }
-
-  const source = () => {
-    return Promise.resolve({
-      data: {
-        responseData: flatListData
-      }
-    })
-  }
-
-  const transformer = (res) => {
-    return res?.data?.responseData ?? []
-  }
-
-  const listRef = useRef(null)
-
-
   return (
     <View style={AppStyles.container}>
       <NavigationBar
         leftView={() => <Text style={[AppStyles.boldText, { fontSize: 24 }]}>Trang chủ</Text>} />
-      {/* <FlatList
-          contentContainerStyle={{ paddingBottom: 150 }}
-          horizontal={false}
-          numColumns={2}
-          data={flatListData}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => {
-            return (
-              <View style={styles.nav3}>
-                <Image
-                  style={styles.image}
-                  source={{ uri: item.source }}></Image>
-                <Text style={{ textAlign: 'center', color: 'yellow' }}>
-                  {item.name}
-                </Text>
-                <Text style={{ textAlign: 'center', color: 'yellow' }}>
-                  Giá Tiền: {item.price} VNĐ
-                </Text>
-              </View>
-            );
-          }}></FlatList> */}
-
-      <AwesomeListComponent
-        ref={listRef}
-        containerStyle={{ flex: 1, with: '100%', height: '100%', backgroundColor: 'transparent' }}
-        listStyle={{ flex: 1, with: '100%', height: '100%', backgroundColor: 'transparent' }}
-        source={source}
-        transformer={transformer}
-        numColumns="2"
-        renderItem={({ item }) => {
-          return (
-            <View style={styles.nav3}>
-              <Image
-                style={styles.image}
-                source={{ uri: item.source }}></Image>
-              <Text style={{ textAlign: 'center', color: 'yellow' }}>
-                {item.name}
-              </Text>
-              <Text style={{ textAlign: 'center', color: 'yellow' }}>
-                Giá Tiền: {item.price} VNĐ
-              </Text>
-            </View>
-          )
-        }} />
+      <ScrollView style={{ flex: 1 }}>
+        <LineChart
+          data={{
+            labels: ["January", "February", "March", "April", "May", "June"],
+            datasets: [
+              {
+                data: [
+                  Math.random() * 100,
+                  Math.random() * 100,
+                  Math.random() * 100,
+                  Math.random() * 100,
+                  Math.random() * 100,
+                  Math.random() * 100
+                ]
+              }
+            ]
+          }}
+          width={AppSizes.screen.width} // from react-native
+          height={220}
+          yAxisLabel="$"
+          yAxisSuffix="k"
+          yAxisInterval={1} // optional, defaults to 1
+          chartConfig={{
+            backgroundGradientFrom: AppColors.primaryBackground,
+            backgroundGradientTo: AppColors.primaryTextColor,
+            decimalPlaces: 2, // optional, defaults to 2dp
+            color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+            labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+            style: {
+              borderRadius: 16,
+            },
+            propsForDots: {
+              r: "6",
+              strokeWidth: "2",
+              stroke: AppColors.primaryBackground
+            }
+          }}
+          bezier
+          style={{
+            marginVertical: 8,
+            borderRadius: 16,
+            overflow: 'hidden'
+          }}
+        />
+        <BaseDashboardItemComponent title="Tổng doanh thu" content="Trong tuần này" amount={100000000} containerStyle={{marginVertical: AppSizes.padding}} color={AppColors.warning}/>
+        <BaseDashboardItemComponent title="Tổng nhân viên" content="Trong tuần này" amount={50} containerStyle={{marginBottom: AppSizes.padding}} color={AppColors.success}/>
+        <BaseDashboardItemComponent title="Tăng trưởng" content="Trong tuần này" showPercent={true} amount={-5} containerStyle={{marginBottom: AppSizes.padding}} color={AppColors.danger}/>
+        <BaseDashboardItemComponent title="Lãi dòng" content="Trong tuần này" amount={50000000} containerStyle={{marginBottom: AppSizes.padding}} color={AppColors.info}/>
+      </ScrollView>
     </View>
   );
 };

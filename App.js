@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Component, useRef } from 'react';
+import { Component, useRef, useState, useEffect } from 'react';
 import { Text, View, Button, Image } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -14,6 +14,8 @@ import { bottomBarHeight } from '@utils'
 import { RouterName } from '@navigation';
 import { Provider } from 'react-redux'
 import store from '@redux/store'
+import Notification from './src/firebaseNotification/index'
+import { MessageBarSimple, MessageBarManagerSimple } from '@component'
 
 import {
   LoginScreen,
@@ -60,7 +62,7 @@ function RootTabs() {
   return (
     <Tab.Navigator
       screenOptions={{
-        tabBarStyle: { backgroundColor: AppColors.primaryBackground, paddingVertical: bottomBarHeight + 6 },
+        tabBarStyle: { height: 55, backgroundColor: AppColors.primaryBackground, paddingVertical: bottomBarHeight + 6, paddingBottom: 6 },
       }}
       tabBarOptions={{
         activeTintColor: AppColors.primaryTextColor,
@@ -113,7 +115,7 @@ function RootTabs() {
         {() => (
           <SettingsStack.Navigator screenOptions={{ headerShown: false }}>
             <SettingsStack.Screen name="Account" component={AccountScreen} />
-            <SettingsStack.Screen name= {RouterName.editProfile} component={EditAccountScreen} />
+            <SettingsStack.Screen name={RouterName.editProfile} component={EditAccountScreen} />
           </SettingsStack.Navigator>
         )}
       </Tab.Screen>
@@ -163,6 +165,14 @@ export default App = (props) => {
     Localization.setI18nConfig();
     this.forceUpdate();
   };
+  const [messageBar, setMessageBar] = useState(null)
+
+  useEffect(() => {
+    MessageBarManagerSimple.register(messageBar)
+    return () => {
+      MessageBarManagerSimple.unregister()
+    }
+  }, [messageBar])
 
   React.useEffect(() => {
     FabManager.register(fabRef.current);
@@ -182,11 +192,13 @@ export default App = (props) => {
     <Provider store={store}>
       <NavigationContainer ref={navigationRef}>
         <View style={{ width: '100%', height: '100%' }}>
+          <Notification />
+
           <RootStack.Navigator screenOptions={{ headerShown: false }}>
             <Stack.Screen name={RouterName.splash} component={SplashScreen} />
             <Stack.Screen name={RouterName.login} component={LoginScreen} />
             <Stack.Screen name={RouterName.signup} component={SignUpScreen} />
-            <Stack.Screen name={RouterName.dialog} component={Dialog} options={{ presentation: 'transparentModal' }}/>
+            <Stack.Screen name={RouterName.dialog} component={Dialog} options={{ presentation: 'transparentModal' }} />
             <RootStack.Screen name={RouterName.main}>{() => RootTabs()}</RootStack.Screen>
             {RootDialog()}
             <Stack.Screen
@@ -219,6 +231,9 @@ export default App = (props) => {
           </RootStack.Navigator>
 
           <FabButton ref={fabRef} navigationRef={navigationRef} />
+          <MessageBarSimple ref={ref => {
+            setMessageBar(ref)
+          }} />
         </View>
       </NavigationContainer>
     </Provider>

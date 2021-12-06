@@ -17,6 +17,8 @@ import Localization from '@localization'
 import { AccessTokenManager, StaticDataManager } from '@data';
 import { saveUser } from '@redux/user/action';
 import { useSelector, useDispatch } from 'react-redux';
+import { LocalStorage } from '@data';
+import { getUniqueId } from 'react-native-device-info';
 
 const LoginScreen = (props) => {
   const dispatch = useDispatch()
@@ -31,8 +33,12 @@ const LoginScreen = (props) => {
     setSecureText(!isSecureText);
   };
 
-  const doLogin = () => {
+  const doLogin = async () => {
     let errMessage = "Vui lòng thử lại!!!"
+    const fcm_token = (await LocalStorage.get("FCM_TOKEN")) ?? ""
+    const device_id = getUniqueId()
+    const device_type = Platform.OS == 'ios' ? `2` : `1`
+
     const loginPromise = new Promise((resolve, reject) => {
       //Login
       const params = {
@@ -40,7 +46,10 @@ const LoginScreen = (props) => {
         // password,
         email: "minhnhat1692@gmail.com",
         password: "minhnhat1692",
-        remember
+        remember,
+        fcm_token,
+        device_id,
+        device_type
       };
       setLoading(true)
       API.login(params)
@@ -77,6 +86,13 @@ const LoginScreen = (props) => {
               .then(res => {
                 if (res?.data?.success) {
                   dispatch(saveUser(res?.data?.result))
+                  const updateDeviceInfoParam = {
+                    action: 'add',
+                    device_type,
+                    device_id,
+                    fcm_token
+                  }
+                  API.updateDeviceInfo(updateDeviceInfoParam)
                   resolve(true)
                 } else {
                   reject(errMessage)

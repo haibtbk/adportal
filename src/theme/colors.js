@@ -11,6 +11,12 @@ const defaultColor = {
 }
 const app = {
     ...defaultColor,
+    danger: '#f64e60',
+    warning: '#ffa800',
+    success: '#0bb783',
+    lightGray: '#9b9b9b',
+
+    info: '#8950fc',
     grayLight: '#F1F0ED',
     gray: '#979797',
     gray1: '#C7C7C7',

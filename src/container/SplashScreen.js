@@ -10,10 +10,15 @@ import { RouterName } from '@navigation';
 import { useDispatch } from 'react-redux'
 import { API } from '@network'
 import { saveUser } from '@redux/user/action'
+import SplashScreenLib from 'react-native-splash-screen'
+
 const SplashScreen = (props) => {
   const { navigation } = props;
   const dispatch = useDispatch()
 
+  useEffect(() => {
+    SplashScreenLib.hide();
+  }, [])
   useEffect(() => {
     setTimeout(() => {
       AccessTokenManager.initializeAndValidate()
