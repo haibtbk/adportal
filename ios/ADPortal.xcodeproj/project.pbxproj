@@ -23,6 +23,7 @@
 		F60420F22762FBDA000028D5 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F60420F12762FBDA000028D5 /* GoogleService-Info.plist */; };
 		F65FDB432758D206008372BA /* Montserrat-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F65FDB412758D206008372BA /* Montserrat-Bold.ttf */; };
 		F65FDB442758D206008372BA /* Montserrat-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F65FDB422758D206008372BA /* Montserrat-Regular.ttf */; };
+		F6C51CC62779980300C73173 /* Swift.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6C51CC52779980300C73173 /* Swift.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -74,6 +75,8 @@
 		F604214A276303CF000028D5 /* ADPortal.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = ADPortal.entitlements; path = ADPortal/ADPortal.entitlements; sourceTree = "<group>"; };
 		F65FDB412758D206008372BA /* Montserrat-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Montserrat-Bold.ttf"; sourceTree = "<group>"; };
 		F65FDB422758D206008372BA /* Montserrat-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Montserrat-Regular.ttf"; sourceTree = "<group>"; };
+		F6C51CC42779980200C73173 /* ADPortal-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ADPortal-Bridging-Header.h"; sourceTree = "<group>"; };
+		F6C51CC52779980300C73173 /* Swift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Swift.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -148,6 +151,8 @@
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */,
 				13B07FB71A68108700A75B9A /* main.m */,
+				F6C51CC52779980300C73173 /* Swift.swift */,
+				F6C51CC42779980200C73173 /* ADPortal-Bridging-Header.h */,
 			);
 			name = ADPortal;
 			sourceTree = "<group>";
@@ -318,7 +323,7 @@
 					};
 					13B07F861A680F5B00A75B9A = {
 						DevelopmentTeam = BPSSXB3L2K;
-						LastSwiftMigration = 1120;
+						LastSwiftMigration = 1230;
 						ProvisioningStyle = Automatic;
 					};
 					2D02E47A1E0B4A5D006451C7 = {
@@ -724,6 +729,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
+				F6C51CC62779980300C73173 /* Swift.swift in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -765,6 +771,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 6A47BCB050273B74E6AC2D82 /* Pods-ADPortal-ADPortalTests.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
@@ -788,6 +795,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 92B64240BAD1AF0E00D500D4 /* Pods-ADPortal-ADPortalTests.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
 				INFOPLIST_FILE = ADPortalTests/Info.plist;
@@ -814,7 +822,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 5;
-				DEVELOPMENT_TEAM = BPSSXB3L2K;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = ADPortal/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
@@ -827,8 +835,9 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.baoviet.ad.portal;
 				PRODUCT_NAME = ADPortal;
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_OBJC_BRIDGING_HEADER = "ADPortal-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 4.0;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Debug;
@@ -843,7 +852,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 5;
-				DEVELOPMENT_TEAM = BPSSXB3L2K;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = ADPortal/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -855,7 +864,8 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.baoviet.ad.portal;
 				PRODUCT_NAME = ADPortal;
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				SWIFT_VERSION = 5.0;
+				SWIFT_OBJC_BRIDGING_HEADER = "ADPortal-Bridging-Header.h";
+				SWIFT_VERSION = 4.0;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Release;

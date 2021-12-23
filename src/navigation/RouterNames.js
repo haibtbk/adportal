@@ -4,7 +4,12 @@ const routes = {
     main: 'Main',
     splash: 'Splash',
     editProfile: 'Edit Profile',
-    dialog: "Dialog"
+    dialog: "Dialog",
+    news: "News",
+    newsDetail: "NewsDetail",
+    notification: "Notification",
+    confirmRequest: "ConfirmRequest"
+
 }
 
 export default routes

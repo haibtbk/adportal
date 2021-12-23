@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Component, useRef, useState, useEffect } from 'react';
-import { Text, View, Button, Image } from 'react-native';
+import { Text, View, Button, Image, AppState, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import EntypoIcon from 'react-native-vector-icons/FontAwesome';
@@ -9,13 +9,13 @@ import { createStackNavigator } from '@react-navigation/stack';
 import FabManager from './src/fab/FabManager';
 import FabButton from './src/fab/FabButton';
 import FabLightbox from './src/fab/FabLightbox';
-import { AppColors, AppSizes } from '@theme'
+import { AppColors, AppSizes, AppStyles } from '@theme'
 import { bottomBarHeight } from '@utils'
 import { RouterName } from '@navigation';
 import { Provider } from 'react-redux'
 import store from '@redux/store'
 import Notification from './src/firebaseNotification/index'
-import { MessageBarSimple, MessageBarManagerSimple } from '@component'
+import { MessageBarSimple, MessageBarManagerSimple, Dialog } from '@component'
 
 import {
   LoginScreen,
@@ -23,15 +23,16 @@ import {
   NewsScreen,
   NotificationsScreen,
   AccountScreen,
-  ProfileScreen,
-  Dialog,
-  DialogView,
   SignUpScreen,
-  SplashScreen
+  SplashScreen,
+  EditAccountScreen,
+  DetailNewScreen,
+  ConfirmRequestScreen
 } from '@container';
 import * as RNLocalize from 'react-native-localize';
 import Localization from '@localization'
-import EditAccountScreen from './src/container/EditAccountScreen';
+
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 function DetailsScreen({ navigation }) {
   return (
@@ -53,20 +54,24 @@ function DetailsScreen({ navigation }) {
 const Tab = createBottomTabNavigator();
 const HomeStack = createStackNavigator();
 const SettingsStack = createStackNavigator();
-const ModalStack = createStackNavigator();
+const NewsStack = createStackNavigator();
+const NotificationStack = createStackNavigator();
 const RootStack = createStackNavigator();
 const Stack = createStackNavigator();
-const StackFab = createStackNavigator();
+
 
 function RootTabs() {
+  const insets = useSafeAreaInsets();
   return (
     <Tab.Navigator
       screenOptions={{
-        tabBarStyle: { height: 55, backgroundColor: AppColors.primaryBackground, paddingVertical: bottomBarHeight + 6, paddingBottom: 6 },
+        tabBarStyle: { ...styles.border, height: 60 + insets.bottom / 1.5, backgroundColor: AppColors.secondaryBackground, borderTopWidth: 0, paddingTop: 6, alignItems: 'flex-start' },
+        tabBarLabelStyle: { padding: AppSizes.paddingXSmall, fontSize: AppSizes.fontBase, },
+        tabBarIconStyle: { size: 10 }
       }}
       tabBarOptions={{
         activeTintColor: AppColors.primaryTextColor,
-        inactiveTintColor: AppColors.inactiveColor
+        inactiveTintColor: AppColors.inactiveColor,
       }}>
       <Tab.Screen
         name="Trang chủ"
@@ -86,24 +91,35 @@ function RootTabs() {
 
       <Tab.Screen
         name="Tin tức"
-        component={NewsScreen}
         options={{
           headerShown: false,
           tabBarIcon: ({ color, size }) => (
             <EntypoIcon name="newspaper-o" color={color} size={size} />
           ),
-        }}
-      />
+        }}>
+        {() => (
+          <NewsStack.Navigator screenOptions={{ headerShown: false }}>
+            <NewsStack.Screen name={RouterName.news} component={NewsScreen} />
+            <NewsStack.Screen name={RouterName.newsDetail} component={DetailNewScreen} />
+          </NewsStack.Navigator>
+        )}
+      </Tab.Screen>
       <Tab.Screen
         name="Thông báo"
-        component={NotificationsScreen}
         options={{
           headerShown: false,
           tabBarIcon: ({ color, size }) => (
             <EntypoIcon name="bell" color={color} size={size} />
           ),
-        }}
-      />
+        }}>
+        {() => (
+          <NewsStack.Navigator screenOptions={{ headerShown: false }}>
+            <NewsStack.Screen name={RouterName.notification} component={NotificationsScreen} />
+            <NewsStack.Screen name={RouterName.confirmRequest} component={ConfirmRequestScreen} />
+          </NewsStack.Navigator>
+        )}
+      </Tab.Screen>
+
       <Tab.Screen
         name="Tài khoản"
         options={{
@@ -122,38 +138,6 @@ function RootTabs() {
     </Tab.Navigator>
   );
 }
-
-const RootDialog = () => {
-  return (
-    <ModalStack.Screen
-      name="DialogView"
-      component={DialogView}
-      options={{
-        headerShown: false,
-        animationEnabled: true,
-        cardStyle: { backgroundColor: 'rgba(0, 0, 0, 0.15)' },
-        cardOverlayEnabled: true,
-        cardStyleInterpolator: ({ current: { progress } }) => {
-          return {
-            cardStyle: {
-              opacity: progress.interpolate({
-                inputRange: [0, 0.5, 0.9, 1],
-                outputRange: [0, 0.25, 0.7, 1],
-              }),
-            },
-            overlayStyle: {
-              opacity: progress.interpolate({
-                inputRange: [0, 1],
-                outputRange: [0, 0.5],
-                extrapolate: 'clamp',
-              }),
-            },
-          };
-        },
-      }}
-    />
-  );
-};
 
 const navigationRef = React.createRef();
 
@@ -191,16 +175,14 @@ export default App = (props) => {
   return (
     <Provider store={store}>
       <NavigationContainer ref={navigationRef}>
-        <View style={{ width: '100%', height: '100%' }}>
+        <View style={{ width: '100%', height: '100%', backgroundColor: AppColors.primaryBackground }}>
           <Notification />
-
           <RootStack.Navigator screenOptions={{ headerShown: false }}>
             <Stack.Screen name={RouterName.splash} component={SplashScreen} />
             <Stack.Screen name={RouterName.login} component={LoginScreen} />
             <Stack.Screen name={RouterName.signup} component={SignUpScreen} />
             <Stack.Screen name={RouterName.dialog} component={Dialog} options={{ presentation: 'transparentModal' }} />
             <RootStack.Screen name={RouterName.main}>{() => RootTabs()}</RootStack.Screen>
-            {RootDialog()}
             <Stack.Screen
               name="fab"
               component={FabLightbox}
@@ -229,7 +211,6 @@ export default App = (props) => {
               }}
             />
           </RootStack.Navigator>
-
           <FabButton ref={fabRef} navigationRef={navigationRef} />
           <MessageBarSimple ref={ref => {
             setMessageBar(ref)
@@ -239,3 +220,16 @@ export default App = (props) => {
     </Provider>
   );
 };
+
+const styles = StyleSheet.create({
+  border: {
+    borderColor: 'transparent',
+    backgroundColor: AppColors.secondaryBackground,
+    shadowColor: '#000',
+    borderTopWidth: 0,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    overflow: 'hidden'
+  }
+})

@@ -1,2 +1,3 @@
 import RouterName from './RouterNames'
-export { RouterName }
+import utils from './utils'
+export { RouterName, utils }

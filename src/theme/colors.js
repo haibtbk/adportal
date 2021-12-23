@@ -24,6 +24,7 @@ const app = {
     white: '#FFFFFF',
     borderSearch: 'rgba(185,185,185, 0.5)',
     subWhite: 'rgba(255,255,255,0.63)',
+    closeButton: 'rgba(255,255,255,0.2)',
     blue: "#2699FB",
     cerulean: '#009BD5',
     transparent: 'transparent',

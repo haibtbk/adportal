@@ -72,9 +72,9 @@ const dialogDefaultProps = {
   positiveText: 'Ok',
   negativeText: null,
   neutralText: null,
-  positiveColor: AppColors.textpr,
-  negativeColor: AppColors.cerulean,
-  neutralColor: AppColors.cerulean,
+  positiveColor: AppColors.success,
+  negativeColor: AppColors.red,
+  neutralColor: AppColors.black,
   positiveAction: null,
   negativeAction: null,
   neutralAction: null,
@@ -175,7 +175,7 @@ const Dialog = ({ route, navigation }) => {
     return (
       <View style={configOS.buttonStyle}>
         <TouchableOpacity onPress={() => _onPositivePress()}>
-          <Text style={[styles.buttonText, { color: paddingSmallprops.positiveColor, }]}>{positiveText}</Text>
+          <Text style={[styles.buttonText, { color: positiveColor, }]}>{positiveText}</Text>
         </TouchableOpacity>
       </View>
     );

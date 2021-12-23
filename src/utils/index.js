@@ -2,10 +2,11 @@ import { Platform, Dimensions, StatusBar } from 'react-native'
 import DateTimeUtil from './DateTimeUtil'
 import DeviceUtil from './DeviceUtil'
 import ColorUtil from './colorUtil'
+import { formatBytes } from './fileUtils'
 
 export const isFunction = (fnc) => ({}.toString.call(fnc) === '[object Function]')
 
-export { DateTimeUtil, DeviceUtil, ColorUtil }
+export { DateTimeUtil, DeviceUtil, ColorUtil, formatBytes }
 
 export const isObject = (any) => ({}.toString.call(any) === '[object Object]') // typeof null === 'object'
 

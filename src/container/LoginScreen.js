@@ -181,7 +181,7 @@ const LoginScreen = (props) => {
         </View>
 
         <ButtonComponent
-          containerStyle={{ width: '100%' }}
+          containerStyle={{ width: '100%', borderRadius: 6 }}
           title={Localization.t('signin')}
           action={() => doLogin()}
         />
@@ -256,14 +256,14 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 45,
     marginTop: 30,
-    borderRadius: 20,
+    borderRadius: 6,
     paddingLeft: 25,
   },
   textInput2: {
     backgroundColor: '#242846',
     width: '100%',
     height: 45,
-    borderRadius: 20,
+    borderRadius: 6,
     paddingLeft: 25,
   },
   stylePassword: {

@@ -1,6 +1,6 @@
 import React from 'react';
 import {TouchableOpacity, Text, StyleSheet} from 'react-native';
-import {AppStyles} from '@theme';
+import {AppStyles, AppSizes} from '@theme';
 import PropTypes from 'prop-types';
 const ButtonComponent = (props) => {
   let {containerStyle, action, title} = props;
@@ -9,26 +9,24 @@ const ButtonComponent = (props) => {
     <TouchableOpacity
       onPress={() => action && action()}
       style={[styles.button, containerStyle && containerStyle]}>
-      <Text style={styles.textLogin}>{title}</Text>
+      <Text style={styles.text}>{title}</Text>
     </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
   button: {
-    marginTop: 20,
-    marginBottom: 5,
     width: 330,
-    height: 45,
+    padding: AppSizes.padding,
+    alignItems: 'center',
+    justifyContent: 'center',
     backgroundColor: '#41cd7d',
-    borderRadius: 50,
+    borderRadius: 6,
   },
-  textLogin: {
+  text: {
     ...AppStyles.baseText,
-    fontSize: 20,
     textAlign: 'center',
-    marginTop: 10,
-    color: 'black',
+    color: 'white',
   },
 });
 

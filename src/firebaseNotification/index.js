@@ -1,10 +1,9 @@
 import React, { useEffect } from 'react';
 import messaging from '@react-native-firebase/messaging';
 import { LocalStorage } from '@data';
-import { navigateNoti } from './NavigationNotificationManager';
-import { handleMessageBar } from './MessageBarManager'
-const Notification = (props) => {
+import { countWaitingApprove } from "./helper"
 
+const Notification = (props) => {
   const getFcmToken = async () => {
     const fcmToken = await messaging().getToken();
     console.log({ fcmToken })
@@ -27,32 +26,9 @@ const Notification = (props) => {
 
   useEffect(() => {
     requestUserPermission();
-
-    // Register background handler
-    messaging().setBackgroundMessageHandler(async remoteMessage => {
-      console.log('Message handled in the background!', remoteMessage);
-    });
-
-    messaging().onMessage(async remoteMessage => {
-      handleMessageBar(remoteMessage)
-    });
-
-    messaging().onNotificationOpenedApp(remoteMessage => {
-      navigateNoti(remoteMessage)
-    });
-
-    // Check whether an initial notification is available
-    messaging()
-      .getInitialNotification()
-      .then(remoteMessage => {
-        if (remoteMessage) {
-          navigateNoti(remoteMessage)
-        }
-      });
-
   }, [])
 
   return null
 }
-
+export { countWaitingApprove }
 export default Notification;

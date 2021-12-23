@@ -1,21 +1,39 @@
-import NotificationTypes from './NotificationTypes';
-import { Linking, Alert } from 'react-native'
 
-const navigateNoti = (notificationData) => {
+import { RouterName } from '@navigation';
+
+const navigateNoti = (notificationData, navigation, callback) => {
     const { data } = notificationData
-    const { type = "0" } = data
-    switch (type) {
-        case NotificationTypes.Learn:
+    const { item_info = "" } = data
+    let itemInforObjData = item_info
+    let itemInforObj = {}
+    let notificationType = 0
 
-            break
-        case NotificationTypes.Lha:
+    try {
+        if (typeof item_info == 'string') {
+            itemInforObjData = JSON.parse(item_info)
+        }
+        notificationType = itemInforObjData.type
+        itemInforObj = itemInforObjData?.item_info
 
-            break
-        case NotificationTypes.Competation:
-
+    } catch (error) {
+        console.log(error)
+    }
+    switch (notificationType) {
+        case 1:
+            navigation.navigate("Thông báo")
+            setTimeout(() => {
+                navigation.navigate(RouterName.confirmRequest, {
+                    request_id: data.id,
+                    itemInfo: itemInforObj,
+                    callback
+                })
+            }, 100)
+            
             break
         default: break
     }
 }
+
+
 
 export { navigateNoti }

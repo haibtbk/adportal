@@ -2,10 +2,11 @@ import React, { useRef } from 'react';
 import { View, Text, Button } from 'react-native';
 import FabManager from '@fab/FabManager';
 import { useFocusEffect } from '@react-navigation/native';
-import { ButtonIconComponent, BaseNewsComponent } from '@component';
+import { ButtonIconComponent, BaseNewsComponent } from '@container';
 import { AppSizes, AppStyles } from '@theme';
 import NavigationBar from '@navigation/NavigationBar';
 import AwesomeListComponent from "react-native-awesome-list";
+import { RouterName } from '@navigation';
 
 const flatListData = [
   {
@@ -53,7 +54,7 @@ const NewsScreen = (props) => {
       };
     }, []),
   );
-  
+
   const refreshData = () => {
     listRef.refresh()
   }
@@ -72,9 +73,15 @@ const NewsScreen = (props) => {
 
   const listRef = useRef(null)
 
+  const readMore = (item) => {
+    navigation.navigate(RouterName.newsDetail, {
+      item
+    })
+  }
+
   const renderItem = ({ item }) => {
     return (
-      <BaseNewsComponent backgroundImage={item?.backgroundImage} author={item?.author} title={item?.title ?? ""} content={item?.content ?? ""} containerStyle={{ marginVertical: AppSizes.paddingSmall }} numberOfLines={4} />
+      <BaseNewsComponent readMore={() => readMore(item)} backgroundImage={item?.backgroundImage} author={item?.author} title={item?.title ?? ""} content={item?.content ?? ""} containerStyle={{ marginVertical: AppSizes.paddingSmall }} numberOfLines={2} />
     )
   }
   return (

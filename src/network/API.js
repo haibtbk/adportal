@@ -42,7 +42,18 @@ API.updateDeviceInfo = (data) => {
         _method: "PUT"
     }
     return API.instance.post(Endpoint.updateDeviceInfo, params)
+}
 
+API.confirmRequest = (params) => {
+    return API.instance.post(Endpoint.confirmRequest, params)
+}
+
+API.getRequestList = (params) => {
+    return API.instance.get(Endpoint.getListRequest, { params })
+}
+
+API.getMenuState = (params) => {
+    return API.instance.get(Endpoint.getMenuState, {params})
 }
 
 /* Export Component ==================================================================== */

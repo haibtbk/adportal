@@ -8,6 +8,10 @@ target 'ADPortal' do
 
   use_react_native!(:path => config["reactNativePath"])
 
+  pod 'lottie-react-native', :path => '../node_modules/lottie-react-native'
+
+  pod 'lottie-ios', :path => '../node_modules/lottie-ios'
+
   target 'ADPortalTests' do
     inherit! :complete
     # Pods for testing

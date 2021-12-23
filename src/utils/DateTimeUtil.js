@@ -23,10 +23,6 @@ function format(datetimeFormat, timeInMillis) {
 }
 
 let defaultFormat = (timeInMillis) => {
-    const data = format(DATE_FORMAT, timeInMillis)
-    return data
-}
-let dateTypeFormat = (timeInMillis) => {
     const data = format(DATE_TYPE, timeInMillis)
     return data
 }
@@ -93,7 +89,6 @@ let getDayOfWeek = (i) => {
 export default {
     format,
     defaultFormat,
-    dateTypeFormat,
     dobFormat,
     noteFormat,
     dateTimeFormat,

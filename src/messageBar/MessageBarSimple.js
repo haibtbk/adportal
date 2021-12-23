@@ -55,7 +55,7 @@ export default class MessageBarSimple extends Component {
         const paddingTop = DeviceUtil.getSafeAreaHeight()
         const messages = this.state.messages
         return (
-            <View style={{ position: 'absolute', top: paddingTop, width: AppSizes.screen.width - 2 * SPACING, left: SPACING, right: SPACING, }}>
+            <View style={{ zIndex: 999, position: 'absolute', top: paddingTop, width: AppSizes.screen.width - 2 * SPACING, left: SPACING, right: SPACING }}>
                 {
                     _.map(messages, (message) => {
                         return this.renderItem(message)
@@ -67,12 +67,14 @@ export default class MessageBarSimple extends Component {
 
     renderItem(message) {
         const config = {
-            velocityThreshold: 0.3,
-            directionalOffsetThreshold: 50
+            velocityThreshold: 0.5,
+            gestureIsClickThreshold: 15,
+            directionalOffsetThreshold: 80
         };
         const { title, content } = message
         return (
             <GestureRecognizer
+                key={() => message.id ?? message.toString()}
                 onSwipeUp={(state) => this.onSwipeUp(message)}
                 config={config}
                 style={{
@@ -81,7 +83,7 @@ export default class MessageBarSimple extends Component {
                     paddingTop: AppSizes.paddingXSmall,
                     marginBottom: AppSizes.marginSmall,
                     justifyContent: 'center',
-                    height: HEIGHT_CONTENT,
+                    // height: HEIGHT_CONTENT,
                     // width: '100%',
                     flex: 1,
                     borderRadius: 16,
@@ -94,11 +96,13 @@ export default class MessageBarSimple extends Component {
                     },
                 }}>
                 <TouchableOpacity style={{ flex: 1, paddingTop: AppSizes.paddingXSmall, }} onPress={() => {
-                    this.hide(message)
+                    setTimeout(() => {
+                        this.hide(message)
+                    }, 500)
                     message.onPress && message.onPress()
                 }}>
-                    <Text style={[AppStyles.boldText, { fontWeight: 'bold', color: 'black', fontSize: AppSizes.fontMedium, marginBottom: AppSizes.marginXSmall }]}>{title}</Text>
-                    <Text style={[AppStyles.baseText, { color: 'black', fontSize: AppSizes.fontMedium }]}>{content}</Text>
+                    <Text style={[AppStyles.boldText, { fontWeight: 'bold', color: 'black', fontSize: AppSizes.fontMedium, marginBottom: AppSizes.marginXSmall }]} numberOfLines={2} ellipsizeMode='tail'>{title}</Text>
+                    <Text style={[AppStyles.baseText, { color: 'black', fontSize: AppSizes.fontMedium }]} numberOfLines={2} ellipsizeMode='tail'>{content}</Text>
                 </TouchableOpacity>
             </GestureRecognizer>
 

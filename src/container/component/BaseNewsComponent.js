@@ -1,17 +1,17 @@
 import React from "react";
-import { Text, View, StyleSheet, TouchableOpacity, ImageBackground } from 'react-native'
+import { Text, View, StyleSheet, TouchableOpacity, ImageBackground, Image } from 'react-native'
 import { AppStyles, AppColors, AppSizes } from '@theme'
 import Icon from 'react-native-vector-icons/AntDesign'
 const DEFAULT_IMAGE = "https://www.investopedia.com/thmb/vf1YMzGYJJT9F62tjmUAXNzVhPA=/480x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/GettyImages-1251235330-83979ee0c47441b284d9c4eecee5a72f.jpg"
 const BaseNewsComponent = (props) => {
-    const { title = "", content = "", containerStyle, author, numberOfLines = 0, readeMore, backgroundImage = DEFAULT_IMAGE } = props
+    const { title = "", content = "", containerStyle, author, numberOfLines = 0, readMore, backgroundImage = DEFAULT_IMAGE } = props
     const soureBackground = { uri: backgroundImage }
     return (
         <ImageBackground
             resizeMode='stretch'
             source={soureBackground}
             style={[styles.container, containerStyle && containerStyle]}
-            imageStyle={{ opacity: 0.1 }}>
+            imageStyle={{ opacity: 0.2 }}>
             <Text style={[AppStyles.boldText, { color: AppColors.primaryTextColor, marginBottom: AppSizes.paddingSmall, fontSize: AppSizes.fontLarge, lineHeight: 30 }]}>
                 {title}
             </Text>
@@ -20,17 +20,18 @@ const BaseNewsComponent = (props) => {
                 <Text style={[AppStyles.baseText, { fontSize: AppSizes.fontSmall }]}>{`Serbia Today | `}</Text>
                 <Text style={[AppStyles.baseText, { fontSize: AppSizes.fontSmall }]}>{`5 Commments`}</Text>
             </View>
-            <Text style={[AppStyles.baseText, styles.content, {fontSize: AppSizes.fontMedium, lineHeight: 30}]}
+            <Text style={[AppStyles.baseText, styles.content, { fontSize: AppSizes.fontMedium, lineHeight: 30 }]}
                 numberOfLines={numberOfLines}
                 ellipsizeMode="tail">
                 {content}
             </Text>
             <TouchableOpacity
-                onPress={() => readeMore && readeMore()}
-                style={styles.readeMore} >
+                onPress={() => readMore && readMore()}
+                style={styles.readMore} >
                 <Icon name="arrowright" size={24} color={AppColors.primaryTextColor} />
                 <Text style={[AppStyles.baseText, { fontSize: AppSizes.fontMedium, marginLeft: AppSizes.paddingSmall }]}>Read more</Text>
             </TouchableOpacity>
+
         </ImageBackground>
     )
 }
@@ -52,7 +53,7 @@ const styles = StyleSheet.create({
         flex: 1,
         flexDirection: 'row'
     },
-    readeMore: {
+    readMore: {
         ...AppStyles.roundButton,
         borderRadius: 8,
         width: 170,

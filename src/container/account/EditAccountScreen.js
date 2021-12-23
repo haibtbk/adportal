@@ -4,17 +4,14 @@ import FabManager from '@fab/FabManager';
 import { useFocusEffect } from '@react-navigation/native';
 import { AppSizes, AppStyles, AppColors } from '@theme';
 import NavigationBar from '@navigation/NavigationBar';
-import { useNavigation } from '@react-navigation/native';
-import navigationManager from '@navigation/utils'
 import { useDispatch, useSelector } from 'react-redux'
-import { BaseInputViewComponent, BaseViewComponent } from '@component';
+import { BaseInputViewComponent, BaseViewComponent, Dialog } from '@component';
 import { WebImage } from '@component';
 import Icon from "react-native-vector-icons/MaterialIcons"
 import IconMaterial from "react-native-vector-icons/MaterialCommunityIcons"
 import ImagePicker from 'react-native-image-crop-picker';
 import { API } from '@network'
 import { saveUser } from '@redux/user/action';
-import { Dialog } from '@container';
 import { Divider } from 'react-native-paper';
 
 const DEMO_AVATAR = "http://hinhnendepnhat.net/wp-content/uploads/2014/10/hinh-nen-girl-xinh-tien-nu-mong-ao.jpg"
