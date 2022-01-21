@@ -8,8 +8,10 @@ const routes = {
     news: "News",
     newsDetail: "NewsDetail",
     notification: "Notification",
-    confirmRequest: "ConfirmRequest"
-
+    confirmRequest: "ConfirmRequest",
+    more: "More",
+    account: "Account",
+    publishFile: "PublishFile"
 }
 
 export default routes

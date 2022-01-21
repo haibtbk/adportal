@@ -11,29 +11,6 @@ import { formatBytes, DateTimeUtil } from '@utils';
 import { navigateNoti } from '../../firebaseNotification/NavigationNotificationManager';
 import { useSelector, useDispatch } from 'react-redux';
 
-
-const flatListData = [
-  {
-    title: "Bạn có cuộc họp lúc 17h00",
-    content: "Cuộc họp bàn về tình hình phát triển chi nhánh và giải pháp để thúc đẩy tăng trưởng chi nhánh"
-  },
-  {
-    title: "Bạn vừa được thưởng 5 triệu đồng vì thành tích ký thành công 2 hợp đồng mới",
-    content: "Xin chúc mừng bạn đã đạt thành tích. Vui lòng tới phòng kế toán để nhận tiền thưởng. Chân thành cảm ơn sự đóng góp của bạn.Xin chúc mừng bạn đã đạt thành tích. Vui lòng tới phòng kế toán để nhận tiền thưởng. Chân thành cảm ơn sự đóng góp của bạn"
-  },
-  {
-    title: "Bạn vừa được thưởng 5 triệu đồng vì thành tích ký thành công 2 hợp đồng mới",
-    content: "Xin chúc mừng bạn đã đạt thành tích. Vui lòng tới phòng kế toán để nhận tiền thưởng. Chân thành cảm ơn sự đóng góp của bạn"
-  },
-  {
-    title: "Bạn vừa được thưởng 5 triệu đồng vì thành tích ký thành công 2 hợp đồng mới",
-    content: "Xin chúc mừng bạn đã đạt thành tích. Vui lòng tới phòng kế toán để nhận tiền thưởng. Chân thành cảm ơn sự đóng góp của bạn.Xin chúc mừng bạn đã đạt thành tích. Vui lòng tới phòng kế toán để nhận tiền thưởng. Chân thành cảm ơn sự đóng góp của bạn"
-  },
-  {
-    title: "Bạn vừa được thưởng 5 triệu đồng vì thành tích ký thành công 2 hợp đồng mới",
-    content: "Xin chúc mừng bạn đã đạt thành tích. Vui lòng tới phòng kế toán để nhận tiền thưởng. Chân thành cảm ơn sự đóng góp của bạn"
-  },
-]
 const NotificationsScreen = (props) => {
   const { navigation } = props;
   const dispatch = useDispatch()

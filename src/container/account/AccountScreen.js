@@ -54,7 +54,9 @@ const AccountScreen = (props) => {
   return (
     <View style={AppStyles.container}>
       <NavigationBar
-        leftView={() => <Text style={[AppStyles.boldText, { fontSize: 24 }]}>Tài khoản</Text>}
+        isBack
+        onLeftPress={() => navigation.goBack()}
+        centerTitle="Tài khoản"
         rightView={() => <TouchableOpacity
           onPress={doEditProfile}
           style={{ paddingVertical: AppSizes.paddingXSmall }}>

@@ -5,6 +5,8 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import EntypoIcon from 'react-native-vector-icons/FontAwesome';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import Feather from 'react-native-vector-icons/Feather';
 import { createStackNavigator } from '@react-navigation/stack';
 import FabManager from './src/fab/FabManager';
 import FabButton from './src/fab/FabButton';
@@ -27,7 +29,9 @@ import {
   SplashScreen,
   EditAccountScreen,
   DetailNewScreen,
-  ConfirmRequestScreen
+  ConfirmRequestScreen,
+  MoreScreen,
+  PublishedFileScreen
 } from '@container';
 import * as RNLocalize from 'react-native-localize';
 import Localization from '@localization'
@@ -119,22 +123,25 @@ function RootTabs() {
           </NewsStack.Navigator>
         )}
       </Tab.Screen>
-
       <Tab.Screen
-        name="Tài khoản"
+        name="More"
         options={{
           headerShown: false,
           tabBarIcon: ({ color, size }) => (
-            <MaterialIcons name='account-box' color={color} size={size}></MaterialIcons>
+            <Feather name="more-horizontal" color={color} size={size + 15} />
           ),
+          tabBarLabel: () => null
         }}>
         {() => (
           <SettingsStack.Navigator screenOptions={{ headerShown: false }}>
-            <SettingsStack.Screen name="Account" component={AccountScreen} />
+            <SettingsStack.Screen name={RouterName.more} component={MoreScreen} />
+            <SettingsStack.Screen name={RouterName.account} component={AccountScreen} />
             <SettingsStack.Screen name={RouterName.editProfile} component={EditAccountScreen} />
+            <SettingsStack.Screen name={RouterName.publishFile} component={PublishedFileScreen} />
           </SettingsStack.Navigator>
         )}
       </Tab.Screen>
+
     </Tab.Navigator>
   );
 }

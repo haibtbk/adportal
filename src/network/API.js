@@ -53,8 +53,15 @@ API.getRequestList = (params) => {
 }
 
 API.getMenuState = (params) => {
-    return API.instance.get(Endpoint.getMenuState, {params})
+    return API.instance.get(Endpoint.getMenuState, { params })
 }
 
+API.searchFiles = (params) => {
+    return API.instance.get(Endpoint.searchFiles, { params })
+}
+
+API.downloadFile = (params) => {
+    return API.instance.post(Endpoint.downloadFile, params)
+}
 /* Export Component ==================================================================== */
 export default API;
