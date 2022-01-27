@@ -108,7 +108,7 @@ const HomeScreen = ({navigation, route}) => {
         rightView={() => <TouchableOpacity
           onPress={onPressWaitingApprove}
           style={styles.rightView}>
-          <Text>Chờ duyệt </Text>
+          <Text style={[AppStyles.baseText, {color: 'white', marginRight: AppSizes.paddingSmall}]}>Chờ duyệt </Text>
           <Text style={styles.redCircle}>{numOfWatingApproveForShow}</Text>
         </TouchableOpacity>} />
       <ScrollView style={{ flex: 1 }}>
@@ -174,7 +174,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     padding: AppSizes.paddingSmall,
-    backgroundColor: 'white'
+    backgroundColor: 'transparent',
+    borderWidth: 0
   },
 
   redCircle: {

@@ -11,6 +11,7 @@ import { navigateNoti } from '../../firebaseNotification/NavigationNotificationM
 import { useSelector, useDispatch } from 'react-redux';
 import PublishedFileItem from './PublishedFileItem'
 import { LoadingComponent } from '@component';
+import { utils, RouterName } from '@navigation';
 
 import moment from 'moment';
 
@@ -68,10 +69,10 @@ const PublishedFileScreen = (props) => {
         setLoading(true)
         API.downloadFile(params)
             .then(res => {
-
+                utils.showBeautyAlert(navigation, "success", "Tải file thành công. Vui lòng xem file trong quản lý file của điện thoại.")
             })
             .catch(err => {
-
+                utils.showBeautyAlert(navigation, "fail", "Có lỗi trong quá trình tải file.")
             })
             .finally(() => {
                 setLoading(false)
