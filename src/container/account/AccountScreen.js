@@ -10,6 +10,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { BaseViewComponent } from '@component';
 import { WebImage } from '@component';
 import Icon from "react-native-vector-icons/Feather"
+import MaterialIcons from "react-native-vector-icons/MaterialIcons"
 import { RouterName } from '@navigation';
 
 const DEMO_AVATAR = "http://hinhnendepnhat.net/wp-content/uploads/2014/10/hinh-nen-girl-xinh-tien-nu-mong-ao.jpg"
@@ -60,7 +61,7 @@ const AccountScreen = (props) => {
         rightView={() => <TouchableOpacity
           onPress={doEditProfile}
           style={{ paddingVertical: AppSizes.paddingXSmall }}>
-          <Icon name="edit-3" size={22} color={AppColors.primaryTextColor} />
+          <MaterialIcons name="edit" size={22} color={AppColors.primaryTextColor} />
         </TouchableOpacity>}
       />
       <WebImage

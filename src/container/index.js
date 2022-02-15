@@ -14,7 +14,24 @@ import CloseButtonComponent from './component/CloseButtonComponent';
 import ConfirmRequestScreen from './notification/ConfirmRequestScreen'
 import MoreScreen from './more/MoreScreen'
 import PublishedFileScreen from './fileManager/PublishedFileScreen';
+
+import DashBoard from './home/DashBoard';
+import ApproveRequest from './home/ApproveRequest'
+import GroupUserPerfomance from './home/GroupUserPerfomance';
+import MonthlyScheduled from './home/MonthlyScheduled';
+import DailySchedule from './home/DailySchedule'
+import WorkingPerformance from './home/WorkingPerformance'
+import DashBoardCompany from './home/DashBoardCompany';
+import HomeScreenCompany from './home/HomeScreenCompany';
 export {
+  HomeScreenCompany,
+  DashBoardCompany,
+  WorkingPerformance,
+  DailySchedule,
+  MonthlyScheduled,
+  GroupUserPerfomance,
+  ApproveRequest,
+  DashBoard,
   PublishedFileScreen,
   AvatarBoxComponent,
   MoreScreen,

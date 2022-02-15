@@ -37,7 +37,7 @@ import {
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import Title from './Title';
 
-const HomeScreen = ({ navigation, route }) => {
+const HomeScreenCompany = ({ navigation, route }) => {
   const dispatch = useDispatch()
   const numOfWatingApprove = useSelector(state => state?.waitingApprove?.number)
   const [numOfWatingApproveForShow, setNumOfWatingApproveForShow] = useState(numOfWatingApprove)
@@ -104,19 +104,10 @@ const HomeScreen = ({ navigation, route }) => {
 
   return (
     <View style={[AppStyles.container]}>
-      {/* <NavigationBar
-        leftView={() => <Text style={[AppStyles.boldText, { fontSize: 24 }]}>Trang chủ</Text>}
-        rightView={() => <TouchableOpacity
-          onPress={onPressWaitingApprove}
-          style={styles.rightView}>
-          <Text style={[AppStyles.baseText, {color: 'white', marginRight: AppSizes.paddingSmall}]}>Chờ duyệt </Text>
-          <Text style={styles.redCircle}>{numOfWatingApproveForShow}</Text>
-        </TouchableOpacity>} /> */}
       <ScrollView style={{ flex: 1 }}>
-        <BaseDashboardItemComponent title="Month income" content="Month income" amount={100000000} containerStyle={{ marginVertical: AppSizes.padding }} color={AppColors.warning} />
-        <BaseDashboardItemComponent title="Revenue quater" content="Revenue quater" amount={12230000000} containerStyle={{ marginBottom: AppSizes.padding }} color={AppColors.success} />
-        <BaseDashboardItemComponent title="News company" content="News company" showPercent={true} amount={123} containerStyle={{ marginBottom: AppSizes.padding }} color={AppColors.danger} />
-        <BaseDashboardItemComponent title="Approve request" content="Approve request" amount={12} containerStyle={{ marginBottom: AppSizes.padding }} color={AppColors.info} />
+        <BaseDashboardItemComponent title="Revenue allbranch" content="Revenue allbranch" amount={100000000} containerStyle={{ marginVertical: AppSizes.padding }} color={AppColors.warning} />
+        <BaseDashboardItemComponent title="Revenue allbranch quater" content="Revenue allbranch quater" amount={12230000000} containerStyle={{ marginBottom: AppSizes.padding }} color={AppColors.success} />
+        <BaseDashboardItemComponent title="Allbranch" content="Allbranch" amount={123} containerStyle={{ marginBottom: AppSizes.padding }} color={AppColors.danger} />
         {/* <Text style={[AppStyles.boldText, {padding: AppSizes.paddingSmall}]}>Monthly Revenue</Text> */}
         <Title title = "Monthly Revenue"/>
         <LineChart
@@ -168,7 +159,7 @@ const HomeScreen = ({ navigation, route }) => {
   );
 };
 
-export default HomeScreen
+export default HomeScreenCompany
 
 const styles = StyleSheet.create({
   rightView: {

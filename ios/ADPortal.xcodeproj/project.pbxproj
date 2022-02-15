@@ -821,7 +821,7 @@
 				CODE_SIGN_ENTITLEMENTS = ADPortal/ADPortal.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 10;
+				CURRENT_PROJECT_VERSION = 12;
 				DEVELOPMENT_TEAM = "";
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = ADPortal/Info.plist;
@@ -838,6 +838,7 @@
 				SWIFT_OBJC_BRIDGING_HEADER = "ADPortal-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Debug;
@@ -851,7 +852,7 @@
 				CODE_SIGN_ENTITLEMENTS = ADPortal/ADPortal.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 10;
+				CURRENT_PROJECT_VERSION = 12;
 				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = ADPortal/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
@@ -866,6 +867,7 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "ADPortal-Bridging-Header.h";
 				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Release;

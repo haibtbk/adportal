@@ -31,7 +31,10 @@ import {
   DetailNewScreen,
   ConfirmRequestScreen,
   MoreScreen,
-  PublishedFileScreen
+  PublishedFileScreen,
+  DashBoard,
+  DashBoardCompany,
+  HomeScreenCompany
 } from '@container';
 import * as RNLocalize from 'react-native-localize';
 import Localization from '@localization'
@@ -87,8 +90,24 @@ function RootTabs() {
         }}>
         {() => (
           <HomeStack.Navigator screenOptions={{ headerShown: false }}>
+            <HomeStack.Screen name="Dashboard" component={DashBoard} />
             <HomeStack.Screen name="Home" component={HomeScreen} />
             <HomeStack.Screen name="Details" component={DetailsScreen} />
+          </HomeStack.Navigator>
+        )}
+      </Tab.Screen>
+
+      <Tab.Screen
+        name="Công ty"
+        options={{
+          headerShown: false,
+          tabBarIcon: ({ color, size }) => (
+            <MaterialIcons name="dashboard" color={color} size={size} />
+          ),
+        }}>
+        {() => (
+          <HomeStack.Navigator screenOptions={{ headerShown: false }}>
+            <HomeStack.Screen name="DashboardCompany" component={DashBoardCompany} />
           </HomeStack.Navigator>
         )}
       </Tab.Screen>
@@ -128,7 +147,7 @@ function RootTabs() {
         options={{
           headerShown: false,
           tabBarIcon: ({ color, size }) => (
-            <Feather name="more-horizontal" color={color} size={size + 15} />
+            <MaterialIcons name="more-horiz" color={color} size={size + 15} />
           ),
           tabBarLabel: () => null
         }}>

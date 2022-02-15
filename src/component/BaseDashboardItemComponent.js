@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
         borderWidth: 0,
         flexDirection: 'row',
         width: '100%',
-        height: 120,
+        height: 100,
         alignItems: 'center',
         justifyContent: 'space-between',
         padding: AppSizes.padding

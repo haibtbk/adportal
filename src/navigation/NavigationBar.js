@@ -18,6 +18,7 @@ export default class NavigationBar extends Component {
 
   render() {
     const {
+      containerStyle,
       leftImage,
       leftTitle,
       onLeftPress,
@@ -34,7 +35,7 @@ export default class NavigationBar extends Component {
     } = this.props
 
     return (
-        <View style={[styles.container, { backgroundColor: AppColors.primaryBackground }]}>
+        <View style={[styles.container, { backgroundColor: AppColors.primaryBackground }, containerStyle && containerStyle]}>
           {/*Left*/}
           <View style={[styles.leftContainer, (leftTitle || rightTitle) && { flex: 1 }]}>
             {leftView && leftView()}
