@@ -4,6 +4,7 @@ import { Text, View, Button, Image, AppState, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import EntypoIcon from 'react-native-vector-icons/FontAwesome';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Feather from 'react-native-vector-icons/Feather';
@@ -34,12 +35,14 @@ import {
   PublishedFileScreen,
   DashBoard,
   DashBoardCompany,
-  HomeScreenCompany
+  HomeScreenCompany,
+  ScheduleScreen
 } from '@container';
 import * as RNLocalize from 'react-native-localize';
 import Localization from '@localization'
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import ApproveRequest from './src/container/home/ApproveRequest';
 
 function DetailsScreen({ navigation }) {
   return (
@@ -77,7 +80,7 @@ function RootTabs() {
         tabBarIconStyle: { size: 10 }
       }}
       tabBarOptions={{
-        activeTintColor: AppColors.primaryTextColor,
+        activeTintColor: AppColors.activeColor,
         inactiveTintColor: AppColors.inactiveColor,
       }}>
       <Tab.Screen
@@ -85,7 +88,7 @@ function RootTabs() {
         options={{
           headerShown: false,
           tabBarIcon: ({ color, size }) => (
-            <MaterialIcons name="dashboard" color={color} size={size} />
+            <MaterialIcons name="home" color={color} size={size} />
           ),
         }}>
         {() => (
@@ -98,7 +101,22 @@ function RootTabs() {
       </Tab.Screen>
 
       <Tab.Screen
-        name="Công ty"
+        name="Phê duyệt"
+        options={{
+          headerShown: false,
+          tabBarIcon: ({ color, size }) => (
+            <FontAwesome5 name="user-check" color={color} size={size} />
+          ),
+        }}>
+        {() => (
+          <HomeStack.Navigator screenOptions={{ headerShown: false }}>
+            <HomeStack.Screen name="DashboardCompany" component={ApproveRequest} />
+          </HomeStack.Navigator>
+        )}
+      </Tab.Screen>
+
+      <Tab.Screen
+        name="Kế hoạch"
         options={{
           headerShown: false,
           tabBarIcon: ({ color, size }) => (
@@ -107,7 +125,7 @@ function RootTabs() {
         }}>
         {() => (
           <HomeStack.Navigator screenOptions={{ headerShown: false }}>
-            <HomeStack.Screen name="DashboardCompany" component={DashBoardCompany} />
+            <HomeStack.Screen name="Schedule" component={ScheduleScreen} />
           </HomeStack.Navigator>
         )}
       </Tab.Screen>
@@ -128,32 +146,17 @@ function RootTabs() {
         )}
       </Tab.Screen>
       <Tab.Screen
-        name="Thông báo"
+        name="Menu"
         options={{
           headerShown: false,
           tabBarIcon: ({ color, size }) => (
-            <EntypoIcon name="bell" color={color} size={size} />
+            <Feather name="menu" color={color} size={size} />
           ),
-        }}>
-        {() => (
-          <NewsStack.Navigator screenOptions={{ headerShown: false }}>
-            <NewsStack.Screen name={RouterName.notification} component={NotificationsScreen} />
-            <NewsStack.Screen name={RouterName.confirmRequest} component={ConfirmRequestScreen} />
-          </NewsStack.Navigator>
-        )}
-      </Tab.Screen>
-      <Tab.Screen
-        name="More"
-        options={{
-          headerShown: false,
-          tabBarIcon: ({ color, size }) => (
-            <MaterialIcons name="more-horiz" color={color} size={size + 15} />
-          ),
-          tabBarLabel: () => null
+
         }}>
         {() => (
           <SettingsStack.Navigator screenOptions={{ headerShown: false }}>
-            <SettingsStack.Screen name={RouterName.more} component={MoreScreen} />
+            <SettingsStack.Screen name={RouterName.menu} component={MoreScreen} />
             <SettingsStack.Screen name={RouterName.account} component={AccountScreen} />
             <SettingsStack.Screen name={RouterName.editProfile} component={EditAccountScreen} />
             <SettingsStack.Screen name={RouterName.publishFile} component={PublishedFileScreen} />

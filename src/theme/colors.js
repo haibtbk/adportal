@@ -3,11 +3,16 @@
  */
 
 const defaultColor = {
-    primaryBackground: '#121723',
-    secondaryBackground: "#1A202E",
+    // primaryBackground: '#121723',
+    primaryBackground: '#0079c1',
+
+    // secondaryBackground: "#1A202E",
+    secondaryBackground: "#ffffff",
+
     primaryTextColor: '#ffffff',
-    secondaryTextColor: '#A7ABB3',
-    inactiveColor: "#5C6577",
+    secondaryTextColor: '#333333',
+    inactiveColor: "#805C6577",
+    activeColor: "#5C6577"
 }
 const app = {
     ...defaultColor,

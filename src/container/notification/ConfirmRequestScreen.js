@@ -65,19 +65,19 @@ const ConfirmRequestScreen = ({ navigation, route }) => {
                 centerTitle="Xác nhận" />
             <ScrollView contentContainerStyle={styles.contentContainerStyle}>
                 <View style={AppStyles.baseBox}>
-                    <Text style={[AppStyles.boldText, { color: AppColors.primaryTextColor, fontSize: 20, textAlign: 'center', marginBottom: AppSizes.paddingSmall }]}>Thông tin file</Text>
+                    <Text style={[AppStyles.boldText, { color: AppColors.activeColor, fontSize: 20, textAlign: 'center', marginBottom: AppSizes.paddingSmall }]}>Thông tin file</Text>
 
-                    <Text style={[AppStyles.boldText, { color: AppColors.primaryTextColor, lineHeight: 25 }]}>{fileName}</Text>
-                    <Text style={[AppStyles.baseText, { color: AppColors.primaryTextColor, lineHeight: 25 }]}>Dung lượng file: {fileSize}</Text>
-                    <Text style={[AppStyles.baseText, { color: AppColors.primaryTextColor, lineHeight: 25 }]}>Ngày tạo: {createTime}</Text>
-                    <Text style={[AppStyles.baseText, { color: AppColors.primaryTextColor, lineHeight: 25 }]}>Lần cuối chỉnh sửa: {updatedTime}</Text>
+                    <Text style={[AppStyles.boldText, { color: AppColors.activeColor, lineHeight: 25 }]}>{fileName}</Text>
+                    <Text style={[AppStyles.baseText, { color: AppColors.activeColor, lineHeight: 25 }]}>Dung lượng file: {fileSize}</Text>
+                    <Text style={[AppStyles.baseText, { color: AppColors.activeColor, lineHeight: 25 }]}>Ngày tạo: {createTime}</Text>
+                    <Text style={[AppStyles.baseText, { color: AppColors.activeColor, lineHeight: 25 }]}>Lần cuối chỉnh sửa: {updatedTime}</Text>
                 </View>
 
                 <View style={[AppStyles.baseBox, { marginTop: AppSizes.padding }]}>
-                    <Text style={[AppStyles.boldText, { color: AppColors.primaryTextColor, fontSize: 20, textAlign: 'center', marginBottom: AppSizes.paddingSmall }]}>Publish info request</Text>
-                    <Text style={[AppStyles.baseText, { color: AppColors.primaryTextColor, lineHeight: 25 }]}>Public approve type: {publicApproveType()}</Text>
-                    <Text style={[AppStyles.baseText, { color: AppColors.primaryTextColor, lineHeight: 25 }]}>Public to type: {publicToType()}</Text>
-                    <Text style={[AppStyles.baseText, { color: AppColors.primaryTextColor, lineHeight: 25 }]}>Request expire at: {endTime}</Text>
+                    <Text style={[AppStyles.boldText, { color: AppColors.activeColor, fontSize: 20, textAlign: 'center', marginBottom: AppSizes.paddingSmall }]}>Publish info request</Text>
+                    <Text style={[AppStyles.baseText, { color: AppColors.activeColor, lineHeight: 25 }]}>Public approve type: {publicApproveType()}</Text>
+                    <Text style={[AppStyles.baseText, { color: AppColors.activeColor, lineHeight: 25 }]}>Public to type: {publicToType()}</Text>
+                    <Text style={[AppStyles.baseText, { color: AppColors.activeColor, lineHeight: 25 }]}>Request expire at: {endTime}</Text>
                 </View>
 
                 <View style={styles.buttonView}>

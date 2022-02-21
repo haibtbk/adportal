@@ -38,13 +38,13 @@ const styles = StyleSheet.create({
     },
     info: {
         ...AppStyles.baseText,
-        color: AppColors.primaryTextColor,
+        color: AppColors.activeColor,
         fontSize: AppSizes.fontMedium,
         flex:1,
         
     },
     avatar: {
-        width: 45,
+        width: 25,
         alignItems: 'center',
         justifyContent: 'center',
         marginRight: AppSizes.paddingSmall

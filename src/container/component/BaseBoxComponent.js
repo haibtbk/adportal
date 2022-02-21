@@ -9,7 +9,7 @@ const BaseBoxComponent = (props) => {
         <TouchableOpacity
             onPress={() => onPress && onPress()}
             style={[styles.container, containerStyle && containerStyle]}>
-            <Text style={[AppStyles.boldText, { color: AppColors.primaryTextColor, marginBottom: AppSizes.paddingSmall, lineHeight: 20 }]}>
+            <Text style={[AppStyles.boldText, { color: AppColors.activeColor, marginBottom: AppSizes.paddingSmall, lineHeight: 20 }]}>
                 {title}
             </Text>
             <Text style={[AppStyles.baseText, { color: AppColors.secondaryTextColor, lineHeight: 20 }]} numberOfLines={numberOfLines} ellipsizeMode="tail">

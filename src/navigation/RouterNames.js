@@ -9,7 +9,7 @@ const routes = {
     newsDetail: "NewsDetail",
     notification: "Notification",
     confirmRequest: "ConfirmRequest",
-    more: "More",
+    menu: "Menu",
     account: "Account",
     publishFile: "PublishFile"
 }

@@ -38,9 +38,6 @@ const AccountScreen = (props) => {
     }, []),
   );
 
-  const logout = () => {
-    navigationManager.logout(navigation, dispatch)
-  }
 
   const doEditProfile = () => {
     navigation.navigate(RouterName.editProfile, {
@@ -79,11 +76,6 @@ const AccountScreen = (props) => {
         <BaseViewComponent title="Số điện thoại" content={account.phone} />
       </View>
 
-      <TouchableOpacity
-        onPress={logout}
-        style={[AppStyles.roundButton, styles.logoutButton]}>
-        <Text style={AppStyles.baseText}>Đăng xuất</Text>
-      </TouchableOpacity>
     </View>
   );
 }

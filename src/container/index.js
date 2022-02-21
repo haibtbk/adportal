@@ -23,7 +23,9 @@ import DailySchedule from './home/DailySchedule'
 import WorkingPerformance from './home/WorkingPerformance'
 import DashBoardCompany from './home/DashBoardCompany';
 import HomeScreenCompany from './home/HomeScreenCompany';
+import ScheduleScreen from './schedule/ScheduleScreen';
 export {
+  ScheduleScreen,
   HomeScreenCompany,
   DashBoardCompany,
   WorkingPerformance,

@@ -6,11 +6,14 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Foundation from 'react-native-vector-icons/Foundation';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const ButtonIconComponent = (props) => {
   const {action, name, size, source, containerStyle, color} = props;
   const getIconSource = (source) => {
     switch (source) {
+      case "Ionicons":
+        return Ionicons
       case 'Entypo':
         return Entypo;
       case 'Feather':
