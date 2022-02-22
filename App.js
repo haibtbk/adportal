@@ -82,7 +82,7 @@ function RootTabs() {
         tabBarIconStyle: { size: 10 }
       }}
       tabBarOptions={{
-        activeTintColor: AppColors.activeColor,
+        activeTintColor: AppColors.primaryBackground,
         inactiveTintColor: AppColors.inactiveColor,
       }}>
       <Tab.Screen
@@ -112,7 +112,9 @@ function RootTabs() {
         }}>
         {() => (
           <HomeStack.Navigator screenOptions={{ headerShown: false }}>
-            <HomeStack.Screen name="DashboardCompany" component={ApproveRequest} />
+            <HomeStack.Screen name="ApproveRequest" component={ApproveRequest} />
+            <HomeStack.Screen name="ConfirmRequest" component={ConfirmRequestScreen} />
+
           </HomeStack.Navigator>
         )}
       </Tab.Screen>

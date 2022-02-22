@@ -20,7 +20,7 @@ const navigateNoti = (notificationData, navigation, callback) => {
     }
     switch (notificationType) {
         case 1:
-            navigation.navigate("Thông báo")
+            navigation.navigate("Phê duyệt")
             setTimeout(() => {
                 navigation.navigate(RouterName.confirmRequest, {
                     request_id: data.id,

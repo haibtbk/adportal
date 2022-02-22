@@ -34,7 +34,7 @@ const DashBoard = ({ navigation, route }) => {
     }, 500)
 
     const onPressWaitingApprove = () => {
-        const jumpToAction = TabActions.jumpTo('Thông báo');
+        const jumpToAction = TabActions.jumpTo('Phê duyệt');
         navigation.dispatch(jumpToAction);
     }
     useEffect(() => {
