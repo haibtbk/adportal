@@ -11,7 +11,9 @@ const routes = {
     confirmRequest: "ConfirmRequest",
     menu: "Menu",
     account: "Account",
-    publishFile: "PublishFile"
+    publishFile: "PublishFile",
+    scheduleUser: "ScheduleUser",
+    scheduleCompany: "ScheduleCompany"
 }
 
 export default routes

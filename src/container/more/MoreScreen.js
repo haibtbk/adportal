@@ -51,6 +51,14 @@ const MoreScreen = (props) => {
 
     }
 
+    const onPressScheduleCompany = () => {
+        navigation.navigate(RouterName.scheduleCompany)
+    }
+
+    const onPressScheduleUser = () =>{
+        navigation.navigate(RouterName.scheduleUser)
+    }
+
     const logout = () => {
         Alert.alert("Chú ý", "Bạn chắc chắn muốn đăng xuất?", [
             { text: "Đồng ý", onPress: () => navigationManager.logout(navigation, dispatch) },
@@ -116,12 +124,12 @@ const MoreScreen = (props) => {
                 <AvatarBoxComponent
                     containerStyle={{ marginVertical: AppSizes.paddingSmall }}
                     avatar={() => <MaterialIcons name='dashboard' size={25} color={AppColors.activeColor} />}
-                    onPress={() => onPressDashboardMarket()}
+                    onPress={() => onPressScheduleUser()}
                     content="Kế hoạch của tôi" />
                 <AvatarBoxComponent
                     containerStyle={{ marginVertical: AppSizes.paddingSmall }}
                     avatar={() => <MaterialIcons name='dashboard' size={25} color={AppColors.activeColor} />}
-                    onPress={() => onPressDashboardMarket()}
+                    onPress={() => onPressScheduleCompany()}
                     content="Kế hoạch của công ty" />
 
             </ScrollView>

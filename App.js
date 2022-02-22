@@ -36,7 +36,9 @@ import {
   DashBoard,
   DashBoardCompany,
   HomeScreenCompany,
-  ScheduleScreen
+  ScheduleScreen,
+  ScheduleCompanyScreen,
+  ScheduleUserScreen
 } from '@container';
 import * as RNLocalize from 'react-native-localize';
 import Localization from '@localization'
@@ -160,6 +162,8 @@ function RootTabs() {
             <SettingsStack.Screen name={RouterName.account} component={AccountScreen} />
             <SettingsStack.Screen name={RouterName.editProfile} component={EditAccountScreen} />
             <SettingsStack.Screen name={RouterName.publishFile} component={PublishedFileScreen} />
+            <SettingsStack.Screen name={RouterName.scheduleUser} component={ScheduleUserScreen} />
+            <SettingsStack.Screen name={RouterName.scheduleCompany} component={ScheduleCompanyScreen} />
           </SettingsStack.Navigator>
         )}
       </Tab.Screen>
