@@ -16,6 +16,7 @@ const defaultColor = {
 }
 const app = {
     ...defaultColor,
+    purple: '#7a44cf',
     danger: '#f64e60',
     warning: '#ffa800',
     success: '#0bb783',

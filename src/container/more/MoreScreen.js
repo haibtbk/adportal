@@ -66,6 +66,10 @@ const MoreScreen = (props) => {
         ])
     }
 
+    const onPressNews = () => {
+        navigation.navigate(RouterName.news)
+    }
+
     return (
         <SafeAreaView style={AppStyles.container}>
             <ScrollView contentContainerStyle={{ padding: AppSizes.padding }}>
@@ -119,7 +123,7 @@ const MoreScreen = (props) => {
                 <AvatarBoxComponent
                     containerStyle={{ marginVertical: AppSizes.paddingSmall }}
                     avatar={() => <FontAwesome name="newspaper-o" color={AppColors.activeColor} size={25} />}
-                    onPress={() => onPressDashboardMarket()}
+                    onPress={() => onPressNews()}
                     content="Tin tức" />
                 <AvatarBoxComponent
                     containerStyle={{ marginVertical: AppSizes.paddingSmall }}

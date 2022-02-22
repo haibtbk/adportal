@@ -18,7 +18,7 @@ const BaseDashboardItemComponent = (props) => {
                 <Text style={[AppStyles.boldText, { color: AppColors.primaryTextColor, fontSize: AppSizes.fontLarge, marginBottom: AppSizes.paddingSmall }]}>
                     {title + ': '}
                 </Text>
-                <Text style={[AppStyles.baseText, { color: AppColors.secondaryTextColor }]}>
+                <Text style={[AppStyles.baseText, { color: AppColors.primaryTextColor }]}>
                     {content}
                 </Text>
             </View>

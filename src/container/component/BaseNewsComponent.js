@@ -41,7 +41,6 @@ const styles = StyleSheet.create({
         flex: 1,
         ...AppStyles.roundButton,
         borderColor: 'transparent',
-        backgroundColor: AppColors.secondaryBackground,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.2,

@@ -1,21 +1,22 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, Button } from 'react-native';
 import FabManager from '@fab/FabManager';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { BaseBoxComponent } from '@container';
-import { AppSizes, AppStyles } from '@theme';
+import { AppSizes, AppStyles, AppColors } from '@theme';
 import NavigationBar from '@navigation/NavigationBar';
 import AwesomeListComponent from "react-native-awesome-list";
 import { API } from '@network';
 import { formatBytes, DateTimeUtil } from '@utils';
 import { navigateNoti } from '../../firebaseNotification/NavigationNotificationManager';
 import { useSelector, useDispatch } from 'react-redux';
-import Title from './Title';
-
+import SwitchSelector from "react-native-switch-selector";
+import { ApproveRequestStatus } from '@constant'
 
 const ApproveRequest = (props) => {
     const navigation = useNavigation();
     const dispatch = useDispatch()
+    const [status, setStatus] = useState(ApproveRequestStatus.queued)
     useFocusEffect(
         React.useCallback(() => {
             // Do something when the screen is focused
@@ -30,6 +31,11 @@ const ApproveRequest = (props) => {
             };
         }, []),
     );
+
+    useEffect(() => {
+        refreshData()
+    }, [status])
+    
     const refreshData = () => {
         listRef.current.refresh()
     }
@@ -38,7 +44,7 @@ const ApproveRequest = (props) => {
         const params = {
             pageIndex: pagingData.pageIndex,
             pageSize: pagingData.pageSize,
-            status: 1,
+            status,
             order: -1,
             submit: 1
         }
@@ -80,14 +86,35 @@ const ApproveRequest = (props) => {
             <BaseBoxComponent onPress={() => onPressItem(item)} title={title} content={content} containerStyle={{ marginVertical: AppSizes.paddingSmall }} numberOfLines={3} />
         )
     }
+
+    const options = [
+        { label: "CHỜ DUYỆT", value: ApproveRequestStatus.queued, testID: "switch-one", accessibilityLabel: "switch-one" },
+        { label: "ĐÃ DUYỆT", value: ApproveRequestStatus.approved, testID: "switch-two", accessibilityLabel: "switch-two" },
+        { label: "TỪ CHỐI", value: ApproveRequestStatus.denied, testID: "switch-there", accessibilityLabel: "switch-three" },
+        { label: "ĐÃ ĐÓNG", value: ApproveRequestStatus.closed, testID: "switch-four", accessibilityLabel: "switch-four" }
+    ];
+
     return (
         <View style={AppStyles.container}>
-            <Title title="Approve Request" />
+            <NavigationBar
+                leftView={() => <Text style={[AppStyles.boldText, { fontSize: 24 }]}>Phê duyệt</Text>} />
+            <SwitchSelector
+                options={options}
+                initial={0}
+                onPress={value => setStatus(value)}
+                textColor={AppColors.purple} //'#7a44cf'
+                selectedColor={AppColors.white}
+                buttonColor={AppColors.purple}
+                borderColor={AppColors.purple}
+                hasPadding
+                testID="gender-switch-selector"
+                accessibilityLabel="gender-switch-selector"
+            />
             <AwesomeListComponent
                 refresh={refreshData}
                 ref={listRef}
                 isPaging={true}
-                containerStyle={{ flex: 1, with: '100%', height: '100%', backgroundColor: 'transparent' }}
+                containerStyle={{ flex: 1, with: '100%', height: '100%', backgroundColor: 'transparent', marginTop: AppSizes.padding }}
                 listStyle={{ flex: 1, with: '100%', height: '100%', backgroundColor: 'transparent' }}
                 source={source}
                 pageSize={12}

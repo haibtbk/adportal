@@ -81,8 +81,8 @@ const ConfirmRequestScreen = ({ navigation, route }) => {
                 </View>
 
                 <View style={styles.buttonView}>
-                    <ButtonComponent action={() => action(0)} title="Từ chối" containerStyle={[styles.button, { backgroundColor: 'transparent', borderColor: AppColors.danger, borderWidth: StyleSheet.hairlineWidth }]} />
-                    <ButtonComponent action={() => action(1)} title="Đồng ý" containerStyle={[styles.button, { backgroundColor: 'transparent', borderColor: AppColors.cerulean, borderWidth: StyleSheet.hairlineWidth }]} />
+                    <ButtonComponent action={() => action(0)} title="Từ chối" containerStyle={[styles.button, { backgroundColor: 'transparent', borderColor: AppColors.white, borderWidth: StyleSheet.hairlineWidth }]} />
+                    <ButtonComponent action={() => action(1)} title="Đồng ý" containerStyle={[styles.button, { backgroundColor: 'transparent', borderColor: AppColors.white, borderWidth: StyleSheet.hairlineWidth }]} />
                 </View>
                 {
                     isLoading && <LoadingComponent />
@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
     buttonView: {
         flexDirection: "row",
         justifyContent: "space-around",
-        marginTop: AppSizes.paddingLarge
+        margin: AppSizes.paddingLarge
     },
     button: {
         width: 120,
