@@ -10,6 +10,8 @@ import { formatBytes, DateTimeUtil } from '@utils';
 
 import { useSelector, useDispatch } from 'react-redux';
 import NavigationBar from '@navigation/NavigationBar';
+import ScheduleUserStatistic from './Statistic';
+import MySchedule from "./MySchedule";
 
 const ScheduleUserScreen = (props) => {
     const { navigation } = props;
@@ -53,6 +55,7 @@ const ScheduleUserScreen = (props) => {
     const renderItem = (props) => {
         //Code here Thuong oi
         return <View>
+            <ScheduleUserStatistic/>
             <Text>a</Text>
         </View>
     }
@@ -63,7 +66,10 @@ const ScheduleUserScreen = (props) => {
                 isBack
                 onLeftPress={() => navigation.goBack()}
                 centerTitle="Kế hoạch của tôi" />
-            <AwesomeListComponent
+            <ScheduleUserStatistic/>
+            <MySchedule />
+
+            {/*<AwesomeListComponent
                 refresh={refreshData}
                 ref={listRef}
                 isPaging={true}
@@ -72,7 +78,7 @@ const ScheduleUserScreen = (props) => {
                 source={source}
                 pageSize={12}
                 transformer={transformer}
-                renderItem={renderItem} />
+                renderItem={renderItem} />*/}
         </View>
     );
 }
