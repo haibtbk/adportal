@@ -35,7 +35,7 @@ const ApproveRequest = (props) => {
     useEffect(() => {
         refreshData()
     }, [status])
-    
+
     const refreshData = () => {
         listRef.current.refresh()
     }
@@ -67,11 +67,12 @@ const ApproveRequest = (props) => {
                 ...item,
                 item_info: {
                     item_info: { ...item.item_info },
-                    type: 1
+                    type: 1,
                 }
             }
         }
-        navigateNoti(item, navigation, callback)
+        const justShowInfo = status != ApproveRequestStatus.queued
+        navigateNoti(item, navigation, callback, justShowInfo)
 
     }
 
@@ -102,13 +103,13 @@ const ApproveRequest = (props) => {
                 options={options}
                 initial={0}
                 onPress={value => setStatus(value)}
-                textColor={AppColors.purple} //'#7a44cf'
+                textColor={AppColors.purple}
                 selectedColor={AppColors.white}
                 buttonColor={AppColors.purple}
                 borderColor={AppColors.purple}
                 hasPadding
-                testID="gender-switch-selector"
-                accessibilityLabel="gender-switch-selector"
+                testID="status-switch-selector"
+                accessibilityLabel="status-switch-selector"
             />
             <AwesomeListComponent
                 refresh={refreshData}

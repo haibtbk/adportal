@@ -10,10 +10,8 @@ import { formatBytes, DateTimeUtil } from '@utils';
 
 import { useSelector, useDispatch } from 'react-redux';
 import NavigationBar from '@navigation/NavigationBar';
-import ScheduleUserStatistic from './Statistic';
-import MySchedule from "./MySchedule";
 
-const ScheduleUserScreen = (props) => {
+const ScheduleListScreen = (props) => {
     const { navigation } = props;
     const dispatch = useDispatch()
 
@@ -55,7 +53,6 @@ const ScheduleUserScreen = (props) => {
     const renderItem = (props) => {
         //Code here Thuong oi
         return <View>
-            <ScheduleUserStatistic />
             <Text>a</Text>
         </View>
     }
@@ -65,9 +62,17 @@ const ScheduleUserScreen = (props) => {
             <NavigationBar
                 isBack
                 onLeftPress={() => navigation.goBack()}
-                centerTitle="Kế hoạch của tôi" />
-            <ScheduleUserStatistic />
-            <MySchedule />
+                centerTitle="Kế hoạch công ty" />
+            <AwesomeListComponent
+                refresh={refreshData}
+                ref={listRef}
+                isPaging={true}
+                containerStyle={{ flex: 1, with: '100%', height: '100%', backgroundColor: 'transparent' }}
+                listStyle={{ flex: 1, with: '100%', height: '100%', backgroundColor: 'transparent' }}
+                source={source}
+                pageSize={12}
+                transformer={transformer}
+                renderItem={renderItem} />
         </View>
     );
 }
@@ -123,4 +128,4 @@ const styles = StyleSheet.create({
         color: '#00BBF2'
     }
 });
-export default ScheduleUserScreen;
+export default ScheduleListScreen;

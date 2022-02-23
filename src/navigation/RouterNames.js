@@ -13,7 +13,8 @@ const routes = {
     account: "Account",
     publishFile: "PublishFile",
     scheduleUser: "ScheduleUser",
-    scheduleCompany: "ScheduleCompany"
+    scheduleCompany: "ScheduleCompany",
+    scheduleList: "ScheduleListScreen"
 }
 
 export default routes

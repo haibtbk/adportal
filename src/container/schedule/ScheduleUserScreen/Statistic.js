@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { AppColors } from '@theme';
+import { AppColors, AppStyles } from '@theme';
 import scheduleCommonStyles from './commonStyles';
 
 function ScheduleUserStatistic() {
@@ -10,41 +10,41 @@ function ScheduleUserStatistic() {
       <View style={styles.statisticItem}>
         <View style={styles.item}>
           <View style={styles.icon}>
-            <Icon name="heart" />
+            <Icon color={AppColors.secondaryTextColor} name="heart" />
           </View>
-          <Text>123</Text>
+          <Text style={AppStyles.baseTextGray}>123</Text>
         </View>
         <View style={styles.item}>
           <View style={styles.icon}>
-            <Icon name="heart" />
+            <Icon color={AppColors.secondaryTextColor} name="heart" />
           </View>
-          <Text>123</Text>
+          <Text style={AppStyles.baseTextGray}>123</Text>
         </View>
         <View style={[styles.item, styles.lastItem]}>
           <View style={styles.icon}>
-            <Icon name="heart" />
+            <Icon color={AppColors.secondaryTextColor} name="heart" />
           </View>
-          <Text>123</Text>
+          <Text style={AppStyles.baseTextGray}>123</Text>
         </View>
       </View>
       <View style={styles.statisticItem}>
         <View style={styles.item}>
           <View style={styles.icon}>
-            <Icon name="heart" />
+            <Icon color={AppColors.secondaryTextColor} name="heart" />
           </View>
-          <Text>123</Text>
+          <Text style={AppStyles.baseTextGray}>123</Text>
         </View>
         <View style={styles.item}>
           <View style={styles.icon}>
-            <Icon name="heart" />
+            <Icon color={AppColors.secondaryTextColor} name="heart" />
           </View>
-          <Text>123</Text>
+          <Text style={AppStyles.baseTextGray}>123</Text>
         </View>
         <View style={[styles.item, styles.lastItem]}>
           <View style={styles.icon}>
-            <Icon name="heart" />
+            <Icon color={AppColors.secondaryTextColor} name="heart" />
           </View>
-          <Text>123</Text>
+          <Text style={AppStyles.baseTextGray}>123</Text>
         </View>
       </View>
     </View>

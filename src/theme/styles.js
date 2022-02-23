@@ -19,10 +19,20 @@ const appStylesBase = {
         fontSize: Fonts.base.size,
         color: Colors.primaryTextColor,
     },
+    baseTextGray: {
+        fontFamily: Fonts.base.family,
+        fontSize: Fonts.base.size,
+        color: Colors.secondaryTextColor,
+    },
     boldText: {
         fontFamily: Fonts.bold.family,
         fontSize: Fonts.base.size,
         color: Colors.primaryTextColor,
+    },
+    boldTextGray: {
+        fontFamily: Fonts.bold.family,
+        fontSize: Fonts.base.size,
+        color: Colors.secondaryTextColor,
     },
     roundButton: {
         borderRadius: 6,

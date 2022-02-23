@@ -12,9 +12,10 @@ import { countWaitingApprove } from "@notification"
 import { utils, RouterName } from '@navigation';
 import moment from "moment";
 import { useDispatch } from "react-redux";
+import { ApproveRequestStatus } from "../../constant";
 
 const ConfirmRequestScreen = ({ navigation, route }) => {
-    const { request_id, itemInfo, callback } = route.params
+    const { request_id, itemInfo, callback, justShowInfo = false } = route.params
     const [isLoading, setLoading] = useState(false)
     const dispatch = useDispatch()
 
@@ -62,7 +63,7 @@ const ConfirmRequestScreen = ({ navigation, route }) => {
             <NavigationBar
                 isBack
                 onLeftPress={() => navigation.goBack()}
-                centerTitle="Xác nhận" />
+                centerTitle="Thông tin phê duyệt" />
             <ScrollView contentContainerStyle={styles.contentContainerStyle}>
                 <View style={AppStyles.baseBox}>
                     <Text style={[AppStyles.boldText, { color: AppColors.activeColor, fontSize: 20, textAlign: 'center', marginBottom: AppSizes.paddingSmall }]}>Thông tin file</Text>
@@ -79,11 +80,14 @@ const ConfirmRequestScreen = ({ navigation, route }) => {
                     <Text style={[AppStyles.baseText, { color: AppColors.activeColor, lineHeight: 25 }]}>Public to type: {publicToType()}</Text>
                     <Text style={[AppStyles.baseText, { color: AppColors.activeColor, lineHeight: 25 }]}>Request expire at: {endTime}</Text>
                 </View>
+                {
+                    !justShowInfo &&
+                    <View style={styles.buttonView}>
+                        <ButtonComponent action={() => action(0)} title="Từ chối" containerStyle={[styles.button, { backgroundColor: 'transparent', borderColor: AppColors.white, borderWidth: StyleSheet.hairlineWidth }]} />
+                        <ButtonComponent action={() => action(1)} title="Đồng ý" containerStyle={[styles.button, { backgroundColor: 'transparent', borderColor: AppColors.white, borderWidth: StyleSheet.hairlineWidth }]} />
+                    </View>
+                }
 
-                <View style={styles.buttonView}>
-                    <ButtonComponent action={() => action(0)} title="Từ chối" containerStyle={[styles.button, { backgroundColor: 'transparent', borderColor: AppColors.white, borderWidth: StyleSheet.hairlineWidth }]} />
-                    <ButtonComponent action={() => action(1)} title="Đồng ý" containerStyle={[styles.button, { backgroundColor: 'transparent', borderColor: AppColors.white, borderWidth: StyleSheet.hairlineWidth }]} />
-                </View>
                 {
                     isLoading && <LoadingComponent />
                 }

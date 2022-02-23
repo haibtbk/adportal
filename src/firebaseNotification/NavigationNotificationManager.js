@@ -1,7 +1,7 @@
 
 import { RouterName } from '@navigation';
 
-const navigateNoti = (notificationData, navigation, callback) => {
+const navigateNoti = (notificationData, navigation, callback, justShowInfo=false) => {
     const { data } = notificationData
     const { item_info = "" } = data
     let itemInforObjData = item_info
@@ -25,7 +25,8 @@ const navigateNoti = (notificationData, navigation, callback) => {
                 navigation.navigate(RouterName.confirmRequest, {
                     request_id: data.id,
                     itemInfo: itemInforObj,
-                    callback
+                    callback,
+                    justShowInfo
                 })
             }, 100)
             

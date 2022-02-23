@@ -37,7 +37,6 @@ const ButtonIconComponent = (props) => {
       style={containerStyle && containerStyle}
       onPress={() => action && action()}>
       <ICON name={name} size={size} {...(color && {color})}></ICON>
-      {/* Khi key value trung nhau co the viet gon ai duoc {color: color} === {color}) */}
     </TouchableOpacity>
   );
 };
