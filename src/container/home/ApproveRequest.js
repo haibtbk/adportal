@@ -112,6 +112,7 @@ const ApproveRequest = (props) => {
                 accessibilityLabel="status-switch-selector"
             />
             <AwesomeListComponent
+                keyExtractor={(item, index) => item.id + Math.random(1)*1000}
                 refresh={refreshData}
                 ref={listRef}
                 isPaging={true}

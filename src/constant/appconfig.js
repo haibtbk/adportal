@@ -6,7 +6,7 @@
 
 const ApiConfig = {
     UAT_API_BASE_URL: 'https://api-test.combatdigito.com',
-    PRO_API_BASE_URL: 'https://api-test.combatdigito.com',
+    PRO_API_BASE_URL: 'https://api-staging.combatdigito.com',
 }
 
 var DeviceInfo = require('react-native-device-info');

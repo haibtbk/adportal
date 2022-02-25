@@ -95,8 +95,8 @@ function RootTabs() {
         }}>
         {() => (
           <HomeStack.Navigator screenOptions={{ headerShown: false }}>
-            <HomeStack.Screen name="Dashboard" component={DashBoard} />
-            <HomeStack.Screen name="Home" component={HomeScreen} />
+            <HomeStack.Screen name="Dashboard" component={HomeScreen} />
+            {/* <HomeStack.Screen name="Home" component={HomeScreen} /> */}
             <HomeStack.Screen name="Details" component={DetailsScreen} />
           </HomeStack.Navigator>
         )}

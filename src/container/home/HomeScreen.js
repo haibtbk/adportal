@@ -25,7 +25,8 @@ import { API } from '@network'
 import { TabActions } from '@react-navigation/native';
 import { countWaitingApprove } from "@notification"
 import { connect } from 'react-redux';
-
+import _ from 'lodash'
+import moment from 'moment';
 import {
   LineChart,
   BarChart,
@@ -37,10 +38,12 @@ import {
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import Title from './Title';
 
-const HomeScreen = ({ navigation, route }) => {
+const HomeScreen = ({ route }) => {
   const dispatch = useDispatch()
+  const navigation = useNavigation()
   const numOfWatingApprove = useSelector(state => state?.waitingApprove?.number)
   const [numOfWatingApproveForShow, setNumOfWatingApproveForShow] = useState(numOfWatingApprove)
+  const [dashboardInfo, setDashboardInfo] = useState({})
 
   useEffect(() => {
     let data = numOfWatingApprove?.toString() ?? 0
@@ -66,6 +69,18 @@ const HomeScreen = ({ navigation, route }) => {
 
   useEffect(() => {
     countWaitingApprove(dispatch)
+  }, [])
+
+  useEffect(() => {
+    API.getDashboardInfo()
+      .then(res => {
+        if (res?.data?.success) {
+          setDashboardInfo(res.data.result)
+        }
+      })
+      .catch(err => {
+        console.log(err)
+      })
   }, [])
 
   const callback = () => {
@@ -102,6 +117,77 @@ const HomeScreen = ({ navigation, route }) => {
     navigation.dispatch(jumpToAction);
   }
 
+  const getMonthRevenue = () => {
+    const { revenue = [] } = dashboardInfo
+    let dataSum = 0
+    _.forEach(revenue, item => {
+      const temp = item?.revenue_data?.revenue ?? 0
+      const intTemp = parseInt(temp)
+      dataSum += intTemp
+    })
+    return dataSum
+  }
+
+  const getQuaterRevenue = () => {
+
+  }
+
+  const scheduleTodayData = () => {
+    const { schedule = [] } = dashboardInfo
+    const startOfDayToday = moment().startOf('day').valueOf()
+    return _.filter(schedule, item => {
+      const startTime = item.start_ts * 1000
+      const startOfDay = moment(startTime).startOf('day').valueOf()
+      return startOfDay == startOfDayToday
+    })
+  }
+
+  const scheduleIncomeData = () => {
+    const { schedule = [] } = dashboardInfo
+    const startOfDayToday = moment().startOf('day').valueOf()
+    return _.filter(schedule, item => {
+      const startTime = item.start_ts * 1000
+      const startOfDay = moment(startTime).startOf('day').valueOf()
+      return startOfDay > startOfDayToday
+    })
+
+  }
+
+  const ScheduleComponent = (props) => {
+    const { data = [] } = props
+    return (
+      <View style={styles.box}>
+        <View style={styles.upcomingBox}>
+          {data.length > 0 ? _.map(data, item => {
+            const name = item?.schedule_data?.name ?? ""
+            const startTime = (item?.start_ts ?? 0) * 1000
+            const endTime = (item?.end_ts ?? 0) * 1000
+            const dayTime = endTime
+            const displayTime = `${moment(startTime).format("HH:mm")} - ${moment(endTime).format("HH:mm")} (${moment(dayTime).format("DD/MM/YYYY")})}`
+            return (
+              <View>
+                <Text style={AppStyles.boldTextGray}>{name}</Text>
+                <Text style={AppStyles.baseTextGray}>{displayTime}</Text>
+              </View>
+
+            )
+          }) : <Text>Chưa có dữ liệu</Text>
+
+          }
+        </View>
+
+        <ButtonIconComponent
+          name="step-forward"
+          source='FontAwesome'
+          size={30}
+          color="white"
+          action={() => { navigation.navigate("Kế hoạch") }
+          } />
+      </View>
+    )
+
+  }
+
   return (
     <View style={[AppStyles.container]}>
       {/* <NavigationBar
@@ -112,13 +198,14 @@ const HomeScreen = ({ navigation, route }) => {
           <Text style={[AppStyles.baseText, {color: 'white', marginRight: AppSizes.paddingSmall}]}>Chờ duyệt </Text>
           <Text style={styles.redCircle}>{numOfWatingApproveForShow}</Text>
         </TouchableOpacity>} /> */}
-      <ScrollView style={{ flex: 1 }}>
-        <BaseDashboardItemComponent title="Month income" content="Month income" amount={100000000} containerStyle={{ marginVertical: AppSizes.padding }} color={AppColors.warning} />
-        <BaseDashboardItemComponent title="Revenue quater" content="Revenue quater" amount={12230000000} containerStyle={{ marginBottom: AppSizes.padding }} color={AppColors.success} />
-        <BaseDashboardItemComponent title="News company" content="News company" showPercent={true} amount={123} containerStyle={{ marginBottom: AppSizes.padding }} color={AppColors.danger} />
-        <BaseDashboardItemComponent title="Approve request" content="Approve request" amount={12} containerStyle={{ marginBottom: AppSizes.padding }} color={AppColors.info} />
+      <ScrollView style={{ flex: 1, }}
+        contentContainerStyle={{ paddingBottom: AppSizes.padding }}>
+        <BaseDashboardItemComponent title="Month income" content="Month income" amount={getMonthRevenue()} containerStyle={{ marginVertical: AppSizes.padding }} color={AppColors.warning} />
+        <BaseDashboardItemComponent title="Revenue quater" content="Revenue quater" amount={getMonthRevenue()} containerStyle={{ marginBottom: AppSizes.padding }} color={AppColors.success} />
+        <BaseDashboardItemComponent onPress={() => navigation.navigate("Tin tức")} title="News company" content="News company" amount={dashboardInfo?.news?.total ?? 0} containerStyle={{ marginBottom: AppSizes.padding }} color={AppColors.danger} />
+        <BaseDashboardItemComponent onPress={() => navigation.navigate("Phê duyệt")} title="Approve request" content="Approve request" amount={dashboardInfo?.approve_request?.length ?? 0} containerStyle={{ marginBottom: AppSizes.padding }} color={AppColors.info} />
         {/* <Text style={[AppStyles.boldText, {padding: AppSizes.paddingSmall}]}>Monthly Revenue</Text> */}
-        <Title title = "Monthly Revenue"/>
+        <Title title="Monthly Revenue" />
         <LineChart
           data={{
             labels: ["January", "February", "March", "April", "May", "June"],
@@ -162,6 +249,12 @@ const HomeScreen = ({ navigation, route }) => {
             overflow: 'hidden'
           }}
         />
+        <View>
+          <Title title="Kế hoạch trong ngày" />
+          <ScheduleComponent data={scheduleTodayData()} />
+          <Title title="Kế hoạch sắp tới" />
+          <ScheduleComponent data={scheduleIncomeData()} />
+        </View>
 
       </ScrollView>
     </View>
@@ -171,6 +264,21 @@ const HomeScreen = ({ navigation, route }) => {
 export default HomeScreen
 
 const styles = StyleSheet.create({
+  box: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: AppSizes.paddingSmall,
+  },
+  upcomingBox: {
+    padding: 12,
+    backgroundColor: AppColors.secondaryBackground,
+    borderStyle: 'solid',
+    borderWidth: 1,
+    borderColor: AppColors.gray,
+    borderRadius: 5,
+    width: '90%'
+  },
   rightView: {
     ...AppStyles.roundButton,
     height: 45,

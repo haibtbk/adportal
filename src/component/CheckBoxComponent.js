@@ -14,9 +14,9 @@ const CheckBoxComponent = (props) => {
   return (
     <TouchableOpacity onPress={() => onPressCheckbox()}>
       {isChecked ? (
-        <CheckBox name='checkbox-active' size={20} color='#41cd7d'></CheckBox>
+        <CheckBox name='checkbox-active' size={20} color="#ffffff"></CheckBox>
       ) : (
-        <CheckBox name='checkbox-passive' size={20} color='#6d6dab'></CheckBox>
+        <CheckBox name='checkbox-passive' size={20} color='#ffffff'></CheckBox>
       )}
     </TouchableOpacity>
   );

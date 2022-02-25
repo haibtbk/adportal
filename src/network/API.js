@@ -63,5 +63,30 @@ API.searchFiles = (params) => {
 API.downloadFile = (params) => {
     return API.instance.post(Endpoint.downloadFile, params)
 }
+
+API.getDashboardInfo = () => {
+    const params = { submit: 1 }
+    return API.instance.get(Endpoint.getDashboardInfo, { params })
+}
+
+API.getSchedules = (params) => {
+    return API.instance.get(Endpoint.getSchedules, { params })
+}
+
+API.getSchedulesCompamny = (params) => {
+    return API.instance.get(Endpoint.getSchedulesCompamny, { params })
+}
+
+API.updateSchedule = (params) => {
+    return API.instance.post(Endpoint.updateSchedule, params)
+}
+
+API.getNews = (params) => {
+    return API.instance.post(Endpoint.getNews, params)
+}
+
+API.getEventNews = (params) => {
+    return API.instance.post(Endpoint.getEventNews, params)
+}
 /* Export Component ==================================================================== */
 export default API;

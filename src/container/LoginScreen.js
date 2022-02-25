@@ -8,7 +8,8 @@ import {
   Linking,
   TextInput,
   SafeAreaView,
-  ActivityIndicator
+  ActivityIndicator,
+  Image
 } from 'react-native';
 import { AppStyles, AppSizes, AppColors } from '@theme'
 import { ButtonComponent, CheckBoxComponent, ButtonIconComponent } from '@component';
@@ -42,10 +43,10 @@ const LoginScreen = (props) => {
     const loginPromise = new Promise((resolve, reject) => {
       //Login
       const params = {
-        // email,
-        // password,
-        email: "minhnhat1692@gmail.com",
-        password: "minhnhat1692",
+        email,
+        password,
+        // email: "minhnhat1692@gmail.com",
+        // password: "minhnhat1692",
         remember,
         fcm_token,
         device_id,
@@ -137,8 +138,9 @@ const LoginScreen = (props) => {
   }
 
   return (
-    <ScrollView style={{ height: '100%', backgroundColor: '#16182b', }} contentContainerStyle={{ height: '100%' }}>
+    <ScrollView style={{ height: '100%', backgroundColor: AppColors.primaryBackground, }} contentContainerStyle={{ height: '100%' }}>
       <View style={styles.container}>
+        <Image style={{width: '100%', height: 100, backgroundColor: AppColors.white}} source={require("@images/ic_bvnt.png")} resizeMode="contain"/>
         <Text style={styles.h1}>{Localization.t('signin')}</Text>
         <TextInput
           underlineColorAndroid="transparent"
@@ -175,9 +177,7 @@ const LoginScreen = (props) => {
               }} />
             <Text style={styles.text1}>{Localization.t('rememberMe')}</Text>
           </View>
-          <Text style={styles.text2} onPress={() => Alert.alert('ok')}>
-            {Localization.t('forgotPassword')}
-          </Text>
+
         </View>
 
         <ButtonComponent
@@ -185,48 +185,35 @@ const LoginScreen = (props) => {
           title={Localization.t('signin')}
           action={() => doLogin()}
         />
-        <View style={styles.navHorizontalLine}>
-          <View style={styles.horizontalLine}></View>
-          <View>
-            <Text style={styles.textOr}>Or</Text>
-          </View>
-          <View style={styles.horizontalLine}></View>
-        </View>
-        <View style={styles.navFbGmailTwiter}>
-          <ButtonIconComponent
-            name="facebook-with-circle"
-            color="white"
-            size={35}
-            action={() =>
-              Linking.openURL('https://www.facebook.com/')
-            } />
+        {
+          false && <View style={styles.navFbGmailTwiter}>
+            <ButtonIconComponent
+              name="facebook-with-circle"
+              color="white"
+              size={35}
+              action={() =>
+                Linking.openURL('https://www.facebook.com/')
+              } />
 
-          <ButtonIconComponent
-            name="google-plus-official"
-            source='FontAwesome'
-            size={35}
-            color="white"
-            action={() =>
-              Linking.openURL(
-                'https://accounts.google.com/signin/v2/identifier?continue=https%3A%2F%2Fmail.google.com%2Fmail%2F&service=mail&sacu=1&rip=1&flowName=GlifWebSignIn&flowEntry=ServiceLogin',
-              )
-            } />
-          <ButtonIconComponent
-            name="twitter-with-circle"
-            color="white"
-            size={35}
-            action={() =>
-              Linking.openURL('https://twitter.com/login')
-            } />
-        </View>
-        <View style={styles.CreateAccount}>
-          <Text style={styles.text3}>{Localization.t('dontHaveAccount')}</Text>
-          <Text
-            style={styles.text4}
-            onPress={() => navigation.navigate('SignUp')}>
-            {Localization.t('createNewAccount')}
-          </Text>
-        </View>
+            <ButtonIconComponent
+              name="google-plus-official"
+              source='FontAwesome'
+              size={35}
+              color="white"
+              action={() =>
+                Linking.openURL(
+                  'https://accounts.google.com/signin/v2/identifier?continue=https%3A%2F%2Fmail.google.com%2Fmail%2F&service=mail&sacu=1&rip=1&flowName=GlifWebSignIn&flowEntry=ServiceLogin',
+                )
+              } />
+            <ButtonIconComponent
+              name="twitter-with-circle"
+              color="white"
+              size={35}
+              action={() =>
+                Linking.openURL('https://twitter.com/login')
+              } />
+          </View>
+        }
       </View>
       {isLoading &&
         <View style={{ width: "100%", height: "100%", position: 'absolute', alignContent: 'center', justifyContent: 'center' }}>
@@ -252,7 +239,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'red'
   },
   textInput1: {
-    backgroundColor: '#242846',
+    backgroundColor: AppColors.white,
     width: '100%',
     height: 45,
     marginTop: 30,
@@ -260,7 +247,7 @@ const styles = StyleSheet.create({
     paddingLeft: 25,
   },
   textInput2: {
-    backgroundColor: '#242846',
+    backgroundColor: AppColors.white,
     width: '100%',
     height: 45,
     borderRadius: 6,
@@ -309,7 +296,7 @@ const styles = StyleSheet.create({
   },
   text1: {
     marginLeft: AppSizes.paddingSmall,
-    color: '#6d6dab',
+    color: AppColors.white,
   },
   text2: {
     color: '#6d6dab',

@@ -50,7 +50,7 @@ const FabButton = React.forwardRef((props, ref) => {
     show,
     hide,
   }));
-
+  return null
   return (
     <View ref={ref}>
       {!visible ? (
