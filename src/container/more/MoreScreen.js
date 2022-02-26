@@ -84,13 +84,13 @@ const MoreScreen = (props) => {
                     }}
                 />
                 <View style={{ flexDirection: 'row', width: '100%', justifyContent: 'center', marginBottom: AppSizes.paddingXSmall }}>
-                    <ButtonIconComponent
+                    {/* <ButtonIconComponent
                         containerStyle={{ marginRight: AppSizes.paddingLarge }}
                         source="Ionicons"
                         name="notifications-outline"
                         size={25}
                         color="#ffffff"
-                        action={showNotification} />
+                        action={showNotification} /> */}
                     <ButtonIconComponent
                         containerStyle={{ marginRight: AppSizes.paddingLarge }}
                         source="AntDesign"
@@ -110,7 +110,7 @@ const MoreScreen = (props) => {
                     avatar={() => <FontAwesome name='files-o' size={25} color={AppColors.activeColor} />}
                     onPress={() => onPressFileManager()}
                     content="Quản lý file" />
-                <AvatarBoxComponent
+                {/* <AvatarBoxComponent
                     containerStyle={{ marginVertical: AppSizes.paddingSmall }}
                     avatar={() => <MaterialIcons name='dashboard' size={25} color={AppColors.activeColor} />}
                     onPress={() => onPressDashboardCompany()}
@@ -119,13 +119,13 @@ const MoreScreen = (props) => {
                     containerStyle={{ marginVertical: AppSizes.paddingSmall }}
                     avatar={() => <MaterialIcons name='dashboard' size={25} color={AppColors.activeColor} />}
                     onPress={() => onPressDashboardMarket()}
-                    content="Dashboard market" />
+                    content="Dashboard market" /> */}
                 <AvatarBoxComponent
                     containerStyle={{ marginVertical: AppSizes.paddingSmall }}
                     avatar={() => <FontAwesome name="newspaper-o" color={AppColors.activeColor} size={25} />}
                     onPress={() => onPressNews()}
                     content="Tin tức" />
-                <AvatarBoxComponent
+                {/* <AvatarBoxComponent
                     containerStyle={{ marginVertical: AppSizes.paddingSmall }}
                     avatar={() => <MaterialIcons name='dashboard' size={25} color={AppColors.activeColor} />}
                     onPress={() => onPressScheduleUser()}
@@ -134,7 +134,7 @@ const MoreScreen = (props) => {
                     containerStyle={{ marginVertical: AppSizes.paddingSmall }}
                     avatar={() => <MaterialIcons name='dashboard' size={25} color={AppColors.activeColor} />}
                     onPress={() => onPressScheduleCompany()}
-                    content="Kế hoạch của công ty" />
+                    content="Kế hoạch của công ty" /> */}
 
             </ScrollView>
         </SafeAreaView>

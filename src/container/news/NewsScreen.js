@@ -1,77 +1,48 @@
-import React, { useRef } from 'react';
-import { View, Text, Button } from 'react-native';
+import React, { useRef, useEffect, useState } from 'react';
+import { View, Text, Button, StyleSheet, ImageBackground, FlatList } from 'react-native';
 import FabManager from '@fab/FabManager';
 import { useFocusEffect } from '@react-navigation/native';
 import { ButtonIconComponent, BaseNewsComponent } from '@container';
-import { AppSizes, AppStyles } from '@theme';
+import { AppSizes, AppStyles, AppColors } from '@theme';
 import NavigationBar from '@navigation/NavigationBar';
 import AwesomeListComponent from "react-native-awesome-list";
 import { RouterName } from '@navigation';
+import { API } from '@network';
+import { LoadingComponent } from '@component';
+import PagerView from 'react-native-pager-view';
+import { useSelector, useDispatch } from 'react-redux';
+import _ from 'lodash'
+import moment from 'moment';
 
-const flatListData = [
-  {
-    title: "Don’t cry because it’s over, smile because it happened.",
-    author: "Dr. Seuss",
-    content: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
-  },
-  {
-    title: "I’m selfish, impatient and a little insecure. I make mistakes, I am out of control and at times hard to handle",
-    content: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
-    author: "Marilyn Monroe",
-    backgroundImage: "https://i2.wp.com/www.motionstock.net/wp-content/uploads/2019/04/Never-ending-particles-spiral_00000-compressor.jpg"
-  },
-  {
-    title: "You’ve gotta dance like there’s nobody watching",
-    content: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
-    author: "William W. Purkey",
-    backgroundImage: "https://t3.ftcdn.net/jpg/01/25/43/52/360_F_125435283_xyfGvvFHjIh63yHZAlGdVQ5ThdhEIcj6.jpg"
-  },
-  {
-    title: "You only live once, but if you do it right, once is enough.",
-    content: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
-    author: "Mae West",
-    backgroundImage: "https://cutewallpaper.org/21/stock-chart-wallpaper/Stock-market-wallpaper-SF-Wallpaper.jpg"
-  },
-  {
-    title: "To live is the rarest thing in the world. Most people exist, that is all. ",
-    author: "Oscar Wilde",
-    content: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
-  },
-]
+const DEFAULT_IMAGE = "https://www.baoviet.com.vn/Uploads/Library/Images/logo.png"
 const NewsScreen = (props) => {
   const { navigation } = props;
-  useFocusEffect(
-    React.useCallback(() => {
-      // Do something when the screen is focused
-      setTimeout(() => {
-        FabManager.show();
-      }, 100);
+  const [currentPage, setCurentPage] = useState(0)
+  const dispatch = useDispatch()
+  const viewPagerRef = useRef(null)
+  const [news, setNews] = useState([])
+  const [eventNews, setEventNews] = useState([])
+  const [isLoading, setLoading] = useState(false)
 
-      return () => {
-        // Do something when the screen is unfocused
-        // Useful for cleanup functions
-        FabManager.hide();
-      };
-    }, []),
-  );
 
-  const refreshData = () => {
-    listRef.refresh()
-  }
 
-  const source = () => {
-    return Promise.resolve({
-      data: {
-        responseData: flatListData
-      }
-    })
-  }
+  useEffect(() => {
+    const p1 = API.getEventNews({ submit: 1 })
+    const p2 = API.getNews({ submit: 1 })
+    setLoading(true)
+    Promise.all([p1, p2])
+      .then(res => {
+        const res1 = res?.[0]?.data?.result ?? []
+        const res2 = res?.[1]?.data?.result ?? []
+        setEventNews(res1)
+        setNews(res2)
+      })
+      .catch(err => console.error(err))
+      .finally(() => {
+        setLoading(false)
+      })
 
-  const transformer = (res) => {
-    return res?.data?.responseData ?? []
-  }
-
-  const listRef = useRef(null)
+  }, [])
 
   const readMore = (item) => {
     navigation.navigate(RouterName.newsDetail, {
@@ -80,24 +51,135 @@ const NewsScreen = (props) => {
   }
 
   const renderItem = ({ item }) => {
+    const backgroundImage = item?.news_data?.thumbnail ?? DEFAULT_IMAGE
+    const author = ""
+    const title = item.title
+    const content = item.subtitle
     return (
-      <BaseNewsComponent readMore={() => readMore(item)} backgroundImage={item?.backgroundImage} author={item?.author} title={item?.title ?? ""} content={item?.content ?? ""} containerStyle={{ marginVertical: AppSizes.paddingSmall }} numberOfLines={2} />
+      <BaseNewsComponent readMore={() => readMore(item)} backgroundImage={backgroundImage} author={author} title={title} content={content} containerStyle={{ marginVertical: AppSizes.paddingSmall }} numberOfLines={2} />
     )
   }
+
+
+  const onPageSelected = (e) => {
+    const pos = e.nativeEvent.position
+    console.log(pos)
+    setCurentPage(pos)
+  }
+
   return (
     <View style={AppStyles.container}>
       <NavigationBar
         leftView={() => <Text style={[AppStyles.boldText, { fontSize: 24 }]}>Tin tức</Text>} />
-      <AwesomeListComponent
-        refresh={refreshData}
-        containerStyle={{ flex: 1, with: '100%', height: '100%', backgroundColor: 'transparent' }}
-        listStyle={{ flex: 1, with: '100%', height: '100%', backgroundColor: 'transparent' }}
-        source={source}
-        transformer={transformer}
-        renderItem={renderItem} />
+      <Text style={[AppStyles.boldText, { fontSize: 16, marginBottom: AppSizes.paddingSmall, marginLeft: AppSizes.paddingSmall }]}>Tin sự kiện</Text>
+
+      <PagerView
+        scrollEnabled={true}
+        showPageIndicator={true}
+        style={[styles.pagerView, { height: 110 }]}
+        initialPage={currentPage}>
+        {
+          _.map(eventNews, item => {
+            const soureBackground = { uri: item?.event_data?.thumbnail ?? DEFAULT_IMAGE }
+            const startTime = (item?.start_ts ?? 0) * 1000
+            const endTime = (item?.end_ts ?? 0) * 1000
+            const displayTime = `${moment(startTime).format("HH:mm DD/MM/YYYY")} - ${moment(endTime).format("HH:mm DD/MM/YYY")}`
+
+            return (
+              <View style={{ flex: 1, paddingHorizontal: 8 }}>
+                <ImageBackground
+                  resizeMode='stretch'
+                  source={soureBackground}
+                  style={[styles.container, { height: 80 }]}>
+                </ImageBackground>
+                <View style={{ backgroundColor: 'rgb(255,255,255)', position: 'absolute', left: 8, right: 8, height: 40, justifyContent: 'flex-end', top: 40, paddingHorizontal: 8 }}>
+                  <Text style={AppStyles.boldTextGray}>{item?.event_title ?? ""}</Text>
+                  <Text style={AppStyles.baseTextGray}>{displayTime}</Text>
+                </View>
+              </View>
+            )
+
+          })
+        }
+
+      </PagerView>
+      <PagerView
+        onPageSelected={onPageSelected}
+        ref={viewPagerRef}
+        scrollEnabled={true}
+        showPageIndicator={true}
+        style={styles.pagerView}
+        initialPage={currentPage}>
+        {
+          _.map(news, item => {
+            const name = item?.category?.name ?? ""
+            const soureBackground = { uri: item?.listNews?.[0]?.news_data?.thumbnail ?? DEFAULT_IMAGE }
+            return (
+              <View style={{ flex: 1, paddingHorizontal: 8 }}>
+                <ImageBackground
+                  resizeMode='stretch'
+                  source={soureBackground}
+                  style={[styles.container,]}>
+                </ImageBackground>
+                <Text style={[AppStyles.boldTextGray, {backgroundColor: AppColors.white, fontSize: 16, marginBottom: AppSizes.paddingSmall, position: 'absolute', left: 8, padding: 8}]}>{name}</Text>
+
+              </View>
+            )
+
+          })
+        }
+
+      </PagerView>
+      <FlatList
+        data={news?.[currentPage]?.listNews ?? []}
+        style={{ flex: 1 }}
+        keyExtractor={(item, index) => item.iid ?? index.toString()}
+        renderItem={renderItem}
+      />
+      {
+        isLoading && <LoadingComponent />
+      }
     </View>
   );
 }
+const styles = StyleSheet.create({
+  container: {
+    ...AppStyles.roundButton,
+    borderColor: 'transparent',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    height: 100
+  },
+  pagerView: {
+    height: 130,
+    margin: 0,
+    padding: 0,
+  },
+  rightView: {
+    ...AppStyles.roundButton,
+    height: 45,
+    minWidth: 110,
+    alignItems: 'center',
+    flexDirection: 'row',
+    padding: AppSizes.paddingSmall,
+    backgroundColor: 'transparent',
+    borderWidth: 0
+  },
 
+  redCircle: {
+    overflow: 'hidden',
+    borderRadius: 17,
+    borderColor: 'white',
+    textAlign: 'center',
+    textAlignVertical: 'center',
+    color: 'white',
+    padding: AppSizes.paddingSmall,
+    minWidth: 35,
+    minHeight: 35,
+    backgroundColor: AppColors.danger
+  },
+});
 
 export default NewsScreen;

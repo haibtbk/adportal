@@ -11,7 +11,7 @@ const BaseNewsComponent = (props) => {
             resizeMode='stretch'
             source={soureBackground}
             style={[styles.container, containerStyle && containerStyle]}
-            imageStyle={{ opacity: 0.2 }}>
+            imageStyle={{ opacity: 0.1 }}>
             <Text style={[AppStyles.boldText, { color: AppColors.primaryTextColor, marginBottom: AppSizes.paddingSmall, fontSize: AppSizes.fontLarge, lineHeight: 30 }]}>
                 {title}
             </Text>

@@ -9,7 +9,7 @@ import { sprintf } from 'sprintf-js'
 /**
  * Init API
  */
-const API = ApiManager.getInstance(Env.test) // Init with test env by default. 
+const API = ApiManager.getInstance(Env.pro) // Init with test env by default. 
 /**
  * Auth API
  */
@@ -82,11 +82,15 @@ API.updateSchedule = (params) => {
 }
 
 API.getNews = (params) => {
-    return API.instance.post(Endpoint.getNews, params)
+    return API.instance.get(Endpoint.getNews, { params })
 }
 
 API.getEventNews = (params) => {
-    return API.instance.post(Endpoint.getEventNews, params)
+    return API.instance.get(Endpoint.getEventNews, { params })
+}
+
+API.getFileCategories = (params) => {
+    return API.instance.get(Endpoint.getFileCategories, { params })
 }
 /* Export Component ==================================================================== */
 export default API;

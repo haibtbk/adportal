@@ -1,8 +1,8 @@
-import React, { useRef, useState } from 'react';
-import { View, Text, Alert, StyleSheet } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { View, Text, Alert, StyleSheet, FlatList, TouchableOpacity, Platform } from 'react-native';
 import FabManager from '@fab/FabManager';
 import { useFocusEffect } from '@react-navigation/native';
-import { AppSizes, AppStyles } from '@theme';
+import { AppSizes, AppStyles, AppColors } from '@theme';
 import NavigationBar from '@navigation/NavigationBar';
 import AwesomeListComponent from "react-native-awesome-list";
 import { API } from '@network';
@@ -12,6 +12,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import PublishedFileItem from './PublishedFileItem'
 import { LoadingComponent } from '@component';
 import { utils, RouterName } from '@navigation';
+import RNFS from 'react-native-fs'
 
 import moment from 'moment';
 
@@ -19,6 +20,29 @@ const PublishedFileScreen = (props) => {
     const { navigation } = props;
     const dispatch = useDispatch()
     const [isLoading, setLoading] = useState(false)
+    const [categories, setCategories] = useState([])
+    const [categoriesItems, setCategoriesItems] = useState([])
+    const [selectedIndex, setSelectedIndex] = useState(0)
+
+    useEffect(() => {
+        setLoading(true)
+        const params = {
+            type: 1,
+            "expand[]": "publish_file_count",
+            submit: 1
+        }
+        API.getFileCategories(params)
+            .then(res => {
+                if (res?.data?.success) {
+                    setCategories(res.data.result)
+                    setCategoriesItems(res?.data?.result?.[0]?.file_list ?? [])
+                }
+            })
+            .catch(err => console.log(err))
+            .finally(() => {
+                setLoading(false)
+            })
+    }, [])
     useFocusEffect(
         React.useCallback(() => {
             // Do something when the screen is focused
@@ -59,7 +83,6 @@ const PublishedFileScreen = (props) => {
     }
 
     const onPressItem = (item) => {
-
     }
     const downloadFile = (item) => {
         const params = {
@@ -69,7 +92,18 @@ const PublishedFileScreen = (props) => {
         setLoading(true)
         API.downloadFile(params)
             .then(res => {
-                utils.showBeautyAlert(navigation, "success", "Tải file thành công. Vui lòng xem file trong quản lý file của điện thoại.")
+                const item = res?.data?.result??{}
+                const file_content = item?.file_content??""
+                const fileName = item?.file_name??""
+                const ext = "." + item.file_type ?? ''
+                const path = Platform.OS == "android" ? RNFS.DownloadDirectoryPath : RNFS.DocumentDirectoryPath
+                const localFile = `${path}/${fileName}${ext}`;
+
+                RNFS.writeFile(localFile, file_content, 'base64')
+                    .then(() => {
+                        utils.showBeautyAlert(navigation, "success", "Tải file thành công. Vui lòng xem file trong quản lý file của điện thoại.")
+                    })
+                    .catch(error => console.log(error.message));
             })
             .catch(err => {
                 utils.showBeautyAlert(navigation, "fail", "Có lỗi trong quá trình tải file.")
@@ -93,13 +127,43 @@ const PublishedFileScreen = (props) => {
                 containerStyle={{ marginVertical: AppSizes.paddingSmall }} numberOfLines={3} />
         )
     }
+
+    const onPressItemCategory = (item, index) => {
+        setCategoriesItems(item?.file_list ?? [])
+        setSelectedIndex(index)
+    }
+
+    const renderItemCategory = ({ item, index }) => {
+        const name = item?.name ?? ""
+        const totalFile = item?.total
+        return (<TouchableOpacity
+            onPress={() => onPressItemCategory(item, index)}
+            style={{ ...AppStyles.roundButton, flex: 1, height: 75, backgroundColor: 'white', maxWidth: AppSizes.screen.width / 2 - 40, overflow: 'hidden', margin: AppSizes.paddingSmall, padding: AppSizes.paddingSmall, justifyContent: 'center', borderColor: selectedIndex == index ? AppColors.danger : 'white', borderWidth: selectedIndex == index ? 2 : StyleSheet.hairlineWidth }}>
+            <Text style={[AppStyles.boldTextGray, { backgroundColor: AppColors.white, fontSize: 16, marginBottom: AppSizes.paddingSmall, }]} numberOfLines={2}>{name}</Text>
+            <Text style={[AppStyles.baseTextGray, { backgroundColor: AppColors.white, fontSize: 16, marginBottom: AppSizes.paddingSmall }]}>{totalFile + (totalFile > 1 ? ' Files' : ' File')}</Text>
+        </TouchableOpacity>)
+    }
     return (
         <View style={AppStyles.container}>
             <NavigationBar
                 isBack
                 onLeftPress={() => navigation.goBack()}
                 centerTitle="Quản lý file" />
-            <AwesomeListComponent
+
+            <FlatList
+                data={categories}
+                style={{ ...AppStyles.roundButton, flex: 1, maxHeight: 200, }}
+                keyExtractor={(item, index) => item.iid ?? index.toString()}
+                renderItem={renderItemCategory}
+                numColumns={2}
+            />
+            <FlatList
+                data={categoriesItems}
+                style={{ flex: 1 }}
+                keyExtractor={(item, index) => item.iid ?? index.toString()}
+                renderItem={renderItem}
+            />
+            {/* <AwesomeListComponent
                 refresh={refreshData}
                 ref={listRef}
                 isPaging={true}
@@ -108,7 +172,7 @@ const PublishedFileScreen = (props) => {
                 source={source}
                 pageSize={12}
                 transformer={transformer}
-                renderItem={renderItem} />
+                renderItem={renderItem} /> */}
             {
                 isLoading && <LoadingComponent />
             }

@@ -13,7 +13,8 @@ const Endpoint = {
     getSchedulesCompamny: "/api/schedule/search-available-manager",
     updateSchedule: "/api/schedule/update",
     getNews: '/api/news/search-for-dashboard',
-    getEventNews: '/api/event/search-available'
+    getEventNews: '/api/event/search-available',
+    getFileCategories: '/api/category/search-by-type'
 }
 
 export default Endpoint

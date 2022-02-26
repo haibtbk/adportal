@@ -8,9 +8,10 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { WebViewComponent } from '@component'
 import htmlSource from './TestWebContent'
 
-const sourseAvatar = { uri: "https://i2.wp.com/www.motionstock.net/wp-content/uploads/2019/04/Never-ending-particles-spiral_00000-compressor.jpg" }
-const DetailNewScreen = (props) => {
+const DetailNewScreen = ({ route, navigation }) => {
   const insets = useSafeAreaInsets();
+  const { item } = route.params;
+
   useFocusEffect(
     React.useCallback(() => {
       // Do something when the screen is focused
@@ -25,18 +26,19 @@ const DetailNewScreen = (props) => {
       };
     }, []),
   );
+  const content = item?.news_data?.content ?? ""
+  const title = item?.title ?? ""
+  const sourseAvatar = { uri: item?.news_data?.thumbnail }
+
 
   return (
     <View style={[styles.container]}>
       <CloseButtonComponent containerStyle={[styles.closeButton, { top: insets.top + 10 }]} />
 
-      <ScrollView contentContainerStyle={styles.contentContainerStyle}>
-        <Image
-          resizeMode="stretch"
-          source={sourseAvatar}
-          style={[styles.avatar]} />
+      <ScrollView contentContainerStyle={[styles.contentContainerStyle, { marginTop: insets.top + 30 }]}>
+        <Text style={[AppStyles.boldTextGray, { fontSize: AppSizes.fontMedium, marginTop: 16, marginHorizontal: 8 }]}>{title}</Text>
         <View style={{ padding: AppSizes.paddingSmall }}>
-          <WebViewComponent source={htmlSource} mode="offline" />
+          <WebViewComponent source={content} mode="offline" />
         </View>
       </ScrollView>
 

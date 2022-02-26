@@ -9,7 +9,7 @@ const PublishedFileItem = (props) => {
         <TouchableOpacity
             onPress={onPress}
             style={[styles.container, containerStyle && containerStyle]}>
-            <Text style={[AppStyles.boldText, { color: AppColors.primaryTextColor, marginBottom: AppSizes.paddingSmall, lineHeight: 20 }]}>
+            <Text style={[AppStyles.boldText, { color: AppColors.secondaryTextColor, marginBottom: AppSizes.paddingSmall, lineHeight: 20 }]}>
                 {title}
             </Text>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
