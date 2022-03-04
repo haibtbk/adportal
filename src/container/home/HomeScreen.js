@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import FabManager from '@fab/FabManager';
 import { useFocusEffect } from '@react-navigation/native';
-import { ButtonIconComponent, BaseDashboardItemComponent } from '@component';
+import { LoadingComponent, BaseDashboardItemComponent, ButtonIconComponent } from '@component';
 import { AppSizes, AppColors, AppStyles } from '@theme';
 import NavigationBar from '@navigation/NavigationBar';
 import { useSelector, useDispatch } from 'react-redux';
@@ -35,8 +35,10 @@ import {
   ContributionGraph,
   StackedBarChart
 } from "react-native-chart-kit";
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import Title from './Title';
+import ScheduleComponent from './ScheduleComponent';
+import PerformanceComponent from './PerfomanceComponent';
+import DateTimeUtil from '../../utils/DateTimeUtil';
 
 const HomeScreen = ({ route }) => {
   const dispatch = useDispatch()
@@ -44,6 +46,10 @@ const HomeScreen = ({ route }) => {
   const numOfWatingApprove = useSelector(state => state?.waitingApprove?.number)
   const [numOfWatingApproveForShow, setNumOfWatingApproveForShow] = useState(numOfWatingApprove)
   const [dashboardInfo, setDashboardInfo] = useState({})
+  const [isLoading, setIsLoading] = useState(false)
+  const [performanceData, setPerformanceData] = useState([])
+  const [dataUserUnderControl, setDataUserUnderControl] = useState([])
+  const [revenue, setRevenues] = useState([])
 
   useEffect(() => {
     let data = numOfWatingApprove?.toString() ?? 0
@@ -72,14 +78,42 @@ const HomeScreen = ({ route }) => {
   }, [])
 
   useEffect(() => {
-    API.getDashboardInfo()
+    setIsLoading(true)
+    const paramUserUnderControl = {
+      submit: 1,
+      start_ts: Math.round(DateTimeUtil.getStartOfDay(moment().valueOf())) / 1000,
+      end_ts: Math.round(DateTimeUtil.getEndOfDay(moment().valueOf() + 30 * 24 * 60 * 60 * 1000)) / 1000,
+    }
+    const revenueParam = {
+      submit: 1,
+      start_ts: Math.round(DateTimeUtil.getStartOfDay(moment().valueOf() - 7 * 24 * 60 * 60 * 1000)) / 1000,
+      end_ts: Math.round(DateTimeUtil.getEndOfDay(moment().valueOf())) / 1000
+    }
+
+    Promise.all([
+      API.getDashboardInfo(),
+      API.getUserUnderControl(paramUserUnderControl),
+      API.getRevenue(revenueParam)])
       .then(res => {
-        if (res?.data?.success) {
-          setDashboardInfo(res.data.result)
+        console.log(res)
+        const res0 = res?.[0]
+        const res1 = res?.[1]
+        const res2 = res?.[2]
+        if (res0?.data?.success) {
+          setDashboardInfo(res0?.data?.result)
+        }
+        if (res1?.data?.success) {
+          setDataUserUnderControl(res1?.data.result)
+        }
+        if (res2?.data?.success) {
+          setRevenues(res2?.data.result)
         }
       })
       .catch(err => {
         console.log(err)
+      })
+      .finally(() => {
+        setIsLoading(false)
       })
   }, [])
 
@@ -117,7 +151,7 @@ const HomeScreen = ({ route }) => {
     navigation.dispatch(jumpToAction);
   }
 
-  const getMonthRevenue = () => {
+  const getQuaterRevenue = () => {
     const { revenue = [] } = dashboardInfo
     let dataSum = 0
     _.forEach(revenue, item => {
@@ -128,7 +162,20 @@ const HomeScreen = ({ route }) => {
     return dataSum
   }
 
-  const getQuaterRevenue = () => {
+  const getMonthRevenue = () => {
+    const currentMonth = moment().month()
+    const { revenue = [] } = dashboardInfo
+    let dataSum = 0
+    _.forEach(revenue, item => {
+      console.log(moment(item?.start_ts * 1000).month())
+      if (currentMonth == moment(item?.start_ts * 1000).month()) {
+        const temp = item?.revenue_data?.revenue ?? 0
+        const intTemp = parseInt(temp)
+        dataSum += intTemp
+      }
+
+    })
+    return dataSum
 
   }
 
@@ -153,88 +200,81 @@ const HomeScreen = ({ route }) => {
 
   }
 
-  const ScheduleComponent = (props) => {
-    const { data = [] } = props
-    return (
-      <View style={styles.box}>
-        <View style={styles.upcomingBox}>
-          {data.length > 0 ? _.map(data, item => {
-            const name = item?.schedule_data?.name ?? ""
-            const startTime = (item?.start_ts ?? 0) * 1000
-            const endTime = (item?.end_ts ?? 0) * 1000
-            const dayTime = endTime
-            const displayTime = `${moment(startTime).format("HH:mm")} - ${moment(endTime).format("HH:mm")} (${moment(dayTime).format("DD/MM/YYYY")})}`
-            return (
-              <View>
-                <Text style={AppStyles.boldTextGray}>{name}</Text>
-                <Text style={AppStyles.baseTextGray}>{displayTime}</Text>
-              </View>
+  const chartDatas = () => {
+    const data = []
+    _.forEach(revenue, item => {
+      const temp = item?.revenue_data?.revenue ?? 0
+      const intTemp = parseInt(temp)
+      data.push(intTemp)
+    })
+    return data
+  }
 
-            )
-          }) : <Text>Chưa có dữ liệu</Text>
 
-          }
-        </View>
+  const chartLabels = () => {
+    const labels = []
+    _.forEach(revenue, item => {
+      const temp = item?.start_ts ?? 0
+      const intTemp = parseInt(temp)
+      labels.push(moment(intTemp * 1000).format('DD/MM'))
+    })
+    return labels
+  }
 
-        <ButtonIconComponent
-          name="step-forward"
-          source='FontAwesome'
-          size={30}
-          color="white"
-          action={() => { navigation.navigate("Kế hoạch") }
-          } />
-      </View>
-    )
-
+  const viewMoreRevenue = () => {
+    navigation.navigate('Revenue')
   }
 
   return (
     <View style={[AppStyles.container]}>
-      {/* <NavigationBar
-        leftView={() => <Text style={[AppStyles.boldText, { fontSize: 24 }]}>Trang chủ</Text>}
-        rightView={() => <TouchableOpacity
-          onPress={onPressWaitingApprove}
-          style={styles.rightView}>
-          <Text style={[AppStyles.baseText, {color: 'white', marginRight: AppSizes.paddingSmall}]}>Chờ duyệt </Text>
-          <Text style={styles.redCircle}>{numOfWatingApproveForShow}</Text>
-        </TouchableOpacity>} /> */}
       <ScrollView style={{ flex: 1, }}
-        contentContainerStyle={{ paddingBottom: AppSizes.padding }}>
-        <BaseDashboardItemComponent title="Month income" content="Month income" amount={getMonthRevenue()} containerStyle={{ marginVertical: AppSizes.padding }} color={AppColors.warning} />
-        <BaseDashboardItemComponent title="Revenue quater" content="Revenue quater" amount={getMonthRevenue()} containerStyle={{ marginBottom: AppSizes.padding }} color={AppColors.success} />
-        <BaseDashboardItemComponent onPress={() => navigation.navigate("Tin tức")} title="News company" content="News company" amount={dashboardInfo?.news?.total ?? 0} containerStyle={{ marginBottom: AppSizes.padding }} color={AppColors.danger} />
-        <BaseDashboardItemComponent onPress={() => navigation.navigate("Phê duyệt")} title="Approve request" content="Approve request" amount={dashboardInfo?.approve_request?.length ?? 0} containerStyle={{ marginBottom: AppSizes.padding }} color={AppColors.info} />
+        contentContainerStyle={{ paddingBottom: AppSizes.padding, marginTop: 8 }}>
+        <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', marginVertical: AppSizes.padding }}>
+          <BaseDashboardItemComponent iconName="ios-logo-usd" title="Doanh thu tháng" content="Doanh thu tháng" amount={getMonthRevenue()} containerStyle={{ flex: 1, marginRight: AppSizes.padding }} color={AppColors.warning} />
+          <BaseDashboardItemComponent iconName="ios-logo-usd" title="Doanh thu quý" content="Doanh thu quý" amount={getQuaterRevenue()} containerStyle={{ flex: 1, }} color={AppColors.success} />
+        </View>
+        <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+          <BaseDashboardItemComponent iconName="newspaper" onPress={() => navigation.navigate("Tin tức")} title="Bản tin" content="Bản tin" amount={dashboardInfo?.news?.total ?? 0} containerStyle={{ flex: 1, marginRight: AppSizes.padding, }} color={AppColors.danger} />
+          <BaseDashboardItemComponent onPress={() => navigation.navigate("Phê duyệt")} title="Yêu cầu phê duyệt" content="Yêu cầu phê duyệt" amount={dashboardInfo?.approve_request?.length ?? 0} containerStyle={{ flex: 1, }} color={AppColors.info} />
+        </View>
+
         {/* <Text style={[AppStyles.boldText, {padding: AppSizes.paddingSmall}]}>Monthly Revenue</Text> */}
-        <Title title="Monthly Revenue" />
-        <LineChart
+        <View style={{ flexDirection: 'row', flex: 1, justifyContent: 'space-between', alignItems: 'center', marginTop: AppSizes.paddingSmall }}>
+          <Title title="Doanh thu hàng ngày" containerStyle={{ flex: 1 }} />
+          <ButtonIconComponent
+            containerStyle={{ padding: AppSizes.padding, alignItems: 'center', justifyContent: 'center' }}
+            action={() => viewMoreRevenue()}
+            name="search"
+            source="FontAwesome"
+            size={20}
+            color="white" />
+        </View>
+
+        <BarChart
+          style={{
+            marginVertical: 8,
+            borderRadius: 6,
+            overflow: 'hidden',
+          }}
           data={{
-            labels: ["January", "February", "March", "April", "May", "June"],
+            labels: chartLabels(),
             datasets: [
               {
-                data: [
-                  Math.random() * 100,
-                  Math.random() * 100,
-                  Math.random() * 100,
-                  Math.random() * 100,
-                  Math.random() * 100,
-                  Math.random() * 100
-                ]
+                data: chartDatas()
               }
             ]
           }}
           width={AppSizes.screen.width} // from react-native
-          height={220}
-          yAxisLabel=""
-          yAxisSuffix=" tỉ"
-          yAxisInterval={1} // optional, defaults to 1
+          height={200}
+          // verticalLabelRotation={30}
           chartConfig={{
             backgroundGradientFrom: AppColors.primaryBackground,
-            backgroundGradientTo: AppColors.primaryTextColor,
-            decimalPlaces: 2, // optional, defaults to 2dp
-            color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+            backgroundGradientTo: "rgba(255, 255, 255, 0.9)",
+            decimalPlaces: 0, // optional, defaults to 2dp
+            color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
             labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
             style: {
-              borderRadius: 16,
+              borderRadius: 6,
             },
             propsForDots: {
               r: "6",
@@ -242,21 +282,18 @@ const HomeScreen = ({ route }) => {
               stroke: AppColors.primaryBackground
             }
           }}
-          bezier
-          style={{
-            marginVertical: 8,
-            borderRadius: 16,
-            overflow: 'hidden'
-          }}
         />
         <View>
           <Title title="Kế hoạch trong ngày" />
           <ScheduleComponent data={scheduleTodayData()} />
-          <Title title="Kế hoạch sắp tới" />
+          <Title title="Kế hoạch tháng" />
           <ScheduleComponent data={scheduleIncomeData()} />
         </View>
+        <Title title="Hiệu suất công việc" containerStyle={{ marginTop: AppSizes.paddingSmall }} />
+        <PerformanceComponent dataUserUnderControl={dataUserUnderControl} schedules={dashboardInfo?.schedule ?? []} />
 
       </ScrollView>
+      {isLoading && <LoadingComponent />}
     </View>
   );
 };

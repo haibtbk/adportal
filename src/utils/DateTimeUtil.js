@@ -85,8 +85,17 @@ let getDayOfWeek = (i) => {
     return moment().isoWeekday(i);
 }
 
+const getStartOfDay = (ts) => {
+    return moment(ts).startOf('day').valueOf()
+}
+
+const getEndOfDay = (ts) => {
+    return moment(ts).endOf('day').valueOf()
+}
 
 export default {
+    getStartOfDay,
+    getEndOfDay,
     format,
     defaultFormat,
     dobFormat,

@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { View, Text, Button, StyleSheet, ImageBackground, FlatList } from 'react-native';
+import { View, Text, Button, StyleSheet, ImageBackground, FlatList, SafeAreaView, ScrollView } from 'react-native';
 import FabManager from '@fab/FabManager';
 import { useFocusEffect } from '@react-navigation/native';
 import { ButtonIconComponent, BaseNewsComponent } from '@container';
@@ -13,17 +13,18 @@ import PagerView from 'react-native-pager-view';
 import { useSelector, useDispatch } from 'react-redux';
 import _ from 'lodash'
 import moment from 'moment';
+import Dots from 'react-native-dots-pagination';
+
 
 const DEFAULT_IMAGE = "https://www.baoviet.com.vn/Uploads/Library/Images/logo.png"
 const NewsScreen = (props) => {
   const { navigation } = props;
   const [currentPage, setCurentPage] = useState(0)
-  const dispatch = useDispatch()
-  const viewPagerRef = useRef(null)
   const [news, setNews] = useState([])
   const [eventNews, setEventNews] = useState([])
   const [isLoading, setLoading] = useState(false)
-
+  const [activeIndexEvent, setActiveIndexEvent] = useState(0)
+  const [activeIndexNews, setActiveIndexNews] = useState(0)
 
 
   useEffect(() => {
@@ -52,94 +53,113 @@ const NewsScreen = (props) => {
 
   const renderItem = ({ item }) => {
     const backgroundImage = item?.news_data?.thumbnail ?? DEFAULT_IMAGE
-    const author = ""
     const title = item.title
     const content = item.subtitle
     return (
-      <BaseNewsComponent readMore={() => readMore(item)} backgroundImage={backgroundImage} author={author} title={title} content={content} containerStyle={{ marginVertical: AppSizes.paddingSmall }} numberOfLines={2} />
+      <BaseNewsComponent readMore={() => readMore(item)} backgroundImage={backgroundImage} title={title} content={content} />
     )
   }
 
 
-  const onPageSelected = (e) => {
+  const onPageNewsSelected = (e) => {
     const pos = e.nativeEvent.position
     console.log(pos)
     setCurentPage(pos)
+    setActiveIndexNews(pos)
+  }
+
+  const onPageEventSelected = (e) => {
+    const pos = e.nativeEvent.position
+    setActiveIndexEvent(pos)
   }
 
   return (
-    <View style={AppStyles.container}>
-      <NavigationBar
-        leftView={() => <Text style={[AppStyles.boldText, { fontSize: 24 }]}>Tin tức</Text>} />
-      <Text style={[AppStyles.boldText, { fontSize: 16, marginBottom: AppSizes.paddingSmall, marginLeft: AppSizes.paddingSmall }]}>Tin sự kiện</Text>
-
-      <PagerView
-        scrollEnabled={true}
-        showPageIndicator={true}
-        style={[styles.pagerView, { height: 110 }]}
-        initialPage={currentPage}>
+    <SafeAreaView style={[AppStyles.container]}>
+      <ScrollView contentContainerStyle={{ padding: AppSizes.paddingSmall }}>
         {
-          _.map(eventNews, item => {
-            const soureBackground = { uri: item?.event_data?.thumbnail ?? DEFAULT_IMAGE }
-            const startTime = (item?.start_ts ?? 0) * 1000
-            const endTime = (item?.end_ts ?? 0) * 1000
-            const displayTime = `${moment(startTime).format("HH:mm DD/MM/YYYY")} - ${moment(endTime).format("HH:mm DD/MM/YYY")}`
+          eventNews.length > 0 &&
+          <View>
+            <Text style={[AppStyles.boldText, { fontSize: 16, marginVertical: AppSizes.paddingSmall, marginLeft: AppSizes.paddingSmall }]}>Tin sự kiện</Text>
 
-            return (
-              <View style={{ flex: 1, paddingHorizontal: 8 }}>
-                <ImageBackground
-                  resizeMode='stretch'
-                  source={soureBackground}
-                  style={[styles.container, { height: 80 }]}>
-                </ImageBackground>
-                <View style={{ backgroundColor: 'rgb(255,255,255)', position: 'absolute', left: 8, right: 8, height: 40, justifyContent: 'flex-end', top: 40, paddingHorizontal: 8 }}>
-                  <Text style={AppStyles.boldTextGray}>{item?.event_title ?? ""}</Text>
-                  <Text style={AppStyles.baseTextGray}>{displayTime}</Text>
+            <PagerView
+              onPageSelected={onPageEventSelected}
+              scrollEnabled={true}
+              showPageIndicator={false}
+              style={[styles.pagerView, { height: 70 }]}
+              initialPage={currentPage}>
+              {
+                _.map(eventNews, item => {
+                  const startTime = (item?.start_ts ?? 0) * 1000
+                  const endTime = (item?.end_ts ?? 0) * 1000
+                  const displayTime = `${moment(startTime).format("HH:mm DD/MM/YYYY")} - ${moment(endTime).format("HH:mm DD/MM/YYY")}`
+
+                  return (
+                    <View style={[styles.container, { height: 60, padding: AppSizes.paddingSmall }]}>
+                      <View style={{ ...AppStyles.roundButton, overflow: 'hidden', backgroundColor: AppColors.white, justifyContent: 'flex-end', padding: AppSizes.paddingSmall }}>
+                        <Text style={AppStyles.boldTextGray}>{item?.event_title ?? ""}</Text>
+                        <Text style={AppStyles.baseTextGray}>{displayTime}</Text>
+                      </View>
+                    </View>
+                  )
+
+                })
+              }
+
+            </PagerView>
+            <Dots passiveDotHeight={8} activeDotHeight={11} activeDotWidth={11} passiveDotWidth={8} length={eventNews?.length ?? 0} active={activeIndexEvent} activeColor={AppColors.purple} />
+
+          </View>
+        }
+
+
+        <PagerView
+          onPageSelected={onPageNewsSelected}
+          scrollEnabled={true}
+          showPageIndicator={false}
+          style={[styles.pagerView]}
+          initialPage={currentPage}>
+          {
+            _.map(news, item => {
+              const name = item?.category?.name ?? ""
+              const soureBackground = { uri: item?.listNews?.[0]?.news_data?.thumbnail ?? DEFAULT_IMAGE }
+              return (
+                <View style={{ flex: 1 }}>
+                  <ImageBackground
+                    style={[AppStyles.roundButton, { flex: 1, padding: 0, overflow: 'hidden', marginHorizontal: AppSizes.paddingSmall }]}
+                    resizeMode='stretch'
+                    source={soureBackground}>
+                    <Text style={[AppStyles.boldTextGray, { backgroundColor: 'rgba(255, 255,255,0.8)', fontSize: 16, marginBottom: AppSizes.paddingSmall, position: 'absolute', padding: 8 }]}>{name}</Text>
+                  </ImageBackground>
                 </View>
-              </View>
-            )
 
-          })
-        }
+              )
 
-      </PagerView>
-      <PagerView
-        onPageSelected={onPageSelected}
-        ref={viewPagerRef}
-        scrollEnabled={true}
-        showPageIndicator={true}
-        style={styles.pagerView}
-        initialPage={currentPage}>
+            })
+          }
+
+        </PagerView>
+        <Dots passiveDotHeight={8} activeDotHeight={11} activeDotWidth={11} passiveDotWidth={8} length={news?.length ?? 0} active={activeIndexNews} activeColor={AppColors.purple} />
+
         {
-          _.map(news, item => {
-            const name = item?.category?.name ?? ""
-            const soureBackground = { uri: item?.listNews?.[0]?.news_data?.thumbnail ?? DEFAULT_IMAGE }
+          _.map(news?.[currentPage]?.listNews ?? [], item => {
             return (
-              <View style={{ flex: 1, paddingHorizontal: 8 }}>
-                <ImageBackground
-                  resizeMode='stretch'
-                  source={soureBackground}
-                  style={[styles.container,]}>
-                </ImageBackground>
-                <Text style={[AppStyles.boldTextGray, {backgroundColor: AppColors.white, fontSize: 16, marginBottom: AppSizes.paddingSmall, position: 'absolute', left: 8, padding: 8}]}>{name}</Text>
-
+              <View key={item.id}>
+                {renderItem({ item })}
               </View>
             )
-
           })
         }
-
-      </PagerView>
-      <FlatList
+        {/* <FlatList
         data={news?.[currentPage]?.listNews ?? []}
         style={{ flex: 1 }}
         keyExtractor={(item, index) => item.iid ?? index.toString()}
         renderItem={renderItem}
-      />
-      {
-        isLoading && <LoadingComponent />
-      }
-    </View>
+      /> */}
+        {
+          isLoading && <LoadingComponent />
+        }
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 const styles = StyleSheet.create({
@@ -153,7 +173,7 @@ const styles = StyleSheet.create({
     height: 100
   },
   pagerView: {
-    height: 130,
+    height: 100,
     margin: 0,
     padding: 0,
   },

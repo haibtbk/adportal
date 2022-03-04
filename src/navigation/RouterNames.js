@@ -14,7 +14,9 @@ const routes = {
     publishFile: "PublishFile",
     scheduleUser: "ScheduleUser",
     scheduleCompany: "ScheduleCompany",
-    scheduleList: "ScheduleListScreen"
+    scheduleList: "ScheduleListScreen",
+    baseWebViewScreen: "BaseWebViewScreen",
+    createSchedule: "CreateSchedule",
 }
 
 export default routes

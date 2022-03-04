@@ -18,7 +18,7 @@ import { RouterName } from '@navigation';
 import { Provider } from 'react-redux'
 import store from '@redux/store'
 import Notification from './src/firebaseNotification/index'
-import { MessageBarSimple, MessageBarManagerSimple, Dialog } from '@component'
+import { MessageBarSimple, MessageBarManagerSimple, Dialog, BaseWebViewScreen } from '@component'
 
 import {
   LoginScreen,
@@ -38,7 +38,9 @@ import {
   HomeScreenCompany,
   ScheduleScreen,
   ScheduleCompanyScreen,
-  ScheduleUserScreen
+  ScheduleUserScreen,
+  CreateScheduleScreen,
+  RevenueScreen
 } from '@container';
 import * as RNLocalize from 'react-native-localize';
 import Localization from '@localization'
@@ -98,6 +100,7 @@ function RootTabs() {
             <HomeStack.Screen name="Dashboard" component={HomeScreen} />
             {/* <HomeStack.Screen name="Home" component={HomeScreen} /> */}
             <HomeStack.Screen name="Details" component={DetailsScreen} />
+            <HomeStack.Screen name="Revenue" component={RevenueScreen} />
           </HomeStack.Navigator>
         )}
       </Tab.Screen>
@@ -214,10 +217,14 @@ export default App = (props) => {
           <Notification />
           <RootStack.Navigator screenOptions={{ headerShown: false }}>
             <Stack.Screen name={RouterName.splash} component={SplashScreen} />
-            <Stack.Screen name={RouterName.login} component={LoginScreen} />
+            <Stack.Screen
+              options={{ gestureEnabled: false }}
+              name={RouterName.login} component={LoginScreen} />
             <Stack.Screen name={RouterName.signup} component={SignUpScreen} />
             <Stack.Screen name={RouterName.dialog} component={Dialog} options={{ presentation: 'transparentModal' }} />
-            <RootStack.Screen name={RouterName.main}>{() => RootTabs()}</RootStack.Screen>
+            <RootStack.Screen
+              options={{ gestureEnabled: false }}
+              name={RouterName.main}>{() => RootTabs()}</RootStack.Screen>
             <Stack.Screen
               name="fab"
               component={FabLightbox}
@@ -245,6 +252,8 @@ export default App = (props) => {
                 },
               }}
             />
+            <Stack.Screen name={RouterName.baseWebViewScreen} component={BaseWebViewScreen} />
+            <Stack.Screen name={RouterName.createSchedule} component={CreateScheduleScreen} />
           </RootStack.Navigator>
           <FabButton ref={fabRef} navigationRef={navigationRef} />
           <MessageBarSimple ref={ref => {

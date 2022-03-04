@@ -93,6 +93,15 @@ const appStylesBase = {
         color: Colors.fabButton,
     },
 
+    textInput: {
+        fontFamily: Fonts.base.family,
+        backgroundColor: Colors.white,
+        width: '100%',
+        // height: 45,
+        borderRadius: 6,
+        padding: Sizes.padding,
+    }
+
 }
 export default {
     // Import app styles base

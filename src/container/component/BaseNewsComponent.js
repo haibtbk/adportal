@@ -4,47 +4,45 @@ import { AppStyles, AppColors, AppSizes } from '@theme'
 import Icon from 'react-native-vector-icons/AntDesign'
 const DEFAULT_IMAGE = "https://www.investopedia.com/thmb/vf1YMzGYJJT9F62tjmUAXNzVhPA=/480x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/GettyImages-1251235330-83979ee0c47441b284d9c4eecee5a72f.jpg"
 const BaseNewsComponent = (props) => {
-    const { title = "", content = "", containerStyle, author, numberOfLines = 0, readMore, backgroundImage = DEFAULT_IMAGE } = props
+    const { title = "", content = "", readMore, backgroundImage = DEFAULT_IMAGE } = props
     const soureBackground = { uri: backgroundImage }
     return (
-        <ImageBackground
-            resizeMode='stretch'
-            source={soureBackground}
-            style={[styles.container, containerStyle && containerStyle]}
-            imageStyle={{ opacity: 0.1 }}>
-            <Text style={[AppStyles.boldText, { color: AppColors.primaryTextColor, marginBottom: AppSizes.paddingSmall, fontSize: AppSizes.fontLarge, lineHeight: 30 }]}>
-                {title}
-            </Text>
-            <View style={styles.header}>
-                <Text style={[AppStyles.baseText, { fontSize: AppSizes.fontSmall }]}>{`Posted By ${author} | `}</Text>
-                <Text style={[AppStyles.baseText, { fontSize: AppSizes.fontSmall }]}>{`Serbia Today | `}</Text>
-                <Text style={[AppStyles.baseText, { fontSize: AppSizes.fontSmall }]}>{`5 Commments`}</Text>
+        <TouchableOpacity
+            onPress={readMore}
+            style={[styles.container]}>
+            <ImageBackground
+                resizeMode='contain'
+                source={soureBackground}
+                style={{ width: 90, height: '100%' }} />
+            <View style={{ flex: 1, alignSelf: 'stretch',justifyContent: 'center', padding: AppSizes.paddingSmall }}>
+                <Text style={[AppStyles.boldTextGray, { marginBottom: AppSizes.paddingSmall }]} numberOfLines={2}>
+                    {title}
+                </Text>
+                <Text style={[AppStyles.baseTextGray]}
+                    numberOfLines={3}
+                    ellipsizeMode="tail">
+                    {content}
+                </Text>
             </View>
-            <Text style={[AppStyles.baseText, styles.content, { fontSize: AppSizes.fontMedium, lineHeight: 30 }]}
-                numberOfLines={numberOfLines}
-                ellipsizeMode="tail">
-                {content}
-            </Text>
-            <TouchableOpacity
-                onPress={() => readMore && readMore()}
-                style={styles.readMore} >
-                <Icon name="arrowright" size={24} color={AppColors.primaryTextColor} />
-                <Text style={[AppStyles.baseText, { fontSize: AppSizes.fontMedium, marginLeft: AppSizes.paddingSmall }]}>Read more</Text>
-            </TouchableOpacity>
-
-        </ImageBackground>
+        </TouchableOpacity>
     )
 }
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
+        height:110,
         ...AppStyles.roundButton,
+        padding:0,
         borderColor: 'transparent',
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.2,
         shadowRadius: 3,
+        backgroundColor: AppColors.white,
+        flexDirection: 'row',
+         overflow: 'hidden',
+        margin: AppSizes.paddingSmall,
+        alignItems: 'center',
     },
     header: {
         marginBottom: AppSizes.paddingXSmall,
@@ -60,8 +58,9 @@ const styles = StyleSheet.create({
         marginBottom: AppSizes.paddingXSmall,
         flexDirection: 'row',
         alignItems: 'center',
+        borderColor: AppColors.secondaryTextColor,
     },
-    content: { color: AppColors.primaryTextColor, marginTop: AppSizes.paddingSmall }
+    content: { color: AppColors.secondaryTextColor, marginTop: AppSizes.paddingSmall }
 })
 
 export default BaseNewsComponent

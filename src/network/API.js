@@ -73,8 +73,8 @@ API.getSchedules = (params) => {
     return API.instance.get(Endpoint.getSchedules, { params })
 }
 
-API.getSchedulesCompamny = (params) => {
-    return API.instance.get(Endpoint.getSchedulesCompamny, { params })
+API.getSchedulesCompany = (params) => {
+    return API.instance.get(Endpoint.getSchedulesCompany, { params })
 }
 
 API.updateSchedule = (params) => {
@@ -92,5 +92,16 @@ API.getEventNews = (params) => {
 API.getFileCategories = (params) => {
     return API.instance.get(Endpoint.getFileCategories, { params })
 }
+API.createSchedule = (params) => {
+    return API.instance.post(Endpoint.createSchedule, params)
+}
+
+API.getUserUnderControl = (params) => {
+    return API.instance.get(Endpoint.getUserUnderControl, { params })
+}
+API.getRevenue = (params) => {
+    return API.instance.get(Endpoint.getRevenue, { params })
+}
+
 /* Export Component ==================================================================== */
 export default API;

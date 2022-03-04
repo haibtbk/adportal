@@ -26,7 +26,11 @@ import HomeScreenCompany from './home/HomeScreenCompany';
 import ScheduleScreen from './schedule/ScheduleScreen';
 import ScheduleUserScreen from './schedule/ScheduleUserScreen';
 import ScheduleCompanyScreen from './schedule/ScheduleCompanyScreen';
+import CreateScheduleScreen from './schedule/CreateScheduleScreen';
+import RevenueScreen from './revenue/RevenueScreen';
 export {
+  RevenueScreen,
+  CreateScheduleScreen,
   ScheduleUserScreen,
   ScheduleCompanyScreen,
   ScheduleScreen,

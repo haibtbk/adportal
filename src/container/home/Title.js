@@ -3,9 +3,9 @@ import { Text } from "react-native"
 import { AppStyles, AppSizes } from "@theme"
 
 const Title = (props) => {
-    const { title } = props
+    const { title, containerStyle } = props
     return (
-        <Text style={[AppStyles.boldText, { padding: AppSizes.paddingSmall, fontSize: AppSizes.fontLarge }]}>{title}</Text>
+        <Text style={[AppStyles.boldText, { padding: AppSizes.paddingSmall, fontSize: AppSizes.fontLarge }, containerStyle]}>{title}</Text>
     )
 }
 

@@ -3,6 +3,9 @@ import DateTimeUtil from './DateTimeUtil'
 import DeviceUtil from './DeviceUtil'
 import ColorUtil from './colorUtil'
 import { formatBytes } from './fileUtils'
+import numberWithCommas from './numberUtils'
+
+export { numberWithCommas }
 
 export const isFunction = (fnc) => ({}.toString.call(fnc) === '[object Function]')
 

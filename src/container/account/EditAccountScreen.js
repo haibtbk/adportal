@@ -115,7 +115,7 @@ const EditAccountScreen = ({ route, navigation }) => {
             navigation,
             positiveText: null,
             title: 'Vui lòng chọn nguồn ảnh',
-            negativeText: "cancel",
+            negativeText: "Thoát",
             customContent: <View>
               <TouchableOpacity style={{ padding: AppSizes.padding }} onPress={handleOpenPhotoFromLibrary}>
                 <Text style={[AppStyles.baseText, { color: AppColors.balck, textAlign: 'center' }]}>Chọn ảnh từ thư viện</Text>

@@ -9,9 +9,13 @@
     "test": "jest",
     "lint": "eslint ."
   },
+  "resolutions": {
+    "@react-native-community/datetimepicker": "5.1.0"
+  },
   "dependencies": {
     "@expo/vector-icons": "^10.2.1",
     "@react-native-community/async-storage": "^1.12.1",
+    "@react-native-community/datetimepicker": "^5.1.0",
     "@react-native-community/masked-view": "^0.1.10",
     "@react-native-firebase/app": "^13.1.0",
     "@react-native-firebase/messaging": "^13.1.0",
@@ -36,12 +40,15 @@
     "react-native-calendars": "^1.1276.0",
     "react-native-chart-kit": "^6.11.0",
     "react-native-device-info": "^6.2.0",
+    "react-native-dots-pagination": "^0.2.0",
     "react-native-fast-image": "^8.5.11",
     "react-native-fs": "^2.18.0",
     "react-native-gesture-handler": "^1.8.0",
     "react-native-image-crop-picker": "^0.37.2",
     "react-native-image-picker": "^4.3.0",
+    "react-native-keyboard-aware-scroll-view": "^0.9.5",
     "react-native-localize": "^1.4.2",
+    "react-native-modal-datetime-picker": "^13.0.1",
     "react-native-pager-view": "^5.4.9",
     "react-native-paper": "^4.2.0",
     "react-native-reanimated": "^1.13.1",

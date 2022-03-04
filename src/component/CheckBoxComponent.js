@@ -1,11 +1,14 @@
-import React, {useState} from 'react';
-import {TouchableOpacity, StyleSheet} from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { TouchableOpacity, StyleSheet } from 'react-native';
 import CheckBox from 'react-native-vector-icons/Fontisto';
 
 const CheckBoxComponent = (props) => {
-  let {isCheck, status} = props;
+  let { isCheck, status } = props;
   let [isChecked, setChecked] = useState(isCheck);
 
+  useEffect(() => {
+    setChecked(isCheck);
+  }, [isCheck]);
   const onPressCheckbox = () => {
     const newIsChecked = !isChecked;
     setChecked(newIsChecked);
@@ -34,7 +37,7 @@ const styles = StyleSheet.create({
     height: 13,
   },
   styleMargin: {
-    
+
   }
 });
 

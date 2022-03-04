@@ -4,7 +4,7 @@ import { WebView } from 'react-native-webview'
 import { AppColors, AppFonts, AppStyles, AppSizes } from '@theme'
 import RenderHtml from 'react-native-render-html';
 
-export default class BaseWebViewScreen extends Component {
+export default class WebViewComponent extends Component {
   constructor(props) {
     super(props)
     this.state = {

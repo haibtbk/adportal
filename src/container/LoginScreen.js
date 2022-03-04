@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   ScrollView,
   Text,
@@ -25,7 +25,7 @@ const LoginScreen = (props) => {
   const dispatch = useDispatch()
   const { navigation } = props;
   const [isSecureText, setSecureText] = useState(true);
-  const [remember, setRemember] = useState(0)
+  const [remember, setRemember] = useState("0")
   const [isLoading, setLoading] = useState(false)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState("")
@@ -58,6 +58,13 @@ const LoginScreen = (props) => {
           if (res?.data?.success) {
             //store token
             AccessTokenManager.saveAccessToken(res?.data?.result?.original?.token);
+            if (remember == "1") {
+              LocalStorage.set("USER_NAME", email)
+              LocalStorage.set("REMEMBER", remember)
+            } else {
+              LocalStorage.remove("USER_NAME")
+              LocalStorage.remove("REMEMBER")
+            }
             resolve(true)
           } else {
             reject(errMessage)
@@ -137,18 +144,31 @@ const LoginScreen = (props) => {
     setEmail(content)
   }
 
+  useEffect(() => {
+    async function getUserNameFromLocalStorage() {
+      const userName = await LocalStorage.get("USER_NAME")
+      const remember = await LocalStorage.get("REMEMBER")
+      if (userName) {
+        setEmail(userName)
+        setRemember(remember)
+      }
+    }
+    getUserNameFromLocalStorage()
+  }, [])
+
   return (
     <ScrollView style={{ height: '100%', backgroundColor: AppColors.primaryBackground, }} contentContainerStyle={{ height: '100%' }}>
       <View style={styles.container}>
-        <Image style={{width: '100%', height: 100, backgroundColor: AppColors.white}} source={require("@images/ic_bvnt.png")} resizeMode="contain"/>
+        <Image style={{ width: '100%', height: 100, backgroundColor: AppColors.white }} source={require("@images/ic_bvnt.png")} resizeMode="contain" />
         <Text style={styles.h1}>{Localization.t('signin')}</Text>
         <TextInput
           underlineColorAndroid="transparent"
-          placeholder="Nhập email đăng nhập"
+          placeholder="Nhập tên đăng nhập"
           placeholderTextColor="#6d6dab"
           color="#6d6dab"
           keyboardType="email-address"
           onChangeText={onChangeTextEmail}
+          value={email}
           style={styles.textInput1}></TextInput>
         <View style={styles.stylePassword}>
           <TextInput
@@ -170,10 +190,10 @@ const LoginScreen = (props) => {
         <View style={styles.remember}>
           <View style={styles.CheckBox}>
             <CheckBoxComponent
-              isCheck={false}
+              isCheck={remember == "1" ? true : false}
               status={(isChecked) => {
                 console.log(isChecked);
-                setRemember(isChecked ? 1 : 0)
+                setRemember(isChecked ? "1" : "0")
               }} />
             <Text style={styles.text1}>{Localization.t('rememberMe')}</Text>
           </View>
@@ -217,7 +237,7 @@ const LoginScreen = (props) => {
       </View>
       {isLoading &&
         <View style={{ width: "100%", height: "100%", position: 'absolute', alignContent: 'center', justifyContent: 'center' }}>
-          <ActivityIndicator size="small" color={AppColors.primaryTextColor} />
+          <ActivityIndicator size="small" color={AppColors.activeColor} />
         </View>
       }
     </ScrollView >
@@ -280,9 +300,10 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   marginEye: {
+    padding: AppSizes.padding,
     position: 'absolute',
-    top: 13,
-    right: 10,
+    top: 0,
+    right: 0,
   },
   remember: {
     width: '100%',

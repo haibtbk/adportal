@@ -5,6 +5,7 @@
 const defaultColor = {
     // primaryBackground: '#121723',
     primaryBackground: '#0079c1',
+    // primaryBackground: 'rgb(0,121,193, 0.9)',
 
     // secondaryBackground: "#1A202E",
     secondaryBackground: "#ffffff",

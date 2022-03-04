@@ -1,4 +1,7 @@
 import Endpoint from '../Endpoint'
+import navigationManager from '@navigation/utils'
+import { useDispatch, useSelector } from 'react-redux'
+import { useNavigation } from "@react-navigation/native";
 
 const UnauthorizeStatusCode = 401;
 
@@ -18,8 +21,8 @@ export function onRejected(axiosIntance, error) {
     // or if user login failed.
     if (!response || response.status !== UnauthorizeStatusCode || originalRequest.url.includes(Endpoint.LOGIN)) {
         return Promise.reject(error);
-    } else{
-        console.log("Refresh token error:" + refreshTokenError)
-            // Actions.replace("login")
+    } else {
+        console.log("Refresh token error:" + error)
+        navigationManager.logout(useNavigation(), useDispatch())
     }
 }

@@ -13,7 +13,7 @@ import PublishedFileItem from './PublishedFileItem'
 import { LoadingComponent } from '@component';
 import { utils, RouterName } from '@navigation';
 import RNFS from 'react-native-fs'
-
+import Icon from 'react-native-vector-icons/AntDesign';
 import moment from 'moment';
 
 const PublishedFileScreen = (props) => {
@@ -84,6 +84,64 @@ const PublishedFileScreen = (props) => {
 
     const onPressItem = (item) => {
     }
+
+    const viewFile = (item) => {
+        const params = {
+            library_record_id: item.id,
+            submit: 1
+        }
+        setLoading(true)
+        API.downloadFile(params)
+            .then(res => {
+                const item = res?.data?.result ?? {}
+                const file_content = item?.file_content ?? ""
+                const fileName = item?.file_name ?? ""
+                const ext = "." + item.file_type ?? ''
+                const path = Platform.OS == "android" ? RNFS.DownloadDirectoryPath : RNFS.DocumentDirectoryPath
+                const localFile = `${path}/${fileName}${ext}`;
+
+                RNFS.writeFile(localFile, file_content, 'base64')
+                    .then(() => {
+                        let url = localFile
+                        RNFS.openDocument(url)
+                        // if (Platform.OS === 'android') {
+                        //     const extension  = item.file_type
+                        //     if (!_.includes(['png', 'jpg', 'jpeg', 'bmp', 'svg', 'gif'], extension)) {
+                        //         url = 'http://docs.google.com/gview?embedded=true&url=' + url
+                        //     }
+                        // }
+                        navigation.navigate(
+                            RouterName.baseWebViewScreen,
+                            {
+                                url,
+                                title: fileName,
+                            })
+                    })
+                    .catch(error => console.log(error.message));
+            })
+            .catch(err => {
+                utils.showBeautyAlert(navigation, "fail", "Có lỗi trong quá trình tải file.")
+            })
+            .finally(() => {
+                setLoading(false)
+            })
+
+        // let url = item.link
+        // if (Platform.OS === 'android') {
+        //     const { extension } = item
+        //     if (!_.includes(['png', 'jpg', 'jpeg', 'bmp', 'svg', 'gif'], extension)) {
+        //         url = 'http://docs.google.com/gview?embedded=true&url=' + url
+        //     }
+        // }
+        // navigation.navigate(
+        //     RouterName.baseWebViewScreen,
+        //     {
+        //         url,
+        //         title: item.name,
+
+        //     })
+    }
+
     const downloadFile = (item) => {
         const params = {
             library_record_id: item.id,
@@ -92,16 +150,16 @@ const PublishedFileScreen = (props) => {
         setLoading(true)
         API.downloadFile(params)
             .then(res => {
-                const item = res?.data?.result??{}
-                const file_content = item?.file_content??""
-                const fileName = item?.file_name??""
+                const item = res?.data?.result ?? {}
+                const file_content = item?.file_content ?? ""
+                const fileName = item?.file_name ?? ""
                 const ext = "." + item.file_type ?? ''
                 const path = Platform.OS == "android" ? RNFS.DownloadDirectoryPath : RNFS.DocumentDirectoryPath
                 const localFile = `${path}/${fileName}${ext}`;
 
                 RNFS.writeFile(localFile, file_content, 'base64')
                     .then(() => {
-                        utils.showBeautyAlert(navigation, "success", "Tải file thành công. Vui lòng xem file trong quản lý file của điện thoại.")
+                        utils.showBeautyAlert(navigation, "success", "Tải file thành công. Vui lòng xem file trong mục tải về của điện thoại.")
                     })
                     .catch(error => console.log(error.message));
             })
@@ -122,6 +180,7 @@ const PublishedFileScreen = (props) => {
         return (
             <PublishedFileItem
                 downloadFile={() => downloadFile(item)}
+                viewFile={() => viewFile(item)}
                 onPress={() => onPressItem(item)}
                 title={title} content={content}
                 containerStyle={{ marginVertical: AppSizes.paddingSmall }} numberOfLines={3} />
@@ -133,7 +192,7 @@ const PublishedFileScreen = (props) => {
         setSelectedIndex(index)
     }
 
-    const renderItemCategory = ({ item, index }) => {
+    const renderItemCategory_ = ({ item, index }) => {
         const name = item?.name ?? ""
         const totalFile = item?.total
         return (<TouchableOpacity
@@ -143,36 +202,37 @@ const PublishedFileScreen = (props) => {
             <Text style={[AppStyles.baseTextGray, { backgroundColor: AppColors.white, fontSize: 16, marginBottom: AppSizes.paddingSmall }]}>{totalFile + (totalFile > 1 ? ' Files' : ' File')}</Text>
         </TouchableOpacity>)
     }
+    const renderItemCategory = ({ item, index }) => {
+        const name = item?.name ?? ""
+        const totalFile = item?.total
+        return (<TouchableOpacity
+            onPress={() => onPressItemCategory(item, index)}
+            style={{ flex: 1, alignSelf: 'flex-start', height: 90, maxWidth: AppSizes.screen.width / 2 - 40, overflow: 'hidden', }}>
+            <Icon name={selectedIndex == index ? "folderopen" : "folder1"} size={35} color={AppColors.secondaryTextColor} />
+            <Text style={[selectedIndex == index ? AppStyles.boldTextGray : AppStyles.baseTextGray, { marginBottom: AppSizes.paddingSmall, }]} numberOfLines={2}>{name}</Text>
+        </TouchableOpacity>)
+    }
     return (
         <View style={AppStyles.container}>
             <NavigationBar
                 isBack
                 onLeftPress={() => navigation.goBack()}
                 centerTitle="Quản lý file" />
-
             <FlatList
                 data={categories}
-                style={{ ...AppStyles.roundButton, flex: 1, maxHeight: 200, }}
+                style={{...AppStyles.roundButton, flex: 1, maxHeight: 200, backgroundColor: AppColors.white }}
                 keyExtractor={(item, index) => item.iid ?? index.toString()}
                 renderItem={renderItemCategory}
                 numColumns={2}
             />
             <FlatList
+                ListHeaderComponent={() => <Text style={[AppStyles.baseText, { marginBottom: AppSizes.paddingSmall, }]}>{`Danh sách file (${categoriesItems.length} ${categoriesItems.length > 1 ? "Files" : "Files"})`}</Text>}
                 data={categoriesItems}
-                style={{ flex: 1 }}
+                style={{ flex: 1, marginTop: AppSizes.padding }}
                 keyExtractor={(item, index) => item.iid ?? index.toString()}
                 renderItem={renderItem}
             />
-            {/* <AwesomeListComponent
-                refresh={refreshData}
-                ref={listRef}
-                isPaging={true}
-                containerStyle={{ flex: 1, with: '100%', height: '100%', backgroundColor: 'transparent' }}
-                listStyle={{ flex: 1, with: '100%', height: '100%', backgroundColor: 'transparent' }}
-                source={source}
-                pageSize={12}
-                transformer={transformer}
-                renderItem={renderItem} /> */}
+
             {
                 isLoading && <LoadingComponent />
             }

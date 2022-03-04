@@ -3,7 +3,7 @@ import { View, Image, StyleSheet, TouchableOpacity, Text, StatusBar, Platform } 
 import { AppColors, AppStyles, AppSizes } from '@theme'
 import { DeviceUtil } from '@utils'
 import _ from 'lodash'
-import Icon from 'react-native-vector-icons/AntDesign'
+import AntDesign from 'react-native-vector-icons/AntDesign'
 const BUTTON_SIZE = 44
 const ICON_SIZE = 28
 let iConBack = require('@images/ic_left_white.png')
@@ -13,9 +13,7 @@ export default class NavigationBar extends Component {
     super(props)
     this.state = {}
   }
-
   static defaultProps = {}
-
   render() {
     const {
       containerStyle,
@@ -30,73 +28,74 @@ export default class NavigationBar extends Component {
       rightView,
       disabled = false,
       isBack,
-      iConName,
+      iconName,
+      IconSource = AntDesign,
       centerTextStyle
     } = this.props
 
     return (
-        <View style={[styles.container, { backgroundColor: AppColors.primaryBackground }, containerStyle && containerStyle]}>
-          {/*Left*/}
-          <View style={[styles.leftContainer, (leftTitle || rightTitle) && { flex: 1 }]}>
-            {leftView && leftView()}
-            {/* Icon has higher priority then text if both props: leftImage and leftTitle are available */}
-            {!leftView && (leftImage || leftTitle || isBack) && (
-              <TouchableOpacity
-                disabled={disabled}
-                style={leftImage || isBack ? styles.iconContainer : styles.leftTextContainer}
-                onPress={() => onLeftPress && onLeftPress()}
-              >
-                {/* {isBack && <Image style={styles.iconBack} source={iConBack} />} */}
-                {isBack && <Image
-                  source={iConBack}
-                  resizeMode="contain"
-                  style={styles.iconBack}
-                />}
-                {leftImage && <Image style={styles.icon} source={leftImage} />}
-                {!leftImage && leftTitle && (
-                  <Text
-                    style={[
-                      styles.textTitle,
-                      {
-                        paddingBottom: 10,
-                        fontSize: 18,
-                        fontWeight: 'bold',
-                        fontStyle: 'italic',
-                      },
-                    ]}
-                    numberOfLines={1}
-                  >
-                    {leftTitle}
-                  </Text>
-                )}
-              </TouchableOpacity>
-            )}
-          </View>
-
-          {/*Center*/}
-          <View style={styles.centerContainer}>
-            {!!centerTitle && (
-              <Text style={[styles.textCenter,centerTextStyle && centerTextStyle]} numberOfLines={1}>{centerTitle}</Text>
-            )}
-          </View>
-
-          {/*Right*/}
-          <View style={[styles.rightContainer, (rightTitle || leftTitle) && { width: '30%' }]}>
-            {rightView && rightView()}
-            {!rightView && (rightImage || rightTitle || iConName) ? (
-              <TouchableOpacity
-                style={rightImage ? styles.iconContainer : styles.rightTextContainer}
-                onPress={onRightPress ? onRightPress : null}
-              >
-                {iConName ? <Icon name={iConName} color={AppColors.white} size={22} /> : null}
-                {rightImage ? <Image style={styles.icon} source={rightImage} /> : null}
-                {!rightImage && rightTitle ? (
-                  <Text style={styles.textTitle}>{rightTitle}</Text>
-                ) : null}
-              </TouchableOpacity>
-            ) : null}
-          </View>
+      <View style={[styles.container, { backgroundColor: AppColors.primaryBackground }, containerStyle && containerStyle]}>
+        {/*Left*/}
+        <View style={[styles.leftContainer, (leftTitle || rightTitle) && { flex: 1 }]}>
+          {leftView && leftView()}
+          {/* Icon has higher priority then text if both props: leftImage and leftTitle are available */}
+          {!leftView && (leftImage || leftTitle || isBack) && (
+            <TouchableOpacity
+              disabled={disabled}
+              style={leftImage || isBack ? styles.iconContainer : styles.leftTextContainer}
+              onPress={() => onLeftPress && onLeftPress()}
+            >
+              {/* {isBack && <Image style={styles.iconBack} source={iConBack} />} */}
+              {isBack && <Image
+                source={iConBack}
+                resizeMode="contain"
+                style={styles.iconBack}
+              />}
+              {leftImage && <Image style={styles.icon} source={leftImage} />}
+              {!leftImage && leftTitle && (
+                <Text
+                  style={[
+                    styles.textTitle,
+                    {
+                      paddingBottom: 10,
+                      fontSize: 18,
+                      fontWeight: 'bold',
+                      fontStyle: 'italic',
+                    },
+                  ]}
+                  numberOfLines={1}
+                >
+                  {leftTitle}
+                </Text>
+              )}
+            </TouchableOpacity>
+          )}
         </View>
+
+        {/*Center*/}
+        <View style={styles.centerContainer}>
+          {!!centerTitle && (
+            <Text style={[styles.textCenter, centerTextStyle && centerTextStyle]} numberOfLines={1}>{centerTitle}</Text>
+          )}
+        </View>
+
+        {/*Right*/}
+        <View style={[styles.rightContainer, (rightTitle || leftTitle) && { width: '30%' }]}>
+          {rightView && rightView()}
+          {!rightView && (rightImage || rightTitle || iconName) ? (
+            <TouchableOpacity
+              style={rightImage ? styles.iconContainer : styles.rightTextContainer}
+              onPress={onRightPress ? onRightPress : null}
+            >
+              {iconName ? <IconSource name={iconName} color={AppColors.white} size={22} /> : null}
+              {rightImage ? <Image style={styles.icon} source={rightImage} /> : null}
+              {!rightImage && rightTitle ? (
+                <Text style={styles.textTitle}>{rightTitle}</Text>
+              ) : null}
+            </TouchableOpacity>
+          ) : null}
+        </View>
+      </View>
     )
   }
 }

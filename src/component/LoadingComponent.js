@@ -3,10 +3,11 @@ import { View, ActivityIndicator } from 'react-native'
 import { AppColors } from '@theme'
 
 const LoadingComponent = (props) => {
+    const { color = AppColors.primaryTextColor, size = 'small' } = props
 
     return (
         <View style={{ width: '100%', height: "100%", alignItems: 'center', justifyContent: "center", position: 'absolute', zIndex: 999 }}>
-            <ActivityIndicator size={"small"} color={AppColors.primaryTextColor} />
+            <ActivityIndicator size={size} color={color} />
         </View>
     )
 }
