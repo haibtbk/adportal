@@ -9,30 +9,17 @@ import AwesomeListComponent from "react-native-awesome-list";
 import { API } from '@network';
 import { formatBytes, DateTimeUtil } from '@utils';
 import { navigateNoti } from '../../firebaseNotification/NavigationNotificationManager';
-import { useSelector, useDispatch } from 'react-redux';
 import SwitchSelector from "react-native-switch-selector";
 import { ApproveRequestStatus } from '@constant'
+import { useFirstTime } from '@hook';
 
 const ApproveRequest = (props) => {
     const navigation = useNavigation();
-    const dispatch = useDispatch()
     const [status, setStatus] = useState(ApproveRequestStatus.queued)
-    useFocusEffect(
-        React.useCallback(() => {
-            // Do something when the screen is focused
-            setTimeout(() => {
-                FabManager.show();
-            }, 100);
-
-            return () => {
-                // Do something when the screen is unfocused
-                // Useful for cleanup functions
-                FabManager.hide();
-            };
-        }, []),
-    );
+    const isFirstTime = useFirstTime(useRef(true))
 
     useEffect(() => {
+        if (isFirstTime) return
         refreshData()
     }, [status])
 
@@ -79,10 +66,18 @@ const ApproveRequest = (props) => {
     const renderItem = ({ item }) => {
         const title = `Người yêu cầu: ${item?.creator_info?.name ?? ""}`
         const itemInforObj = item.item_info
-        const fileName = itemInforObj.name;
-        const fileSize = formatBytes(itemInforObj?.extra?.size, 2)
-        const content = `Tên file: ${fileName}(${fileSize} )`
+        const { item_request_code = "" } = itemInforObj
+        let content = ""
+        const expire_ts = `Ngày hết hạn: ${DateTimeUtil.format("DD/MM/YYYY", (item?.expire_ts ?? 0)*1000)}`
 
+        if (item_request_code == "update_income_plan") {
+            content = "Cập nhật kế hoạch doanh thu"
+        } else {
+            const fileName = itemInforObj.name;
+            const fileSize = formatBytes(itemInforObj?.extra?.size, 2)
+            content = `Tên file: ${fileName}(${fileSize} )`
+        }
+        content = `${content}\n${expire_ts}`
         return (
             <BaseBoxComponent onPress={() => onPressItem(item)} title={title} content={content} containerStyle={{ marginVertical: AppSizes.paddingSmall }} numberOfLines={3} />
         )
@@ -112,7 +107,7 @@ const ApproveRequest = (props) => {
                 accessibilityLabel="status-switch-selector"
             />
             <AwesomeListComponent
-                keyExtractor={(item, index) => item.id + Math.random(1)*1000}
+                keyExtractor={(item, index) => item.id + Math.random(1) * 1000}
                 refresh={refreshData}
                 ref={listRef}
                 isPaging={true}
@@ -120,6 +115,7 @@ const ApproveRequest = (props) => {
                 listStyle={{ flex: 1, with: '100%', height: '100%', backgroundColor: 'transparent' }}
                 source={source}
                 pageSize={12}
+                renderEmptyView={() => <Text style={AppStyles.baseText}>Không có dữ liệu</Text>}
                 transformer={transformer}
                 renderItem={renderItem} />
         </View>

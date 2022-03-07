@@ -140,21 +140,17 @@ const NewsScreen = (props) => {
         </PagerView>
         <Dots passiveDotHeight={8} activeDotHeight={11} activeDotWidth={11} passiveDotWidth={8} length={news?.length ?? 0} active={activeIndexNews} activeColor={AppColors.purple} />
 
-        {
+        {(news?.[currentPage]?.listNews ?? []).length > 0 ?
           _.map(news?.[currentPage]?.listNews ?? [], item => {
             return (
               <View key={item.id}>
                 {renderItem({ item })}
               </View>
             )
-          })
+          }) : <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <Text style={[AppStyles.baseText, { fontSize: 16 }]}>Không có tin tức</Text>
+          </View>
         }
-        {/* <FlatList
-        data={news?.[currentPage]?.listNews ?? []}
-        style={{ flex: 1 }}
-        keyExtractor={(item, index) => item.iid ?? index.toString()}
-        renderItem={renderItem}
-      /> */}
         {
           isLoading && <LoadingComponent />
         }

@@ -17,6 +17,7 @@ import Entypo from 'react-native-vector-icons/Entypo';
 import { DateTimeUtil } from "@utils"
 import workTypes from './WorkTypes';
 import _ from 'lodash'
+import { useFirstTime } from '@hook';
 
 const actionStatus = [
     { label: "Hoàn thành", value: 3 },
@@ -32,22 +33,11 @@ const ScheduleScreen = (props) => {
     const oneWeek = 7 * 24 * 60 * 60 * 1000
     const [start_ts, setStartTime] = useState(moment().valueOf() - oneWeek)
     const [end_ts, setEndTime] = useState(moment().valueOf() + oneWeek)
-    useFocusEffect(
-        React.useCallback(() => {
-            // Do something when the screen is focused
-            setTimeout(() => {
-                FabManager.show();
-            }, 100);
+    const isFirstTime = useFirstTime(useRef(true))
 
-            return () => {
-                // Do something when the screen is unfocused
-                // Useful for cleanup functions
-                FabManager.hide();
-            };
-        }, []),
-    );
 
     useEffect(() => {
+        if (isFirstTime) return
         refreshData()
     }, [status, start_ts, end_ts])
 
@@ -212,19 +202,19 @@ const ScheduleScreen = (props) => {
             />
             {
                 status == 2 && (<View style={{ flexDirection: 'row' }}>
-                <DateTimePickerComponent
-                    containerStyle={{ flex: 1, marginRight: 10 }}
-                    value={start_ts}
-                    mode="date"
-                    label="Từ ngày"
-                    onChangeDateTime={onChangeDateTimeStart} />
-                <DateTimePickerComponent
-                    containerStyle={{ flex: 1 }}
-                    value={end_ts}
-                    mode="date"
-                    label="Đến ngày"
-                    onChangeDateTime={onChangeDateTimeEnd} />
-            </View>)
+                    <DateTimePickerComponent
+                        containerStyle={{ flex: 1, marginRight: 10 }}
+                        value={start_ts}
+                        mode="date"
+                        label="Từ ngày"
+                        onChangeDateTime={onChangeDateTimeStart} />
+                    <DateTimePickerComponent
+                        containerStyle={{ flex: 1 }}
+                        value={end_ts}
+                        mode="date"
+                        label="Đến ngày"
+                        onChangeDateTime={onChangeDateTimeEnd} />
+                </View>)
             }
             <AwesomeListComponent
                 keyExtractor={(item, index) => item.id + Math.random(1) * 1000}

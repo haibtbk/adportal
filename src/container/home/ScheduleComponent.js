@@ -44,7 +44,7 @@ const ScheduleComponent = (props) => {
                             <Text style={AppStyles.baseTextGray}>{displayTime}</Text>
                         </View>
                     ) : null
-                }) : <Text>Chưa có dữ liệu</Text>
+                }) : <Text style={AppStyles.baseTextGray}>Chưa có dữ liệu</Text>
 
                 }
             </View>

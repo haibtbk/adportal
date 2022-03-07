@@ -46,12 +46,12 @@ const PerformanceComponent = (props) => {
           const performance = getPerfomance(item)
           return (
             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-              <Text style={[AppStyles.baseTextGray, {marginBottom: AppSizes.paddingSmall}]}>{name}</Text>
+              <Text style={[AppStyles.baseTextGray, { marginBottom: AppSizes.paddingSmall }]}>{name}</Text>
               <Text style={AppStyles.baseTextGray}>{performance}</Text>
             </View>
           )
 
-        }) : <Text>Chưa có dữ liệu</Text>
+        }) : <Text style={AppStyles.baseTextGray}>Chưa có dữ liệu</Text>
       }
     </View>
   )

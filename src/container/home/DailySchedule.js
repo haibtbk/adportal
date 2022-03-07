@@ -1,17 +1,10 @@
-import React, { useRef } from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
-import FabManager from '@fab/FabManager';
-import { useFocusEffect } from '@react-navigation/native';
-import { BaseBoxComponent } from '@container';
 import { AppSizes, AppStyles } from '@theme';
+import { useRef } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 import AwesomeListComponent from "react-native-awesome-list";
-import { API } from '@network';
-import { formatBytes, DateTimeUtil } from '@utils';
-import { navigateNoti } from '../../firebaseNotification/NavigationNotificationManager';
-import { useSelector, useDispatch } from 'react-redux';
-import Title from './Title';
 import FakeData from './fakeDatas';
 import Item from './Item';
+import Title from './Title';
 
 const DailySchedule = (props) => {
     const { navigation } = props;

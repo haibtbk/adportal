@@ -249,40 +249,45 @@ const HomeScreen = ({ route }) => {
             size={20}
             color="white" />
         </View>
-
-        <BarChart
-          style={{
-            marginVertical: 8,
-            borderRadius: 6,
-            overflow: 'hidden',
-          }}
-          data={{
-            labels: chartLabels(),
-            datasets: [
-              {
-                data: chartDatas()
-              }
-            ]
-          }}
-          width={AppSizes.screen.width} // from react-native
-          height={200}
-          // verticalLabelRotation={30}
-          chartConfig={{
-            backgroundGradientFrom: AppColors.primaryBackground,
-            backgroundGradientTo: "rgba(255, 255, 255, 0.9)",
-            decimalPlaces: 0, // optional, defaults to 2dp
-            color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-            labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-            style: {
+        {
+          revenue.length > 0 ? <BarChart
+            style={{
+              marginVertical: 8,
               borderRadius: 6,
-            },
-            propsForDots: {
-              r: "6",
-              strokeWidth: "2",
-              stroke: AppColors.primaryBackground
-            }
-          }}
-        />
+              overflow: 'hidden',
+            }}
+            data={{
+              labels: chartLabels(),
+              datasets: [
+                {
+                  data: chartDatas()
+                }
+              ]
+            }}
+            width={AppSizes.screen.width} // from react-native
+            height={200}
+            // verticalLabelRotation={30}
+            chartConfig={{
+              backgroundGradientFrom: AppColors.primaryBackground,
+              backgroundGradientTo: "rgba(255, 255, 255, 0.9)",
+              decimalPlaces: 0, // optional, defaults to 2dp
+              color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+              labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+              style: {
+                borderRadius: 6,
+              },
+              propsForDots: {
+                r: "6",
+                strokeWidth: "2",
+                stroke: AppColors.primaryBackground
+              }
+            }}
+          /> :
+            <View style={AppStyles.baseBox}>
+              <Text style={AppStyles.baseTextGray}>Không có dữ liệu</Text>
+            </View>
+        }
+
         <View>
           <Title title="Kế hoạch trong ngày" />
           <ScheduleComponent data={scheduleTodayData()} />

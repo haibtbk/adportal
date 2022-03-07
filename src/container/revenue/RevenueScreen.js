@@ -131,6 +131,7 @@ const RevenueScreen = (props) => {
                 containerStyle={styles.box}
                 source={source}
                 emptyViewStyle={{ backgroundColor: 'transparent' }}
+                renderEmptyView={() => <Text style={AppStyles.baseText}>Không có dữ liệu</Text>}
                 transformer={transformer}
                 ItemSeparatorComponent={() => (<View style={[styles.separator]} />)}
                 renderItem={renderItem} />

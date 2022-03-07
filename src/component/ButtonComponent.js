@@ -3,13 +3,13 @@ import {TouchableOpacity, Text, StyleSheet} from 'react-native';
 import {AppStyles, AppSizes} from '@theme';
 import PropTypes from 'prop-types';
 const ButtonComponent = (props) => {
-  let {containerStyle, action, title} = props;
+  let {containerStyle, action, title, textStyle} = props;
 
   return (
     <TouchableOpacity
       onPress={() => action && action()}
       style={[styles.button, containerStyle && containerStyle]}>
-      <Text style={styles.text}>{title}</Text>
+      <Text style={[styles.text, textStyle && textStyle]}>{title}</Text>
     </TouchableOpacity>
   );
 };
