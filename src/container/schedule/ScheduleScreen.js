@@ -11,7 +11,7 @@ import SwitchSelector from "react-native-switch-selector";
 import moment from 'moment';
 import SelectDropdown from 'react-native-select-dropdown'
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-import { LoadingComponent, DateTimePickerComponent } from '@component';
+import { LoadingComponent, DateTimePickerComponent, DropdownComponent } from '@component';
 import { utils, RouterName } from '@navigation';
 import Entypo from 'react-native-vector-icons/Entypo';
 import { DateTimeUtil } from "@utils"
@@ -21,8 +21,9 @@ import { useFirstTime } from '@hook';
 
 const actionStatus = [
     { label: "Hoàn thành", value: 3 },
-    { label: "Dừng", value: 4 }]
-const MAX_DROPDOWM_WIDTH = 130
+    { label: "Dừng", value: 4 }, 
+    { label: "Đang chạy", value: 2 }]
+const MAX_DROPDOWM_WIDTH = 135
 const DROPDOWN_HEIGHT = 35
 
 const ScheduleScreen = (props) => {
@@ -98,10 +99,10 @@ const ScheduleScreen = (props) => {
 
     const getDefaultValue = (status) => {
         switch (status) {
-            case 4: return "Dừng"
-            case 3: return "Hoàn thành"
-            case 2: return "Đang chạy"
-            default: return "Đang chạy"
+            case 4: return { label: "Dừng", value: 4 }
+            case 3: return { label: "Hoàn thành", value: 3 }
+            case 2: return { label: "Đang chạy", value: 2 }
+            default: return { label: "Đang chạy", value: 2 }
         }
     }
     const renderItem = ({ item }) => {
@@ -126,31 +127,13 @@ const ScheduleScreen = (props) => {
                         {displayTime}
                     </Text>
 
-                    <SelectDropdown
+                    <DropdownComponent
+                        containerStyle={styles.dropdownBtnStyle}
                         data={actionStatus}
                         onSelect={(i) => onChangeValueStatus(i, item)}
-                        defaultButtonText={getDefaultValue(item.status)}
-                        buttonTextAfterSelection={(selectedItem, index) => {
-                            return selectedItem.label;
-                        }}
-                        rowTextForSelection={(item, index) => {
-                            return item.label;
-                        }}
-                        buttonStyle={styles.dropdownBtnStyle}
-                        buttonTextStyle={styles.dropdownBtnTxtStyle}
-                        renderDropdownIcon={(isOpened) => {
-                            return (
-                                <FontAwesome
-                                    name={isOpened ? "chevron-up" : "chevron-down"}
-                                    color={AppColors.gray}
-                                    size={16}
-                                />
-                            );
-                        }}
-                        dropdownIconPosition={"right"}
-                        rowStyle={styles.dropdownRowStyle}
-                        rowTextStyle={styles.dropdownRowTxtStyle}
+                        defaultValue={getDefaultValue(item.status)}
                     />
+
                 </View>
 
 

@@ -1,24 +1,23 @@
 import * as React from 'react';
 import { Component, useRef, useState, useEffect } from 'react';
 import { Text, View, Button, Image, AppState, StyleSheet } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, DrawerActions } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import EntypoIcon from 'react-native-vector-icons/FontAwesome';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import Ionicons from 'react-native-vector-icons/Ionicons';
 import Feather from 'react-native-vector-icons/Feather';
 import { createStackNavigator } from '@react-navigation/stack';
 import FabManager from './src/fab/FabManager';
 import FabButton from './src/fab/FabButton';
 import FabLightbox from './src/fab/FabLightbox';
 import { AppColors, AppSizes, AppStyles } from '@theme'
-import { bottomBarHeight } from '@utils'
 import { RouterName } from '@navigation';
 import { Provider } from 'react-redux'
 import store from '@redux/store'
 import Notification from './src/firebaseNotification/index'
 import { MessageBarSimple, MessageBarManagerSimple, Dialog, BaseWebViewScreen } from '@component'
+import DrawerMenuNavigator from './src/stack/DrawerMenuNavigator';
 
 import {
   LoginScreen,
@@ -48,31 +47,11 @@ import Localization from '@localization'
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import ApproveRequest from './src/container/home/ApproveRequest';
 
-function DetailsScreen({ navigation }) {
-  return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Text>Details Screen</Text>
-      <Button
-        title="Go to Details... again"
-        onPress={() => navigation.push('Details')}
-      />
-      <Button
-        title="Show Dialog"
-        onPress={() => navigation.navigate('Dialog')}
-      />
-    </View>
-  );
-}
-
-
 const Tab = createBottomTabNavigator();
 const HomeStack = createStackNavigator();
-const SettingsStack = createStackNavigator();
 const NewsStack = createStackNavigator();
-const NotificationStack = createStackNavigator();
 const RootStack = createStackNavigator();
 const Stack = createStackNavigator();
-
 
 function RootTabs() {
   const insets = useSafeAreaInsets();
@@ -97,9 +76,8 @@ function RootTabs() {
         }}>
         {() => (
           <HomeStack.Navigator screenOptions={{ headerShown: false }}>
-            <HomeStack.Screen name="Dashboard" component={HomeScreen} />
-            {/* <HomeStack.Screen name="Home" component={HomeScreen} /> */}
-            <HomeStack.Screen name="Details" component={DetailsScreen} />
+            <HomeStack.Screen name="Home" component={HomeScreen} />
+            <HomeStack.Screen name={RouterName.account} component={AccountScreen} />
             <HomeStack.Screen name="Revenue" component={RevenueScreen} />
           </HomeStack.Navigator>
         )}
@@ -159,17 +137,9 @@ function RootTabs() {
           tabBarIcon: ({ color, size }) => (
             <Feather name="menu" color={color} size={size} />
           ),
-
         }}>
         {() => (
-          <SettingsStack.Navigator screenOptions={{ headerShown: false }}>
-            <SettingsStack.Screen name={RouterName.menu} component={MoreScreen} />
-            <SettingsStack.Screen name={RouterName.account} component={AccountScreen} />
-            <SettingsStack.Screen name={RouterName.editProfile} component={EditAccountScreen} />
-            <SettingsStack.Screen name={RouterName.publishFile} component={PublishedFileScreen} />
-            <SettingsStack.Screen name={RouterName.scheduleUser} component={ScheduleUserScreen} />
-            <SettingsStack.Screen name={RouterName.scheduleCompany} component={ScheduleCompanyScreen} />
-          </SettingsStack.Navigator>
+          <DrawerMenuNavigator />
         )}
       </Tab.Screen>
 
@@ -182,7 +152,6 @@ const navigationRef = React.createRef();
 export default App = (props) => {
   Localization.setI18nConfig();
   const fabRef = React.useRef();
-
   const handleLocalizationChange = () => {
     Localization.setI18nConfig();
     this.forceUpdate();
@@ -262,6 +231,8 @@ export default App = (props) => {
         </View>
       </NavigationContainer>
     </Provider>
+    // </SafeAreaProvider>
+
   );
 };
 

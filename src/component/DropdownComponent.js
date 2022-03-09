@@ -1,7 +1,7 @@
 
 
 import React from 'react';
-import { AppColors } from '@theme';
+import { AppColors, AppSizes } from '@theme';
 import { StyleSheet } from 'react-native';
 import SelectDropdown from 'react-native-select-dropdown';
 import FontAwesome from "react-native-vector-icons/FontAwesome";
@@ -10,7 +10,7 @@ const MAX_DROPDOWM_WIDTH = 150
 const DROPDOWN_HEIGHT = 35
 
 const DropdownComponent = (props) => {
-    const { data, onSelect, defaultValue, defaultButtonText = "", containerStyle } = props
+    const { data, onSelect, defaultValue, defaultButtonText = "", containerStyle, textStyle, arrowColor=AppColors.gray } = props
 
     return (
         <SelectDropdown
@@ -25,17 +25,18 @@ const DropdownComponent = (props) => {
                 return item.label;
             }}
             buttonStyle={[styles.dropdownBtnStyle, containerStyle]}
-            buttonTextStyle={styles.dropdownBtnTxtStyle}
+            buttonTextStyle={[styles.dropdownBtnTxtStyle, textStyle]}
             renderDropdownIcon={(isOpened) => {
                 return (
                     <FontAwesome
                         name={isOpened ? "chevron-up" : "chevron-down"}
-                        color={AppColors.gray}
+                        color={arrowColor}
                         size={16}
                     />
                 );
             }}
             dropdownIconPosition={"right"}
+            dropdownStyle={styles.dropdownStyle}
             rowStyle={styles.dropdownRowStyle}
             rowTextStyle={styles.dropdownRowTxtStyle}
         />
@@ -55,15 +56,18 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         width: MAX_DROPDOWM_WIDTH,
         height: DROPDOWN_HEIGHT,
-        backgroundColor: 'white'
+        backgroundColor: 'white',
     },
-    dropdownBtnTxtStyle: { color: "#444", textAlign: "left", fontSize: 14 },
+    dropdownBtnTxtStyle: { color: "#444", textAlign: "right", fontSize: AppSizes.fontMedium },
 
     dropdownRowStyle: {
         backgroundColor: "#EFEFEF",
         height: 45,
     },
     dropdownRowTxtStyle: { color: "#444", },
+    dropdownStyle: {
+        borderRadius: 4,
+    }
 })
 
 

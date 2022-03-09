@@ -4,19 +4,27 @@ import { AppSizes, AppStyles, AppColors } from '@theme';
 import _ from 'lodash';
 import moment from 'moment';
 import { useNavigation } from '@react-navigation/native';
+import Title from './Title';
 
 const styles = StyleSheet.create({
-  box: {
-    ...AppStyles.roundButton,
-    flex: 1,
-    justifyContent: 'space-between',
+  container: {
     marginTop: AppSizes.paddingSmall,
-    backgroundColor: AppColors.white,
-  }
+    backgroundColor: AppColors.secondaryBackground,
+    borderStyle: 'solid',
+    borderWidth: 1,
+    borderColor: AppColors.gray,
+    borderRadius: 5,
+    paddingHorizontal: AppSizes.paddingSmall
+  },
+  box: {
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: AppSizes.paddingXSmall,
+  },
 });
 
 const PerformanceComponent = (props) => {
-  const { dataUserUnderControl = [], schedules = [] } = props
+  const { dataUserUnderControl = [], schedules = [], title, titleStyle = {} } = props
   const navigation = useNavigation();
 
   const getPerfomance = (user) => {
@@ -35,24 +43,28 @@ const PerformanceComponent = (props) => {
   }
 
   return (
-    <View style={styles.box}>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: AppSizes.paddingSmall }}>
-        <Text style={AppStyles.boldTextGray}>Họ tên</Text>
-        <Text style={AppStyles.boldTextGray}>Hoàn thành/ Tổng số</Text>
-      </View>
-      {
-        dataUserUnderControl.length > 0 ? _.map(dataUserUnderControl, (item, index) => {
-          const name = item?.name ?? ""
-          const performance = getPerfomance(item)
-          return (
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-              <Text style={[AppStyles.baseTextGray, { marginBottom: AppSizes.paddingSmall }]}>{name}</Text>
-              <Text style={AppStyles.baseTextGray}>{performance}</Text>
-            </View>
-          )
+    <View style={styles.container}>
+      <Title title={title} containerStyle={titleStyle} />
+      <View style={styles.box}>
+        {dataUserUnderControl.length > 0 && <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: AppSizes.paddingSmall, width: '100%' }}>
+          <Text style={AppStyles.boldTextGray}>Họ tên</Text>
+          <Text style={AppStyles.boldTextGray}>Hoàn thành/ Tổng số</Text>
+        </View>}
 
-        }) : <Text style={AppStyles.baseTextGray}>Chưa có dữ liệu</Text>
-      }
+        {
+          dataUserUnderControl.length > 0 ? _.map(dataUserUnderControl, (item, index) => {
+            const name = item?.name ?? ""
+            const performance = getPerfomance(item)
+            return (
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                <Text style={[AppStyles.baseTextGray, { marginBottom: AppSizes.paddingSmall }]}>{name}</Text>
+                <Text style={AppStyles.baseTextGray}>{performance}</Text>
+              </View>
+            )
+
+          }) : <Text style={[AppStyles.baseTextGray, { paddingBottom: AppSizes.padding }]}>Không có dữ liệu</Text>
+        }
+      </View>
     </View>
   )
 

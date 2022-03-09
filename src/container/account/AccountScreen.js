@@ -9,7 +9,7 @@ import navigationManager from '@navigation/utils'
 import { useDispatch, useSelector } from 'react-redux'
 import { BaseViewComponent } from '@component';
 import { WebImage } from '@component';
-import Icon from "react-native-vector-icons/Feather"
+import Feather from "react-native-vector-icons/Feather"
 import MaterialIcons from "react-native-vector-icons/MaterialIcons"
 import { RouterName } from '@navigation';
 
@@ -49,11 +49,23 @@ const AccountScreen = (props) => {
     return account?.avatar ?? DEMO_AVATAR
   }
 
+  const logout = () => {
+    navigationManager.logout(navigation, dispatch)
+  }
+  
   return (
     <View style={AppStyles.container}>
       <NavigationBar
         isBack
-        onLeftPress={() => navigation.goBack()}
+        leftView={() => (
+          <TouchableOpacity
+            onPress={() => {
+              navigation.goBack()
+            }}
+          >
+            <Feather name="menu" size={26} color="white" />
+          </TouchableOpacity>
+        )}
         centerTitle="Tài khoản"
         rightView={() => <TouchableOpacity
           onPress={doEditProfile}
@@ -75,7 +87,11 @@ const AccountScreen = (props) => {
         <BaseViewComponent title="Email" content={account.mail} />
         <BaseViewComponent title="Số điện thoại" content={account.phone} />
       </View>
-
+      <TouchableOpacity
+        onPress={logout}
+        style={[AppStyles.roundButton, styles.logoutButton]}>
+        <Text style={AppStyles.baseText}>Đăng xuất</Text>
+      </TouchableOpacity>
     </View>
   );
 }

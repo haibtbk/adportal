@@ -10,10 +10,12 @@ import {
   Image,
   FlatList,
   Alert,
+  SafeAreaView,
+  TouchableOpacity
 } from 'react-native';
 import FabManager from '@fab/FabManager';
 import { useFocusEffect } from '@react-navigation/native';
-import { LoadingComponent, BaseDashboardItemComponent, ButtonIconComponent } from '@component';
+import { LoadingComponent, BaseDashboardItemComponent, ButtonIconComponent, DropdownComponent } from '@component';
 import { AppSizes, AppColors, AppStyles } from '@theme';
 import NavigationBar from '@navigation/NavigationBar';
 import { useSelector, useDispatch } from 'react-redux';
@@ -39,25 +41,40 @@ import Title from './Title';
 import ScheduleComponent from './ScheduleComponent';
 import PerformanceComponent from './PerfomanceComponent';
 import DateTimeUtil from '../../utils/DateTimeUtil';
+import { WebImage } from '@component';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { RouterName } from '@navigation';
 
+
+
+const DEMO_AVATAR = "http://hinhnendepnhat.net/wp-content/uploads/2014/10/hinh-nen-girl-xinh-tien-nu-mong-ao.jpg"
+const ROLLS = [
+  {
+    id: 1,
+    label: "Cá nhân",
+  },
+  {
+    id: 2,
+    label: "Công ty",
+  },
+  {
+    id: 3,
+    label: "Tổng công ty",
+  }
+
+]
 const HomeScreen = ({ route }) => {
+  const insets = useSafeAreaInsets();
   const dispatch = useDispatch()
   const navigation = useNavigation()
-  const numOfWatingApprove = useSelector(state => state?.waitingApprove?.number)
-  const [numOfWatingApproveForShow, setNumOfWatingApproveForShow] = useState(numOfWatingApprove)
   const [dashboardInfo, setDashboardInfo] = useState({})
   const [isLoading, setIsLoading] = useState(false)
-  const [performanceData, setPerformanceData] = useState([])
   const [dataUserUnderControl, setDataUserUnderControl] = useState([])
   const [revenue, setRevenues] = useState([])
-
-  useEffect(() => {
-    let data = numOfWatingApprove?.toString() ?? 0
-    if (numOfWatingApprove > 100) {
-      data = "+100"
-    }
-    setNumOfWatingApproveForShow(data)
-  }, [numOfWatingApprove])
+  const [roll, setRoll] = useState(ROLLS[0])
+  const account = useSelector((state) => {
+    return state?.user?.account
+  })
 
   useFocusEffect(
     React.useCallback(() => {
@@ -95,7 +112,6 @@ const HomeScreen = ({ route }) => {
       API.getUserUnderControl(paramUserUnderControl),
       API.getRevenue(revenueParam)])
       .then(res => {
-        console.log(res)
         const res0 = res?.[0]
         const res1 = res?.[1]
         const res2 = res?.[2]
@@ -225,20 +241,35 @@ const HomeScreen = ({ route }) => {
     navigation.navigate('Revenue')
   }
 
+  const onChangeRoll = (item) => {
+    setRoll(item)
+  }
+
   return (
     <View style={[AppStyles.container]}>
-      <ScrollView style={{ flex: 1, }}
-        contentContainerStyle={{ paddingBottom: AppSizes.padding, marginTop: 8 }}>
-        <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', marginVertical: AppSizes.padding }}>
-          <BaseDashboardItemComponent iconName="ios-logo-usd" title="Doanh thu tháng" content="Doanh thu tháng" amount={getMonthRevenue()} containerStyle={{ flex: 1, marginRight: AppSizes.padding }} color={AppColors.warning} />
+      <View style={{ flexDirection: 'row', alignItems: 'center', alignSelf: 'flex-end', paddingHorizontal: AppSizes.padding, paddingBottom: AppSizes.paddingSmall, marginTop: insets.top > 0 ? insets.top - 10 : 0 }}>
+        <DropdownComponent
+          arrowColor={AppColors.white}
+          textStyle={{ color: 'white', fontSize: AppSizes.fontMedium }}
+          containerStyle={{ width: 145, marginBottom: 0, backgroundColor: 'transparent', borderColor: 'transparent', justifyContent: "flex-start" }}
+          data={ROLLS}
+          onSelect={(item) => onChangeRoll(item)}
+          defaultValue={ROLLS[0]}
+        />
+      </View>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        style={{ flex: 1, }}
+        contentContainerStyle={{ paddingBottom: AppSizes.padding }}>
+        <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', marginBottom: AppSizes.paddingSmall }}>
+          <BaseDashboardItemComponent iconName="ios-logo-usd" title="Doanh thu tháng" content="Doanh thu tháng" amount={getMonthRevenue()} containerStyle={{ flex: 1, marginRight: AppSizes.paddingSmall }} color={AppColors.warning} />
           <BaseDashboardItemComponent iconName="ios-logo-usd" title="Doanh thu quý" content="Doanh thu quý" amount={getQuaterRevenue()} containerStyle={{ flex: 1, }} color={AppColors.success} />
         </View>
         <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
-          <BaseDashboardItemComponent iconName="newspaper" onPress={() => navigation.navigate("Tin tức")} title="Bản tin" content="Bản tin" amount={dashboardInfo?.news?.total ?? 0} containerStyle={{ flex: 1, marginRight: AppSizes.padding, }} color={AppColors.danger} />
+          <BaseDashboardItemComponent iconName="newspaper" onPress={() => navigation.navigate("Tin tức")} title="Bản tin" content="Bản tin" amount={dashboardInfo?.news?.total ?? 0} containerStyle={{ flex: 1, marginRight: AppSizes.paddingSmall, }} color={AppColors.danger} />
           <BaseDashboardItemComponent onPress={() => navigation.navigate("Phê duyệt")} title="Yêu cầu phê duyệt" content="Yêu cầu phê duyệt" amount={dashboardInfo?.approve_request?.length ?? 0} containerStyle={{ flex: 1, }} color={AppColors.info} />
         </View>
 
-        {/* <Text style={[AppStyles.boldText, {padding: AppSizes.paddingSmall}]}>Monthly Revenue</Text> */}
         <View style={{ flexDirection: 'row', flex: 1, justifyContent: 'space-between', alignItems: 'center', marginTop: AppSizes.paddingSmall }}>
           <Title title="Doanh thu hàng ngày" containerStyle={{ flex: 1 }} />
           <ButtonIconComponent
@@ -289,17 +320,14 @@ const HomeScreen = ({ route }) => {
         }
 
         <View>
-          <Title title="Kế hoạch trong ngày" />
-          <ScheduleComponent data={scheduleTodayData()} />
-          <Title title="Kế hoạch tháng" />
-          <ScheduleComponent data={scheduleIncomeData()} />
+          <ScheduleComponent data={scheduleTodayData()} title="Kế hoạch trong ngày" titleStyle={{ color: AppColors.secondaryTextColor, fontSize: AppSizes.fontLarge }} />
+          <ScheduleComponent data={scheduleIncomeData()} title="Kế hoạch tháng" titleStyle={{ color: AppColors.secondaryTextColor, fontSize: AppSizes.fontLarge }} />
         </View>
-        <Title title="Hiệu suất công việc" containerStyle={{ marginTop: AppSizes.paddingSmall }} />
-        <PerformanceComponent dataUserUnderControl={dataUserUnderControl} schedules={dashboardInfo?.schedule ?? []} />
+        <PerformanceComponent dataUserUnderControl={dataUserUnderControl} schedules={dashboardInfo?.schedule ?? []} title="Hiệu suất công việc" titleStyle={{ color: AppColors.secondaryTextColor, fontSize: AppSizes.fontLarge, paddingLeft: 0, flex: 1 }} />
 
       </ScrollView>
       {isLoading && <LoadingComponent />}
-    </View>
+    </View >
   );
 };
 

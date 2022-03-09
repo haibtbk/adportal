@@ -9,7 +9,7 @@ function lineHeight(fontSize) {
 }
 
 const baseMonserrat = {
-  size: 14,
+  size: 16,
   lineHeight: lineHeight(14),
   ...Platform.select({
     ios: {
@@ -22,7 +22,7 @@ const baseMonserrat = {
 };
 
 const boldMontserrat = {
-  size: 14,
+  size: 16,
   lineHeight: lineHeight(14),
   ...Platform.select({
     ios: {

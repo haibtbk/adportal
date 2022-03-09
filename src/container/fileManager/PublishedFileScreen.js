@@ -15,6 +15,7 @@ import { utils, RouterName } from '@navigation';
 import RNFS from 'react-native-fs'
 import Icon from 'react-native-vector-icons/AntDesign';
 import moment from 'moment';
+import Feather from 'react-native-vector-icons/Feather';
 
 const PublishedFileScreen = (props) => {
     const { navigation } = props;
@@ -43,20 +44,7 @@ const PublishedFileScreen = (props) => {
                 setLoading(false)
             })
     }, [])
-    useFocusEffect(
-        React.useCallback(() => {
-            // Do something when the screen is focused
-            setTimeout(() => {
-                FabManager.show();
-            }, 100);
 
-            return () => {
-                // Do something when the screen is unfocused
-                // Useful for cleanup functions
-                FabManager.hide();
-            };
-        }, []),
-    );
     const refreshData = () => {
         listRef.current.refresh()
     }
@@ -192,16 +180,6 @@ const PublishedFileScreen = (props) => {
         setSelectedIndex(index)
     }
 
-    const renderItemCategory_ = ({ item, index }) => {
-        const name = item?.name ?? ""
-        const totalFile = item?.total
-        return (<TouchableOpacity
-            onPress={() => onPressItemCategory(item, index)}
-            style={{ ...AppStyles.roundButton, flex: 1, height: 75, backgroundColor: 'white', maxWidth: AppSizes.screen.width / 2 - 40, overflow: 'hidden', margin: AppSizes.paddingSmall, padding: AppSizes.paddingSmall, justifyContent: 'center', borderColor: selectedIndex == index ? AppColors.danger : 'white', borderWidth: selectedIndex == index ? 2 : StyleSheet.hairlineWidth }}>
-            <Text style={[AppStyles.boldTextGray, { backgroundColor: AppColors.white, fontSize: 16, marginBottom: AppSizes.paddingSmall, }]} numberOfLines={2}>{name}</Text>
-            <Text style={[AppStyles.baseTextGray, { backgroundColor: AppColors.white, fontSize: 16, marginBottom: AppSizes.paddingSmall }]}>{totalFile + (totalFile > 1 ? ' Files' : ' File')}</Text>
-        </TouchableOpacity>)
-    }
     const renderItemCategory = ({ item, index }) => {
         const name = item?.name ?? ""
         const totalFile = item?.total
@@ -215,12 +193,20 @@ const PublishedFileScreen = (props) => {
     return (
         <View style={AppStyles.container}>
             <NavigationBar
+                leftView={() => (
+                    <TouchableOpacity
+                        onPress={() => {
+                            navigation.goBack()
+                        }}
+                    >
+                        <Feather name="menu" size={26} color="white" />
+                    </TouchableOpacity>
+                )}
                 isBack
-                onLeftPress={() => navigation.goBack()}
                 centerTitle="Quản lý file" />
             <FlatList
                 data={categories}
-                style={{...AppStyles.roundButton, flex: 1, maxHeight: 200, backgroundColor: AppColors.white }}
+                style={{ ...AppStyles.roundButton, flex: 1, maxHeight: 200, backgroundColor: AppColors.white }}
                 keyExtractor={(item, index) => item.iid ?? index.toString()}
                 renderItem={renderItemCategory}
                 numColumns={2}

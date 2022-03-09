@@ -89,7 +89,7 @@ const CreateScheduleScreen = (props) => {
             <View style={{ flexDirection: 'row', alignItems: "center", justifyContent: 'space-between' }}>
                 <Text style={AppStyles.boldText}>Loại công việc: </Text>
                 <DropdownComponent
-                    containerStyle={{ marginBottom: AppSizes.padding, width: '50%' }}
+                    containerStyle={{ marginBottom: AppSizes.padding, width: '50%'}}
                     data={workTypes}
                     onSelect={(item) => onChangeValueWorkType(item)}
                     defaultValue={workTypes[0]}
