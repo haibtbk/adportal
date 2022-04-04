@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { TouchableOpacity, StyleSheet } from 'react-native';
 import CheckBox from 'react-native-vector-icons/Fontisto';
+import {AppColors} from '@theme';
 
 const CheckBoxComponent = (props) => {
   let { isCheck, status } = props;
@@ -17,9 +18,9 @@ const CheckBoxComponent = (props) => {
   return (
     <TouchableOpacity onPress={() => onPressCheckbox()}>
       {isChecked ? (
-        <CheckBox name='checkbox-active' size={20} color="#ffffff"></CheckBox>
+        <CheckBox name='checkbox-active' size={20} color={AppColors.primaryBackground}></CheckBox>
       ) : (
-        <CheckBox name='checkbox-passive' size={20} color='#ffffff'></CheckBox>
+        <CheckBox name='checkbox-passive' size={20} color={AppColors.primaryBackground}></CheckBox>
       )}
     </TouchableOpacity>
   );

@@ -21,6 +21,7 @@ const app = {
     warning: '#ffa800',
     success: '#0bb783',
     lightGray: '#9b9b9b',
+    niceBlue: '#03396c',
 
     info: '#8950fc',
     grayLight: '#F1F0ED',
@@ -30,7 +31,7 @@ const app = {
     white: '#FFFFFF',
     borderSearch: 'rgba(185,185,185, 0.5)',
     subWhite: 'rgba(255,255,255,0.63)',
-    closeButton: 'rgba(255,255,255,0.2)',
+    closeButton: 'rgba(0,0,0,0.2)',
     blue: "#2699FB",
     cerulean: '#009BD5',
     transparent: 'transparent',

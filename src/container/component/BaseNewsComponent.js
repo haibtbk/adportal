@@ -10,16 +10,16 @@ const BaseNewsComponent = (props) => {
         <TouchableOpacity
             onPress={readMore}
             style={[styles.container]}>
-            <ImageBackground
-                resizeMode='contain'
-                source={soureBackground}
-                style={{ width: 90, height: '100%' }} />
-            <View style={{ flex: 1, alignSelf: 'stretch',justifyContent: 'center', padding: AppSizes.paddingSmall }}>
+            <View style={{ flex: 1, alignSelf: 'stretch', justifyContent: 'center', padding: AppSizes.paddingSmall }}>
                 <Text style={[AppStyles.boldTextGray, { marginBottom: AppSizes.paddingSmall }]} numberOfLines={2}>
                     {title}
                 </Text>
-                <Text style={[AppStyles.baseTextGray]}
-                    numberOfLines={3}
+                <ImageBackground
+                    resizeMode='stretch'
+                    source={soureBackground}
+                    style={{ width: '100%', height: 200, marginVertical: AppSizes.paddingSmall }} />
+                <Text style={[AppStyles.baseTextGray, { flex: 1, marginBottom: AppSizes.paddingSmall }]}
+                    numberOfLines={4}
                     ellipsizeMode="tail">
                     {content}
                 </Text>
@@ -30,19 +30,11 @@ const BaseNewsComponent = (props) => {
 
 const styles = StyleSheet.create({
     container: {
-        height:110,
-        ...AppStyles.roundButton,
-        padding:0,
-        borderColor: 'transparent',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.2,
-        shadowRadius: 3,
-        backgroundColor: AppColors.white,
-        flexDirection: 'row',
-         overflow: 'hidden',
-        margin: AppSizes.paddingSmall,
-        alignItems: 'center',
+        ...AppStyles.boxShadow,
+        paddingVertical: AppSizes.padding,
+        minHeight: 350,
+        margin: AppSizes.padding,
+        marginBottom: AppSizes.paddingXSmall,
     },
     header: {
         marginBottom: AppSizes.paddingXSmall,

@@ -18,6 +18,13 @@ const Endpoint = {
     createSchedule: 'api/schedule/create',
     getUserUnderControl: 'api/schedule/search-user-under-control',
     getRevenue: 'api/revenue/search',
+    getRevenueCorporation: 'api/revenue/get-all-company-revenue',
+    signup: 'api/register',
+    deleteSchedule: '/api/schedule/delete',
+    getRevenueCompany: '/api/revenue/get-my-company-revenue-record-by-time',
+    getRevenueCorporationVer2: '/api/revenue/get-company-revenue-record-by-time',
+    uploadAvatar: '/api/file-manager/upload-avatar',
+    getScheduleUser: '/api/schedule/search-schedule-of-user-iids',
 }
 
 export default Endpoint

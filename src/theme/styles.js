@@ -11,7 +11,7 @@ const appStylesBase = {
     // Text Styles
     container: {
         flex: 1,
-        backgroundColor: Colors.primaryBackground,
+        backgroundColor: Colors.white,
         padding: 16
     },
     baseText: {
@@ -51,6 +51,18 @@ const appStylesBase = {
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.2,
         shadowRadius: 3,
+    },
+    boxShadow: {
+        borderRadius: 10,
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 3,
+        },
+        shadowOpacity: 0.27,
+        shadowRadius: 4.65,
+        elevation: 6,
+        backgroundColor: '#fff'
     },
 
 
@@ -95,9 +107,11 @@ const appStylesBase = {
 
     textInput: {
         fontFamily: Fonts.base.family,
+        fontSize: Fonts.base.size,
         backgroundColor: Colors.white,
         width: '100%',
         // height: 45,
+        borderWidth: StyleSheet.hairlineWidth,
         borderRadius: 6,
         padding: Sizes.padding,
     }

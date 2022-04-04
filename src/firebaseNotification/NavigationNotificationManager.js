@@ -1,7 +1,8 @@
 
 import { RouterName } from '@navigation';
+import {RootNavigation} from '@navigation'
 
-const navigateNoti = (notificationData, navigation, callback, justShowInfo=false) => {
+const navigateNoti = (notificationData, navigation, callback, justShowInfo = false, jumpToTabFirst=true) => {
     const { data } = notificationData
     const { item_info = "" } = data
     let itemInforObjData = item_info
@@ -18,9 +19,12 @@ const navigateNoti = (notificationData, navigation, callback, justShowInfo=false
     } catch (error) {
         console.log(error)
     }
+    console.log("routename", JSON.stringify(RootNavigation.navigationRef));
     switch (notificationType) {
         case 1:
-            navigation.navigate("Phê duyệt")
+            if(jumpToTabFirst){
+                navigation.navigate("Phê duyệt")
+            }
             setTimeout(() => {
                 navigation.navigate(RouterName.confirmRequest, {
                     request_id: data.id,
@@ -29,7 +33,7 @@ const navigateNoti = (notificationData, navigation, callback, justShowInfo=false
                     justShowInfo
                 })
             }, 100)
-            
+
             break
         default: break
     }

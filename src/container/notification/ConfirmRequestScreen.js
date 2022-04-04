@@ -85,7 +85,7 @@ const ConfirmRequestScreen = ({ navigation, route }) => {
                 onLeftPress={() => navigation.goBack()}
                 centerTitle="Thông tin phê duyệt" />
             {
-                item_request_code == "update_income_plan" ? <ScrollView contentContainerStyle={AppStyles.baseBox}>
+                item_request_code == "update_income_plan" ? <ScrollView>
                     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 10 }}>
                         <Text style={[AppStyles.boldTextGray, { fontSize: 16 }]}>Tháng</Text>
                         <Text style={[AppStyles.boldTextGray, { fontSize: 16 }]}>Kế hoạch cũ</Text>

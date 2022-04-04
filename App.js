@@ -7,17 +7,19 @@ import EntypoIcon from 'react-native-vector-icons/FontAwesome';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Feather from 'react-native-vector-icons/Feather';
+import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 import { createStackNavigator } from '@react-navigation/stack';
 import FabManager from './src/fab/FabManager';
 import FabButton from './src/fab/FabButton';
 import FabLightbox from './src/fab/FabLightbox';
-import { AppColors, AppSizes, AppStyles } from '@theme'
+import { AppColors, AppSizes, AppStyles, AppFonts } from '@theme'
 import { RouterName } from '@navigation';
 import { Provider } from 'react-redux'
 import store from '@redux/store'
 import Notification from './src/firebaseNotification/index'
 import { MessageBarSimple, MessageBarManagerSimple, Dialog, BaseWebViewScreen } from '@component'
 import DrawerMenuNavigator from './src/stack/DrawerMenuNavigator';
+import { RootNavigation } from '@navigation';
 
 import {
   LoginScreen,
@@ -39,14 +41,13 @@ import {
   ScheduleCompanyScreen,
   ScheduleUserScreen,
   CreateScheduleScreen,
-  RevenueScreen
+  RevenueScreen,
+  RevenueAreaScreen,
 } from '@container';
 import * as RNLocalize from 'react-native-localize';
 import Localization from '@localization'
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import ApproveRequest from './src/container/home/ApproveRequest';
-
 const Tab = createBottomTabNavigator();
 const HomeStack = createStackNavigator();
 const NewsStack = createStackNavigator();
@@ -58,13 +59,13 @@ function RootTabs() {
   return (
     <Tab.Navigator
       screenOptions={{
-        tabBarStyle: { ...styles.border, height: 60 + insets.bottom / 1.5, backgroundColor: AppColors.secondaryBackground, borderTopWidth: 0, paddingTop: 6, alignItems: 'flex-start' },
-        tabBarLabelStyle: { padding: AppSizes.paddingXSmall, fontSize: AppSizes.fontBase, },
+        tabBarStyle: { ...AppStyles.boxShadow, borderBottomLeftRadius: 0, borderBottomRightRadius: 0, height: 60 + insets.bottom / 1.5, backgroundColor: 'white', borderTopWidth: 0, paddingTop: 6, alignItems: 'flex-start' },
+        tabBarLabelStyle: { padding: AppSizes.paddingXSmall, fontSize: AppSizes.fontBase, fontFamily: AppFonts.base.family},
         tabBarIconStyle: { size: 10 }
       }}
       tabBarOptions={{
         activeTintColor: AppColors.primaryBackground,
-        inactiveTintColor: AppColors.inactiveColor,
+        inactiveTintColor: AppColors.activeColor,
       }}>
       <Tab.Screen
         name="Trang chủ"
@@ -78,24 +79,23 @@ function RootTabs() {
           <HomeStack.Navigator screenOptions={{ headerShown: false }}>
             <HomeStack.Screen name="Home" component={HomeScreen} />
             <HomeStack.Screen name={RouterName.account} component={AccountScreen} />
-            <HomeStack.Screen name="Revenue" component={RevenueScreen} />
+            <HomeStack.Screen name={RouterName.revenue} component={RevenueScreen} />
+            <HomeStack.Screen name="RevenueArea" component={RevenueAreaScreen} />
           </HomeStack.Navigator>
         )}
       </Tab.Screen>
 
       <Tab.Screen
-        name="Phê duyệt"
+        name="Tài liệu"
         options={{
           headerShown: false,
           tabBarIcon: ({ color, size }) => (
-            <FontAwesome5 name="user-check" color={color} size={size} />
+            <FontAwesome5 name="folder" color={color} size={size} />
           ),
         }}>
         {() => (
           <HomeStack.Navigator screenOptions={{ headerShown: false }}>
-            <HomeStack.Screen name="ApproveRequest" component={ApproveRequest} />
-            <HomeStack.Screen name="ConfirmRequest" component={ConfirmRequestScreen} />
-
+            <HomeStack.Screen name={RouterName.publishFile} component={PublishedFileScreen} />
           </HomeStack.Navigator>
         )}
       </Tab.Screen>
@@ -135,7 +135,7 @@ function RootTabs() {
         options={{
           headerShown: false,
           tabBarIcon: ({ color, size }) => (
-            <Feather name="menu" color={color} size={size} />
+            <SimpleLineIcons name="menu" color={color} size={size} />
           ),
         }}>
         {() => (
@@ -147,7 +147,7 @@ function RootTabs() {
   );
 }
 
-const navigationRef = React.createRef();
+const { navigationRef } = RootNavigation
 
 export default App = (props) => {
   Localization.setI18nConfig();

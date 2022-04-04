@@ -53,7 +53,8 @@ const styles = StyleSheet.create({
   },
   contentContainerStyle: {
     // flex: 1,
-    paddingBottom: 50
+    paddingBottom: 100,
+    paddingHorizontal: AppSizes.padding,
   },
   closeButton: {
     zIndex: 999,

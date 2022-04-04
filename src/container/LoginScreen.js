@@ -9,19 +9,25 @@ import {
   TextInput,
   SafeAreaView,
   ActivityIndicator,
+  Platform,
   Image
 } from 'react-native';
 import { AppStyles, AppSizes, AppColors } from '@theme'
-import { ButtonComponent, CheckBoxComponent, ButtonIconComponent } from '@component';
+import { ButtonComponent, CheckBoxComponent, ButtonIconComponent, LoadingComponent } from '@component';
 import { API } from "@network"
 import Localization from '@localization'
 import { AccessTokenManager, StaticDataManager } from '@data';
 import { saveUser } from '@redux/user/action';
 import { useSelector, useDispatch } from 'react-redux';
 import { LocalStorage } from '@data';
-import { getUniqueId } from 'react-native-device-info';
+import { getUniqueId, getBuildNumber, getVersion } from 'react-native-device-info';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import { RouterName } from '@navigation';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const LoginScreen = (props) => {
+  const insets = useSafeAreaInsets();
+
   const dispatch = useDispatch()
   const { navigation } = props;
   const [isSecureText, setSecureText] = useState(true);
@@ -156,52 +162,76 @@ const LoginScreen = (props) => {
     getUserNameFromLocalStorage()
   }, [])
 
+  const register = () => {
+    navigation.navigate(RouterName.signup)
+  }
+  const versionNumber = getVersion()
+
   return (
-    <ScrollView style={{ height: '100%', backgroundColor: AppColors.primaryBackground, }} contentContainerStyle={{ height: '100%' }}>
+    <ScrollView style={{ height: '100%', backgroundColor: AppColors.white, }} contentContainerStyle={{ height: '100%' }}>
       <View style={styles.container}>
-        <Image style={{ width: '100%', height: 100, backgroundColor: AppColors.white }} source={require("@images/ic_bvnt.png")} resizeMode="contain" />
-        <Text style={styles.h1}>{Localization.t('signin')}</Text>
+        <Image style={{ width: '100%', height: 100, marginBottom: AppSizes.paddingLarge }} source={require("@images/ic_bvnt.png")} resizeMode="contain" />
         <TextInput
+          autoCapitalize='none'
           underlineColorAndroid="transparent"
           placeholder="Nhập tên đăng nhập"
-          placeholderTextColor="#6d6dab"
-          color="#6d6dab"
+          placeholderTextColor={AppColors.gray}
+          color={AppColors.primaryBackground}
           keyboardType="email-address"
           onChangeText={onChangeTextEmail}
           value={email}
           style={styles.textInput1}></TextInput>
         <View style={styles.stylePassword}>
           <TextInput
+            autoCapitalize='none'
             underlineColorAndroid="transparent"
             placeholder="Nhập mật khẩu"
-            placeholderTextColor="#6d6dab"
-            color="#6d6dab"
+            placeholderTextColor={AppColors.gray}
+            color={AppColors.primaryBackground}
             keyboardType="default"
             onChangeText={onChangeTextPassword}
             secureTextEntry={isSecureText}
             style={styles.textInput2}></TextInput>
-          <ButtonIconComponent
-            containerStyle={styles.marginEye}
-            action={() => onPressEyePassword()}
-            name={!isSecureText ? 'eye-with-line' : 'eye'}
-            size={20}
-            color="#6d6dab"></ButtonIconComponent>
+          {
+            Platform.OS == 'ios' && <ButtonIconComponent
+              containerStyle={styles.marginEye}
+              action={() => onPressEyePassword()}
+              name={!isSecureText ? 'eye-with-line' : 'eye'}
+              size={20}
+              color={AppColors.primaryBackground}
+            />
+          }
+
         </View>
         <View style={styles.remember}>
           <View style={styles.CheckBox}>
             <CheckBoxComponent
               isCheck={remember == "1" ? true : false}
               status={(isChecked) => {
-                console.log(isChecked);
                 setRemember(isChecked ? "1" : "0")
               }} />
-            <Text style={styles.text1}>{Localization.t('rememberMe')}</Text>
+            <Text style={[AppStyles.baseTextGray, { marginLeft: AppSizes.paddingSmall }]}>Lưu đăng nhập</Text>
           </View>
+          {Platform.OS == 'android' &&
+            <TouchableOpacity
+              onPress={() => onPressEyePassword()}
+              style={styles.CheckBox}>
+              <ButtonIconComponent
+                containerStyle={styles.marginEyeAndroid}
+                action={() => onPressEyePassword()}
+                name={!isSecureText ? 'eye-with-line' : 'eye'}
+                size={20}
+                color={AppColors.primaryBackground}
+              />
+              <Text style={[AppStyles.baseTextGray]}>Xem mật khẩu</Text>
+
+            </TouchableOpacity>
+          }
 
         </View>
 
         <ButtonComponent
-          containerStyle={{ width: '100%', borderRadius: 6 }}
+          containerStyle={{ width: '100%', borderRadius: 6, backgroundColor: AppColors.primaryBackground }}
           title={Localization.t('signin')}
           action={() => doLogin()}
         />
@@ -234,11 +264,17 @@ const LoginScreen = (props) => {
               } />
           </View>
         }
+        {/* <View style={{ flexDirection: 'row', marginVertical: AppSizes.padding, alignItems: 'flex-end' }}>
+          <Text style={[AppStyles.baseTextGray, { fontSize: 13 }]}>Chưa có tài khoản? </Text>
+          <TouchableOpacity onPress={register}>
+            <Text style={[AppStyles.baseTextGray, { color: AppColors.primaryBackground, textDecorationLine: 'underline' }]}>Đăng ký</Text>
+          </TouchableOpacity>
+        </View> */}
+        <Text style={[AppStyles.baseTextGray, { position: 'absolute', bottom: insets.bottom + 10, fontSize: AppSizes.fontSmall, marginTop: AppSizes.paddingLarge }]}>Version {versionNumber}</Text>
       </View>
-      {isLoading &&
-        <View style={{ width: "100%", height: "100%", position: 'absolute', alignContent: 'center', justifyContent: 'center' }}>
-          <ActivityIndicator size="small" color={AppColors.activeColor} />
-        </View>
+
+      {
+        isLoading && <LoadingComponent />
       }
     </ScrollView >
   );
@@ -259,18 +295,21 @@ const styles = StyleSheet.create({
     backgroundColor: 'red'
   },
   textInput1: {
+    ...AppStyles.baseTextGray,
+    ...AppStyles.boxShadow,
+    color: AppColors.primaryBackground,
     backgroundColor: AppColors.white,
     width: '100%',
-    height: 45,
-    marginTop: 30,
+    height: 50,
     borderRadius: 6,
     paddingLeft: 25,
   },
   textInput2: {
-    backgroundColor: AppColors.white,
+    ...AppStyles.baseTextGray,
+    ...AppStyles.boxShadow,
+    color: AppColors.primaryBackground,
     width: '100%',
-    height: 45,
-    borderRadius: 6,
+    height: 50,
     paddingLeft: 25,
   },
   stylePassword: {
@@ -300,10 +339,14 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   marginEye: {
-    padding: AppSizes.padding,
     position: 'absolute',
+    padding: AppSizes.padding,
     top: 0,
     right: 0,
+  },
+  marginEyeAndroid: {
+    padding: AppSizes.padding,
+    paddingRight: AppSizes.paddingSmall,
   },
   remember: {
     width: '100%',
@@ -311,8 +354,8 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
     marginTop: '6%',
     marginBottom: '6%',
-    justifyContent: 'space-between',
     alignItems: 'center',
+    justifyContent: 'space-between',
     padding: AppSizes.paddingXSmall,
   },
   text1: {

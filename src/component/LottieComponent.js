@@ -15,7 +15,7 @@ const LottieComponent = (props) => {
 
     return (
         <LottieView
-            style={{ width: 80, height: 80 }}
+            style={{ width: 50, height: 50 }}
             ref={animation}
             source={source}
             colorFilters={[

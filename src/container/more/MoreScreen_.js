@@ -32,7 +32,7 @@ const MoreScreen_ = (props) => {
                 containerStyle={{ marginVertical: AppSizes.padding }}
                 avatar={() => <FontAwesome name='files-o' size={35} color={AppColors.white}/>}
                 onPress={() => onPressFileManager()}
-                content="Quản lý file" />
+                content="Tài liệu" />
 
         </View>
     )

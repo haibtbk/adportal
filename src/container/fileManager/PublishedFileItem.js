@@ -8,7 +8,7 @@ const PublishedFileItem = (props) => {
     return (
         <TouchableOpacity
             onPress={onPress}
-            style={[styles.container, containerStyle && containerStyle]}>
+            style={[styles.container, AppStyles.boxShadow, containerStyle && containerStyle]}>
             <Text style={[AppStyles.boldText, { color: AppColors.secondaryTextColor, marginBottom: AppSizes.paddingSmall, lineHeight: 20 }]}>
                 {title}
             </Text>
@@ -16,7 +16,7 @@ const PublishedFileItem = (props) => {
                 <Text style={[AppStyles.baseText, { color: AppColors.secondaryTextColor, lineHeight: 20 }]} numberOfLines={numberOfLines} ellipsizeMode="tail">
                     {content}
                 </Text>
-                <View style={{flexDirection: 'row'}}>
+                <View style={{ flexDirection: 'row' }}>
                     {/* <ButtonIconComponent
                         containerStyle={{marginRight: AppSizes.padding}}
                         name="eye"
@@ -26,7 +26,7 @@ const PublishedFileItem = (props) => {
                     <ButtonIconComponent
                         name="download"
                         size={25}
-                        color="#6d6dab"
+                        color={AppColors.primaryBackground}
                         action={downloadFile} />
                 </View>
 

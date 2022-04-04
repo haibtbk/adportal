@@ -5,7 +5,7 @@ import { AppStyles, AppSizes } from "@theme"
 const Title = (props) => {
     const { title, containerStyle } = props
     return (
-        <Text style={[AppStyles.boldText, { padding: AppSizes.paddingSmall, fontSize: AppSizes.fontLarge }, containerStyle]}>{title}</Text>
+        <Text style={[AppStyles.boldTextGray, { padding: AppSizes.paddingSmall, fontSize: AppSizes.fontLarge }, containerStyle]}>{title}</Text>
     )
 }
 

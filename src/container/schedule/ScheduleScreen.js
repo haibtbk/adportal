@@ -1,34 +1,25 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, Button, StyleSheet, TouchableOpacity } from 'react-native';
-import FabManager from '@fab/FabManager';
+import { View, Text, Alert, StyleSheet, TouchableOpacity } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { AppSizes, AppStyles, AppColors } from '@theme';
 import NavigationBar from '@navigation/NavigationBar';
 import AwesomeListComponent from "react-native-awesome-list";
 import { API } from '@network';
-import { useSelector, useDispatch } from 'react-redux';
 import SwitchSelector from "react-native-switch-selector";
 import moment from 'moment';
-import SelectDropdown from 'react-native-select-dropdown'
-import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { LoadingComponent, DateTimePickerComponent, DropdownComponent } from '@component';
 import { utils, RouterName } from '@navigation';
 import Entypo from 'react-native-vector-icons/Entypo';
 import { DateTimeUtil } from "@utils"
-import workTypes from './WorkTypes';
 import _ from 'lodash'
 import { useFirstTime } from '@hook';
+import { Helper, actionStatus } from '@schedule';
 
-const actionStatus = [
-    { label: "Hoàn thành", value: 3 },
-    { label: "Dừng", value: 4 }, 
-    { label: "Đang chạy", value: 2 }]
 const MAX_DROPDOWM_WIDTH = 135
 const DROPDOWN_HEIGHT = 35
 
 const ScheduleScreen = (props) => {
     const navigation = useNavigation();
-    const dispatch = useDispatch()
     const [isLoading, setLoading] = useState(false)
     const [status, setStatus] = useState(1)
     const oneWeek = 7 * 24 * 60 * 60 * 1000
@@ -76,7 +67,43 @@ const ScheduleScreen = (props) => {
     }
 
     const onChangeValueStatus = (item, itemSchedule) => {
-        console.log(item)
+
+        if (item.value == -1) { //xoa ban ghi
+            Alert.alert("Chú ý", "Bạn có chắc chắn muốn xóa lịch này?", [
+                {
+                    text: "Hủy",
+                    onPress: () => {
+                    },
+                    style: "cancel"
+                },
+                {
+                    text: "Xóa",
+                    onPress: () => {
+                        const params = {
+                            id: itemSchedule.id,
+                            submit: 1,
+                            _method: 'DELETE'
+                        }
+                        setLoading(true)
+                        API.deleteSchedule(params)
+                            .then(res => {
+                                if (res?.data?.success) {
+                                    utils.showBeautyAlert(navigation, "success", res?.data?.message ?? "Xóa thành công")
+                                }
+                                refreshData()
+                            })
+                            .catch(err => console.error(err))
+                            .finally(() => {
+                                setLoading(false)
+                            })
+                    }
+                }
+            ])
+
+
+            return
+        }
+
         const params = {
             id: itemSchedule.id,
             status: item.value,
@@ -98,33 +125,32 @@ const ScheduleScreen = (props) => {
     }
 
     const getDefaultValue = (status) => {
-        switch (status) {
-            case 4: return { label: "Dừng", value: 4 }
-            case 3: return { label: "Hoàn thành", value: 3 }
-            case 2: return { label: "Đang chạy", value: 2 }
-            default: return { label: "Đang chạy", value: 2 }
-        }
+        return _.filter(actionStatus, i => i.value == status)?.[0] ?? { label: "Đang chạy", value: status.pending }
     }
     const renderItem = ({ item }) => {
 
         const name = item?.schedule_data?.name ?? ""
-        const startTime = (item?.start_ts ?? 0) * 1000
-        const endTime = (item?.end_ts ?? 0) * 1000
-        const displayTime = `Từ: ${moment(startTime).format("HH:mm DD/MM/YYYY")} \nĐến: ${moment(endTime).format("HH:mm DD/MM/YYYY")}`
-        const workType = _.filter(workTypes, i => i.value == item?.schedule_data?.work_type)?.[0]?.label ?? ""
+        const for_user = item?.schedule_data?.for_user ?? ""
+        const workType = Helper.getWorkHeader(item?.schedule_data?.work_type ?? "")
         return (
             <TouchableOpacity
                 onPress={() => onPressItem(item)}
                 style={[styles.box]}>
-                <Text style={[AppStyles.boldText, { color: AppColors.activeColor, lineHeight: 20 }]} numberOfLines={2} ellipsizeMode="tail">
-                    {name}
+                <Text style={[AppStyles.baseTextGray]} numberOfLines={2} ellipsizeMode="tail">
+                    Nội dung: {!!name ? name : "Chưa có"}
                 </Text>
-                <Text style={styles.baseText} numberOfLines={2} ellipsizeMode="tail">
+                
+                <Text style={[AppStyles.baseTextGray, { marginVertical: AppSizes.paddingXSmall }]} numberOfLines={2} ellipsizeMode="tail">
                     Loại công việc: {workType}
                 </Text>
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', alignSelf: 'stretch' }}>
-                    <Text style={[styles.baseText, { flex: 1 }]}>
-                        {displayTime}
+
+                <Text style={[AppStyles.baseTextGray]} numberOfLines={2} ellipsizeMode="tail">
+                    Người thực hiện: {!!for_user ? for_user : "Chưa có"}
+                </Text>
+
+                <View style={{ flexDirection: 'row', alignItems: 'center', }}>
+                    <Text style={[AppStyles.baseTextGray, { marginRight: AppSizes.padding }]}>
+                        Trạng thái:
                     </Text>
 
                     <DropdownComponent
@@ -162,29 +188,48 @@ const ScheduleScreen = (props) => {
         setEndTime(date)
     }
 
+    const createSections = (res) => {
+        console.log(res)
+        const groupsDate = _.groupBy(res, (item) => {
+            return moment(item.start_ts * 1000).format("DD/MM/YYYY")
+        })
+
+        let sections = []
+        _.forEach(groupsDate, (value, key) => {
+            sections.push({
+                title: key,
+                data: value
+            })
+        })
+        return sections
+    }
+    const renderSectionHeader = ({ section }) => <Text style={[AppStyles.boldTextGray, { marginHorizontal: AppSizes.paddingSmall, paddingTop: AppSizes.padding, backgroundColor: AppColors.white }]}>{section?.title}</Text>
+
+
     return (
-        <View style={AppStyles.container}>
+        <View style={[AppStyles.container]}>
             <NavigationBar
                 onRightPress={() => { navigation.navigate(RouterName.createSchedule, { callback }) }}
                 IconSource={Entypo}
                 iconName="new-message"
-                leftView={() => <Text style={[AppStyles.boldText, { fontSize: 24 }]}>Kế hoạch</Text>} />
+                leftView={() => <Text style={[AppStyles.boldTextGray, { fontSize: 24 }]}>Kế hoạch</Text>} />
 
             <SwitchSelector
-                style={{ marginBottom: AppSizes.paddingSmall, }}
+                style={{ marginBottom: AppSizes.paddingSmall, marginHorizontal: AppSizes.paddingSmall }}
                 options={options}
+                textStyle={AppStyles.baseTextGray}
                 initial={0}
                 onPress={value => setStatus(value)}
-                textColor={AppColors.purple}
+                textColor={AppColors.secondaryTextColor}
                 selectedColor={AppColors.white}
-                buttonColor={AppColors.purple}
-                borderColor={AppColors.purple}
+                buttonColor={AppColors.primaryBackground}
+                borderColor={AppColors.primaryBackground}
                 hasPadding
                 testID="status-switch-selector"
                 accessibilityLabel="status-switch-selector"
             />
             {
-                status == 2 && (<View style={{ flexDirection: 'row' }}>
+                status == 2 && (<View style={{ flexDirection: 'row', margin: AppSizes.paddingSmall }}>
                     <DateTimePickerComponent
                         containerStyle={{ flex: 1, marginRight: 10 }}
                         value={start_ts}
@@ -203,12 +248,15 @@ const ScheduleScreen = (props) => {
                 keyExtractor={(item, index) => item.id + Math.random(1) * 1000}
                 refresh={refreshData}
                 ref={listRef}
-                containerStyle={{ flex: 1, with: '100%', height: '100%', backgroundColor: 'transparent', marginTop: AppSizes.padding }}
+                containerStyle={{ flex: 1, with: '100%', height: '100%', backgroundColor: 'transparent', }}
                 listStyle={{ flex: 1, with: '100%', height: '100%', backgroundColor: 'transparent' }}
                 source={source}
                 emptyViewStyle={{ backgroundColor: 'transparent' }}
                 transformer={transformer}
-                renderItem={renderItem} />
+                renderItem={renderItem}
+                isSectionList={true}
+                renderSectionHeader={renderSectionHeader}
+                createSections={createSections} />
             {
                 isLoading && <LoadingComponent />
             }
@@ -219,13 +267,15 @@ const ScheduleScreen = (props) => {
 const styles = StyleSheet.create({
     box: {
         flex: 1,
-        ...AppStyles.roundButton,
+        ...AppStyles.boxShadow,
+        padding: AppSizes.paddingSmall,
         borderColor: 'transparent',
         backgroundColor: AppColors.secondaryBackground,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.2,
         shadowRadius: 3,
+        margin: AppSizes.paddingSmall,
         marginVertical: AppSizes.paddingSmall
     },
     dropdown: {

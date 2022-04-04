@@ -1,7 +1,5 @@
 import Endpoint from '../Endpoint'
 import navigationManager from '@navigation/utils'
-import { useDispatch, useSelector } from 'react-redux'
-import { useNavigation } from "@react-navigation/native";
 
 const UnauthorizeStatusCode = 401;
 
@@ -23,6 +21,6 @@ export function onRejected(axiosIntance, error) {
         return Promise.reject(error);
     } else {
         console.log("Refresh token error:" + error)
-        navigationManager.logout(useNavigation(), useDispatch())
+        navigationManager.logoutWithoutCallAPI()
     }
 }

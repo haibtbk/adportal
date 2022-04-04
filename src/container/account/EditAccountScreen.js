@@ -5,7 +5,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { AppSizes, AppStyles, AppColors } from '@theme';
 import NavigationBar from '@navigation/NavigationBar';
 import { useDispatch, useSelector } from 'react-redux'
-import { BaseInputViewComponent, BaseViewComponent, Dialog } from '@component';
+import { BaseInputViewComponent, BaseViewComponent, Dialog, LoadingComponent } from '@component';
 import { WebImage } from '@component';
 import Icon from "react-native-vector-icons/MaterialIcons"
 import IconMaterial from "react-native-vector-icons/MaterialCommunityIcons"
@@ -13,10 +13,12 @@ import ImagePicker from 'react-native-image-crop-picker';
 import { API } from '@network'
 import { saveUser } from '@redux/user/action';
 import { Divider } from 'react-native-paper';
+import { AppConfig } from '@constant/';
 
 const DEMO_AVATAR = "http://hinhnendepnhat.net/wp-content/uploads/2014/10/hinh-nen-girl-xinh-tien-nu-mong-ao.jpg"
 const AVATAR_SIZE = 160
 const EditAccountScreen = ({ route, navigation }) => {
+  const [isLoading, setLoading] = useState(false)
   const dispatch = useDispatch()
   const { account } = route.params;
 
@@ -44,21 +46,32 @@ const EditAccountScreen = ({ route, navigation }) => {
     const params = {
       code: mAccount.code,
       name,
-      phone
+      phone,
+      avatar
     }
+    setLoading(true)
     API.updateProfile(params)
       .then(res => {
-        const account = res?.data?.result
-        dispatch(saveUser(account))
-        setAccount(account)
-        Alert.alert("Cập nhật thành công", "", [
-          { text: "OK", onPress: () => navigation.goBack() }
-        ])
+        if (res?.data?.success) {
+          const account = res?.data?.result
+          dispatch(saveUser(account))
+          setAccount(account)
+          Alert.alert("Cập nhật thành công", "", [
+            { text: "OK", onPress: () => navigation.goBack() }
+          ])
+        } else {
+          Alert.alert("Có lỗi xảy ra", "Vui lòng thử lại!!!")
+        }
+
       })
       .catch(error => {
         Alert.alert("Có lỗi xảy ra", "Vui lòng thử lại!!!")
       })
+      .finally(() => {
+        setLoading(false)
+      })
   }
+
 
   const onChangeName = (text) => {
     setName(text)
@@ -72,6 +85,40 @@ const EditAccountScreen = ({ route, navigation }) => {
     return avatar ?? DEMO_AVATAR
   }
 
+  const uploadAvatar = (photo) => {
+    var photo = {
+      uri: photo.path,
+      // uri: photo.sourceURL,
+      type: photo.mime,
+      name: photo.filename??`image_${new Date().getTime()}`
+    };
+
+    //use formdata
+    var formData = new FormData();
+    formData.append('upload_file', photo);
+    formData.append("submit", 1)
+    formData.append("uploadFileField", "upload_file")
+
+    setLoading(true)
+    API.uploadAvatar(formData)
+      .then(res => {
+        if (res?.data?.success) {
+          const baseURL = AppConfig.API_BASE_URL[API.env]
+          const avatar = baseURL + '/' + res?.data?.result?.path ?? ""
+          setAvatar(avatar)
+        } else {
+          Alert.alert("Có lỗi xảy ra", "Vui lòng thử lại!!!")
+        }
+
+      })
+      .catch(error => {
+        Alert.alert("Có lỗi xảy ra", "Vui lòng thử lại!!!")
+      })
+      .finally(() => {
+        setLoading(false)
+      })
+  }
+
   const handleOpenCamera = () => {
     Dialog.hide()
     ImagePicker.openCamera({
@@ -80,6 +127,7 @@ const EditAccountScreen = ({ route, navigation }) => {
       cropping: true,
     }).then(image => {
       setAvatar(image?.path)
+      uploadAvatar(image)
       console.log(image);
     });
   }
@@ -93,6 +141,7 @@ const EditAccountScreen = ({ route, navigation }) => {
     }).then(image => {
       console.log(image);
       setAvatar(image?.path)
+      uploadAvatar(image)
     });
   }
 
@@ -101,12 +150,12 @@ const EditAccountScreen = ({ route, navigation }) => {
       <NavigationBar
         isBack
         centerTitle="Cập nhật"
-        centerTextStyle={[AppStyles.boldText, { fontSize: 24 }]}
+        centerTextStyle={[AppStyles.boldTextGray, { fontSize: 24 }]}
         onLeftPress={() => navigation.goBack()}
         rightView={() => <TouchableOpacity
           onPress={doEditProfile}
           style={{ padding: AppSizes.paddingSmall }}>
-          <Icon name="done" size={24} color={AppColors.primaryTextColor} />
+          <Icon name="done" size={24} color={AppColors.secondaryTextColor} />
         </TouchableOpacity>}
       />
       <TouchableOpacity
@@ -140,15 +189,16 @@ const EditAccountScreen = ({ route, navigation }) => {
             uri: getAvatar(),
           }}
         />
-        <IconMaterial style={{ position: 'absolute', alignSelf: "flex-end", }} name='image-edit-outline' size={24} color={AppColors.primaryTextColor} />
+        <IconMaterial style={{ position: 'absolute', alignSelf: "flex-end", }} name='image-edit-outline' size={24} color={AppColors.secondaryTextColor} />
       </TouchableOpacity>
 
       <View style={[AppStyles.roundButton, styles.infoBox]}>
         <BaseInputViewComponent title="Tên" content={name} onChangeText={onChangeName} />
-        <BaseViewComponent title="Email" content={mAccount.mail} />
+        <BaseInputViewComponent title="Email" content={mAccount.mail} disable={true} />
         <BaseInputViewComponent title="Số điện thoại" content={phone} onChangeText={onChangePhone} />
       </View>
 
+      {isLoading && <LoadingComponent />}
     </View>
   );
 }

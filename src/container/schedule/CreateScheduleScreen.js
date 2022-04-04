@@ -87,7 +87,7 @@ const CreateScheduleScreen = (props) => {
 
 
             <View style={{ flexDirection: 'row', alignItems: "center", justifyContent: 'space-between' }}>
-                <Text style={AppStyles.boldText}>Loại công việc: </Text>
+                <Text style={AppStyles.boldTextGray}>Loại công việc: </Text>
                 <DropdownComponent
                     containerStyle={{ marginBottom: AppSizes.padding, width: '50%'}}
                     data={workTypes}
@@ -96,7 +96,7 @@ const CreateScheduleScreen = (props) => {
                 />
             </View>
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                <Text style={AppStyles.boldText}>Mức độ ưu tiên: </Text>
+                <Text style={AppStyles.boldTextGray}>Mức độ ưu tiên: </Text>
                 <DropdownComponent
                     containerStyle={{ marginBottom: AppSizes.padding, width: '50%' }}
                     data={workPriority}
@@ -122,15 +122,15 @@ const CreateScheduleScreen = (props) => {
 
             <TextInput
                 underlineColorAndroid="transparent"
-                placeholder="Ghi chú"
+                placeholder="Nội dung công việc"
                 multiline={true}
-                placeholderTextColor="#6d6dab"
+                placeholderTextColor={AppColors.gray}
                 keyboardType="default"
                 onChangeText={onChangeTextName}
                 style={[AppStyles.textInput, { marginBottom: AppSizes.padding, height: 90, textAlignVertical: "top", }]} />
 
             {
-                isLoading && <LoadingComponent color={AppColors.gray} />
+                isLoading && <LoadingComponent color={AppColors.primaryBackground} />
             }
         </KeyboardAwareScrollView>
     )

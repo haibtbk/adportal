@@ -6,7 +6,7 @@ import { ColorUtil } from '@utils'
 import { numberWithCommas } from '@utils'
 
 const BaseDashboardItemComponent = (props) => {
-    const { color = AppColors.danger, title = "", content = "", amount = 0, containerStyle, showPercent, onPress, iconName = "layers" } = props
+    const { color = AppColors.danger, title = "", content = "", amount = 0, containerStyle, showPercent, onPress, iconName = "layers", percent } = props
     const getAmount = () => {
         return `${numberWithCommas(amount)}${showPercent ? '%' : ""}`
     }
@@ -25,6 +25,12 @@ const BaseDashboardItemComponent = (props) => {
             <Text style={[AppStyles.boldText, { color: AppColors.primaryTextColor, fontSize: AppSizes.fontLarge, textAlign: 'center' }]}>
                 {getAmount()}
             </Text>
+            {
+                percent != undefined && <Text style={[AppStyles.boldText, { color: AppColors.primaryTextColor, textAlign: 'center' }]}>
+                    {`${Math.round(percent * 100)}% cùng kỳ`}
+                </Text>
+            }
+
 
         </TouchableOpacity>
     )
@@ -35,7 +41,7 @@ const styles = StyleSheet.create({
         ...AppStyles.roundButton,
         borderWidth: 0,
         width: '100%',
-        height: 95,
+        height: 120,
     }
 })
 

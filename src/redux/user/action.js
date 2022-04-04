@@ -10,7 +10,7 @@ export function saveUser(user) {
 export function logout(){
     return async (dispatch) => {
         return dispatch({
-            type: 'LOU_OUT'
+            type: 'USER_LOGOUT'
         });
     };
 }

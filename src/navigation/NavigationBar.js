@@ -6,99 +6,91 @@ import _ from 'lodash'
 import AntDesign from 'react-native-vector-icons/AntDesign'
 const BUTTON_SIZE = 44
 const ICON_SIZE = 28
-let iConBack = require('@images/ic_left_white.png')
+import Feather from 'react-native-vector-icons/Feather';
 
-export default class NavigationBar extends Component {
-  constructor(props) {
-    super(props)
-    this.state = {}
-  }
-  static defaultProps = {}
-  render() {
-    const {
-      containerStyle,
-      leftImage,
-      leftTitle,
-      onLeftPress,
-      rightImage,
-      rightTitle,
-      onRightPress,
-      centerTitle,
-      leftView,
-      rightView,
-      disabled = false,
-      isBack,
-      iconName,
-      IconSource = AntDesign,
-      centerTextStyle
-    } = this.props
+const NavigationBar = (props) => {
 
-    return (
-      <View style={[styles.container, { backgroundColor: AppColors.primaryBackground }, containerStyle && containerStyle]}>
-        {/*Left*/}
-        <View style={[styles.leftContainer, (leftTitle || rightTitle) && { flex: 1 }]}>
-          {leftView && leftView()}
-          {/* Icon has higher priority then text if both props: leftImage and leftTitle are available */}
-          {!leftView && (leftImage || leftTitle || isBack) && (
-            <TouchableOpacity
-              disabled={disabled}
-              style={leftImage || isBack ? styles.iconContainer : styles.leftTextContainer}
-              onPress={() => onLeftPress && onLeftPress()}
-            >
-              {/* {isBack && <Image style={styles.iconBack} source={iConBack} />} */}
-              {isBack && <Image
-                source={iConBack}
-                resizeMode="contain"
-                style={styles.iconBack}
-              />}
-              {leftImage && <Image style={styles.icon} source={leftImage} />}
-              {!leftImage && leftTitle && (
-                <Text
-                  style={[
-                    styles.textTitle,
-                    {
-                      paddingBottom: 10,
-                      fontSize: 18,
-                      fontWeight: 'bold',
-                      fontStyle: 'italic',
-                    },
-                  ]}
-                  numberOfLines={1}
-                >
-                  {leftTitle}
-                </Text>
-              )}
-            </TouchableOpacity>
-          )}
-        </View>
+  const {
+    containerStyle,
+    leftImage,
+    leftTitle,
+    onLeftPress,
+    rightImage,
+    rightTitle,
+    onRightPress,
+    centerTitle,
+    leftView,
+    rightView,
+    disabled = false,
+    isBack,
+    iconName,
+    IconSource = AntDesign,
+    centerTextStyle
+  } = props
 
-        {/*Center*/}
-        <View style={styles.centerContainer}>
-          {!!centerTitle && (
-            <Text style={[styles.textCenter, centerTextStyle && centerTextStyle]} numberOfLines={1}>{centerTitle}</Text>
-          )}
-        </View>
-
-        {/*Right*/}
-        <View style={[styles.rightContainer, (rightTitle || leftTitle) && { width: '30%' }]}>
-          {rightView && rightView()}
-          {!rightView && (rightImage || rightTitle || iconName) ? (
-            <TouchableOpacity
-              style={rightImage ? styles.iconContainer : styles.rightTextContainer}
-              onPress={onRightPress ? onRightPress : null}
-            >
-              {iconName ? <IconSource name={iconName} color={AppColors.white} size={22} /> : null}
-              {rightImage ? <Image style={styles.icon} source={rightImage} /> : null}
-              {!rightImage && rightTitle ? (
-                <Text style={styles.textTitle}>{rightTitle}</Text>
-              ) : null}
-            </TouchableOpacity>
-          ) : null}
-        </View>
+  return (
+    <View style={[styles.container, { backgroundColor: AppColors.white }, containerStyle && containerStyle]}>
+      {/*Left*/}
+      <View style={[styles.leftContainer, (leftTitle || rightTitle) && { flex: 1 }]}>
+        {leftView && leftView()}
+        {/* Icon has higher priority then text if both props: leftImage and leftTitle are available */}
+        {!leftView && (leftImage || leftTitle || isBack) && (
+          <TouchableOpacity
+            disabled={disabled}
+            style={leftImage || isBack ? styles.iconContainer : styles.leftTextContainer}
+            onPress={() => onLeftPress && onLeftPress()}
+          >
+            {/* {isBack && <Image style={styles.iconBack} source={iConBack} />} */}
+            {isBack && <Feather name="arrow-left" size={26} color={AppColors.secondaryTextColor} />}
+            {leftImage && <Image style={styles.icon} source={leftImage} />}
+            {!leftImage && leftTitle && (
+              <Text
+                style={[
+                  styles.textTitle,
+                  {
+                    paddingBottom: 10,
+                    fontSize: 18,
+                    fontWeight: 'bold',
+                    fontStyle: 'italic',
+                  },
+                ]}
+                numberOfLines={1}
+              >
+                {leftTitle}
+              </Text>
+            )}
+          </TouchableOpacity>
+        )}
       </View>
-    )
-  }
+
+      {/*Center*/}
+      <View style={styles.centerContainer}>
+        {!!centerTitle && (
+          <Text style={[styles.textCenter, centerTextStyle && centerTextStyle]} numberOfLines={1}>{centerTitle}</Text>
+        )}
+      </View>
+
+      {/*Right*/}
+      <View style={[styles.rightContainer, (rightTitle || leftTitle) && { width: '30%' }]}>
+        {rightView && rightView()}
+        {!rightView && (rightImage || rightTitle || iconName) ? (
+          <TouchableOpacity
+            style={rightImage ? styles.iconContainer : styles.rightTextContainer}
+            onPress={onRightPress ? onRightPress : null}
+          >
+            {iconName ? <IconSource name={iconName} color={AppColors.secondaryTextColor} size={22} /> : null}
+            {rightImage ? <Image style={styles.icon} source={rightImage} /> : null}
+            {!rightImage && rightTitle ? (
+              <Text style={styles.textTitle}>{rightTitle}</Text>
+            ) : null}
+          </TouchableOpacity>
+        ) : null}
+      </View>
+    </View>
+  )
 }
+
+export default NavigationBar
 
 const navbarHeight =
   Platform.OS == 'ios'
@@ -114,7 +106,7 @@ const styles = StyleSheet.create({
     height: navbarHeight,
     flexDirection: 'row',
     width: '100%',
-    backgroundColor: AppColors.primaryBackground,
+    backgroundColor: AppColors.white,
     alignItems: 'center',
 
   },
@@ -135,8 +127,8 @@ const styles = StyleSheet.create({
   iconBack: {
     width: 26,
     height: 26,
-    tintColor: AppColors.white,
-    color: "white"
+    tintColor: AppColors.secondaryTextColor,
+    color: AppColors.secondaryTextColor,
   },
   leftTextContainer: {
     flexDirection: 'row',
@@ -164,13 +156,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   textTitle: {
-    ...AppStyles.baseText,
-    color: AppColors.white,
+    ...AppStyles.baseTextGray,
     fontSize: AppSizes.fontMedium,
   },
   textCenter: {
-    ...AppStyles.baseText,
-    color: AppColors.white,
+    ...AppStyles.baseTextGray,
     fontSize: AppSizes.fontMedium,
     textAlign: 'center',
   },

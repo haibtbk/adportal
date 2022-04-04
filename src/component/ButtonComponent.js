@@ -1,6 +1,6 @@
 import React from 'react';
 import {TouchableOpacity, Text, StyleSheet} from 'react-native';
-import {AppStyles, AppSizes} from '@theme';
+import {AppStyles, AppSizes, AppColors} from '@theme';
 import PropTypes from 'prop-types';
 const ButtonComponent = (props) => {
   let {containerStyle, action, title, textStyle} = props;
@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
   text: {
     ...AppStyles.baseText,
     textAlign: 'center',
-    color: 'white',
+    color: AppColors.white,
   },
 });
 

@@ -109,7 +109,7 @@ const MoreScreen = (props) => {
                     containerStyle={{ marginVertical: AppSizes.paddingSmall }}
                     avatar={() => <FontAwesome name='files-o' size={25} color={AppColors.activeColor} />}
                     onPress={() => onPressFileManager()}
-                    content="Quản lý file" />
+                    content="Tài liệu" />
                 {/* <AvatarBoxComponent
                     containerStyle={{ marginVertical: AppSizes.paddingSmall }}
                     avatar={() => <MaterialIcons name='dashboard' size={25} color={AppColors.activeColor} />}

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Button, ActivityIndicator } from 'react-native';
+import { View, Text, Image, ActivityIndicator } from 'react-native';
 import FabManager from '@fab/FabManager';
 import { useFocusEffect } from '@react-navigation/native';
 import { ButtonIconComponent } from '@component';
@@ -28,31 +28,46 @@ const SplashScreen = (props) => {
               .then(res => {
                 if (res) {
                   dispatch(saveUser(res?.data?.result))
-                  navigation.navigate(RouterName.main);
+                  navigation.reset({
+                    index: 0,
+                    routes: [{ name: RouterName.main }],
+                  });
                 } else {
-                  navigation.navigate(RouterName.login);
+                  navigation.reset({
+                    index: 0,
+                    routes: [{ name: RouterName.login }],
+                  });
                 }
               })
               .catch((error) => {
-                navigation.navigate(RouterName.login);
-
+                navigation.reset({
+                  index: 0,
+                  routes: [{ name: RouterName.login }],
+                });
               })
           } else {
-            navigation.navigate(RouterName.login);
+            navigation.reset({
+              index: 0,
+              routes: [{ name: RouterName.login }],
+            });
           }
         })
         .catch(() => {
-          navigation.navigate(RouterName.login);
+          navigation.reset({
+            index: 0,
+            routes: [{ name: RouterName.login }],
+          });
         })
     }, 2000);
 
   }, [])
   return (
     <View style={[AppStyles.container, { alignItems: 'center', justifyContent: 'center' }]}>
-      <Text style={[AppStyles.boldText, { fontSize: 45, marginBottom: AppSizes.margin }]}>
-        AD PORTAL
-      </Text>
-      <ActivityIndicator size="large" color={AppColors.primaryTextColor} />
+      {/* <Text style={[AppStyles.boldText, { fontSize: 30, marginBottom: AppSizes.margin, color: AppColors.primaryBackground }]}>
+        BVL AD PORTAL
+      </Text> */}
+      <Image source={require('@images/launch_screen.png')} style={{ width: 300, height: 200 }} resizeMode="contain" />
+      <ActivityIndicator size="large" color={AppColors.primaryBackground} />
     </View>
   );
 }

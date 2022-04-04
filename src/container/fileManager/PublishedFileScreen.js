@@ -1,13 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, Alert, StyleSheet, FlatList, TouchableOpacity, Platform } from 'react-native';
-import FabManager from '@fab/FabManager';
-import { useFocusEffect } from '@react-navigation/native';
 import { AppSizes, AppStyles, AppColors } from '@theme';
 import NavigationBar from '@navigation/NavigationBar';
-import AwesomeListComponent from "react-native-awesome-list";
 import { API } from '@network';
 import { formatBytes, DateTimeUtil } from '@utils';
-import { navigateNoti } from '../../firebaseNotification/NavigationNotificationManager';
 import { useSelector, useDispatch } from 'react-redux';
 import PublishedFileItem from './PublishedFileItem'
 import { LoadingComponent } from '@component';
@@ -15,15 +11,36 @@ import { utils, RouterName } from '@navigation';
 import RNFS from 'react-native-fs'
 import Icon from 'react-native-vector-icons/AntDesign';
 import moment from 'moment';
-import Feather from 'react-native-vector-icons/Feather';
+import _ from 'lodash';
 
+let categoriesFixed = []
+const ROOT_ITEM_PATH = {
+    name: "Root",
+    parent_id: null,
+    id: null,
+    level: -1,
+}
 const PublishedFileScreen = (props) => {
     const { navigation } = props;
-    const dispatch = useDispatch()
     const [isLoading, setLoading] = useState(false)
     const [categories, setCategories] = useState([])
     const [categoriesItems, setCategoriesItems] = useState([])
-    const [selectedIndex, setSelectedIndex] = useState(0)
+    const [selectedIndex, setSelectedIndex] = useState(null)
+    const [pathData, setPathData] = useState([ROOT_ITEM_PATH])
+
+    const getChildrenFolders = (item) => {
+        return _.filter(categoriesFixed, (category) => {
+            if (item == null) {
+                return category.parent_id === null
+            }
+            return category.parent_id == item.id
+
+        }) ?? []
+    }
+
+    useEffect(() => {
+        setSelectedIndex(null)
+    }, [categories])
 
     useEffect(() => {
         setLoading(true)
@@ -35,8 +52,8 @@ const PublishedFileScreen = (props) => {
         API.getFileCategories(params)
             .then(res => {
                 if (res?.data?.success) {
-                    setCategories(res.data.result)
-                    setCategoriesItems(res?.data?.result?.[0]?.file_list ?? [])
+                    categoriesFixed = res?.data?.result
+                    setCategories(getChildrenFolders(null))
                 }
             })
             .catch(err => console.log(err))
@@ -47,21 +64,6 @@ const PublishedFileScreen = (props) => {
 
     const refreshData = () => {
         listRef.current.refresh()
-    }
-
-    const source = (pagingData) => {
-        const params = {
-            pageIndex: pagingData.pageIndex,
-            pageSize: pagingData.pageSize,
-            order: -1,
-            submit: 1,
-            text: ""
-        }
-        return API.searchFiles(params)
-    }
-
-    const transformer = (res) => {
-        return res?.data?.result?.data ?? []
     }
 
     const listRef = useRef(null)
@@ -114,20 +116,7 @@ const PublishedFileScreen = (props) => {
                 setLoading(false)
             })
 
-        // let url = item.link
-        // if (Platform.OS === 'android') {
-        //     const { extension } = item
-        //     if (!_.includes(['png', 'jpg', 'jpeg', 'bmp', 'svg', 'gif'], extension)) {
-        //         url = 'http://docs.google.com/gview?embedded=true&url=' + url
-        //     }
-        // }
-        // navigation.navigate(
-        //     RouterName.baseWebViewScreen,
-        //     {
-        //         url,
-        //         title: item.name,
 
-        //     })
     }
 
     const downloadFile = (item) => {
@@ -171,56 +160,90 @@ const PublishedFileScreen = (props) => {
                 viewFile={() => viewFile(item)}
                 onPress={() => onPressItem(item)}
                 title={title} content={content}
-                containerStyle={{ marginVertical: AppSizes.paddingSmall }} numberOfLines={3} />
+                containerStyle={{ margin: AppSizes.paddingSmall, }} numberOfLines={3} />
         )
     }
 
     const onPressItemCategory = (item, index) => {
+        const childrenCategories = getChildrenFolders(item)
+        setPathData(pathData.concat(item))
+        setCategories(childrenCategories)
         setCategoriesItems(item?.file_list ?? [])
         setSelectedIndex(index)
     }
 
     const renderItemCategory = ({ item, index }) => {
         const name = item?.name ?? ""
-        const totalFile = item?.total
         return (<TouchableOpacity
             onPress={() => onPressItemCategory(item, index)}
-            style={{ flex: 1, alignSelf: 'flex-start', height: 90, maxWidth: AppSizes.screen.width / 2 - 40, overflow: 'hidden', }}>
-            <Icon name={selectedIndex == index ? "folderopen" : "folder1"} size={35} color={AppColors.secondaryTextColor} />
-            <Text style={[selectedIndex == index ? AppStyles.boldTextGray : AppStyles.baseTextGray, { marginBottom: AppSizes.paddingSmall, }]} numberOfLines={2}>{name}</Text>
+            style={{ flex: 1, alignItems: 'center', height: 85, maxWidth: AppSizes.screen.width / 2 - 40, overflow: 'hidden', marginRight: AppSizes.paddingXSmall }}>
+            <Icon name={selectedIndex == index ? "folderopen" : "folder1"} size={35} color={selectedIndex == index ? AppColors.primaryBackground : AppColors.secondaryTextColor} />
+            <Text style={[AppStyles.baseTextGray, { marginBottom: AppSizes.paddingSmall, color: selectedIndex == index ? AppColors.primaryBackground : AppColors.secondaryTextColor, }]} numberOfLines={2}>{name}</Text>
         </TouchableOpacity>)
     }
+
+    const onPressItemPath = (item) => {
+        const pathTemp = _.filter(pathData, (o) => o.level <= item.level)
+        setPathData(pathTemp)
+        const childrenCategories = getChildrenFolders(item)
+        setCategories(childrenCategories)
+        setCategoriesItems(item?.file_list ?? [])
+    }
+
     return (
-        <View style={AppStyles.container}>
+        <View style={[AppStyles.container]}>
             <NavigationBar
-                leftView={() => (
-                    <TouchableOpacity
-                        onPress={() => {
-                            navigation.goBack()
-                        }}
-                    >
-                        <Feather name="menu" size={26} color="white" />
-                    </TouchableOpacity>
-                )}
-                isBack
-                centerTitle="Quản lý file" />
+                leftView={() => <Text style={[AppStyles.boldTextGray, { fontSize: 24 }]}>Tài liệu</Text>} />
+            <PathView data={pathData} onPressItem={onPressItemPath} />
+
             <FlatList
-                data={categories}
-                style={{ ...AppStyles.roundButton, flex: 1, maxHeight: 200, backgroundColor: AppColors.white }}
-                keyExtractor={(item, index) => item.iid ?? index.toString()}
-                renderItem={renderItemCategory}
-                numColumns={2}
-            />
-            <FlatList
-                ListHeaderComponent={() => <Text style={[AppStyles.baseText, { marginBottom: AppSizes.paddingSmall, }]}>{`Danh sách file (${categoriesItems.length} ${categoriesItems.length > 1 ? "Files" : "Files"})`}</Text>}
+                ListHeaderComponent={() => <View><FlatList
+                    data={categories}
+                    style={{ ...AppStyles.roundButton, minHeight: 120, flexGrow: 1, borderColor: AppColors.borderColor, marginHorizontal: AppSizes.paddingSmall, }}
+                    keyExtractor={(item, index) => item.iid ?? index.toString()}
+                    renderItem={renderItemCategory}
+                    ListEmptyComponent={() => { return <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}><Text style={AppStyles.baseTextGray}>No folders</Text></View> }}
+                    numColumns={2}
+                />
+                    <Text style={[AppStyles.baseTextGray, { marginTop: AppSizes.padding, marginLeft: AppSizes.paddingSmall }]}>{`Danh sách file (${categoriesItems.length} ${categoriesItems.length > 1 ? "Files" : "Files"})`}</Text>
+                </View>
+                }
                 data={categoriesItems}
                 style={{ flex: 1, marginTop: AppSizes.padding }}
                 keyExtractor={(item, index) => item.iid ?? index.toString()}
+                ListEmptyComponent={() => { return <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}><Text style={[AppStyles.baseTextGray, { paddingTop: AppSizes.padding }]}>No files</Text></View> }}
                 renderItem={renderItem}
             />
 
             {
                 isLoading && <LoadingComponent />
+            }
+        </View>
+    )
+}
+
+const PathView = (props) => {
+
+    const { data = [], onPressItem } = props
+    return (
+        <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: AppSizes.paddingXSmall, flexWrap: 'wrap', marginBottom: AppSizes.paddingSmall }}>
+            <Text style={[AppStyles.baseTextGray]}>Path://</Text>
+            {
+                _.map(data, (item, index) => {
+                    const name = item?.name
+                    const isHideSplash = index == data.length - 1
+                    return (
+                        <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: AppSizes.paddingXSmall }}>
+                            <TouchableOpacity
+                                onPress={() => onPressItem && onPressItem(item)}
+                                style={{ ...AppStyles.roundButton, paddingVertical: AppSizes.paddingXSmall, backgroundColor: AppColors.primaryBackground }}>
+                                <Text key={index} style={[AppStyles.baseText, { marginRight: AppSizes.paddingSmall }]}>{name}</Text>
+                            </TouchableOpacity>
+                            <Text style={[AppStyles.baseTextGray]}>{isHideSplash ? "" : '/'}</Text>
+                        </View>
+
+                    )
+                })
             }
         </View>
     )

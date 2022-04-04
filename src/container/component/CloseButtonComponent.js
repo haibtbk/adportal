@@ -11,7 +11,7 @@ const CloseButtonComponent = (props) => {
         <TouchableOpacity
             onPress={() => navigation.goBack()}
             style={[styles.container, containerStyle && containerStyle]}>
-            <Icon name="close" size={22} color={AppColors.black} />
+            <Icon name="close" size={22} color={AppColors.white} />
         </TouchableOpacity>
     )
 }

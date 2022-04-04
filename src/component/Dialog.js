@@ -72,7 +72,7 @@ const dialogDefaultProps = {
   positiveText: 'Ok',
   negativeText: null,
   neutralText: null,
-  positiveColor: AppColors.success,
+  positiveColor: AppColors.primaryBackground,
   negativeColor: AppColors.red,
   neutralColor: AppColors.black,
   positiveAction: null,

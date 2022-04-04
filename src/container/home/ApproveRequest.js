@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, Button } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import FabManager from '@fab/FabManager';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { BaseBoxComponent } from '@container';
@@ -12,6 +12,9 @@ import { navigateNoti } from '../../firebaseNotification/NavigationNotificationM
 import SwitchSelector from "react-native-switch-selector";
 import { ApproveRequestStatus } from '@constant'
 import { useFirstTime } from '@hook';
+import Feather from 'react-native-vector-icons/Feather';
+import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
+
 
 const ApproveRequest = (props) => {
     const navigation = useNavigation();
@@ -59,7 +62,7 @@ const ApproveRequest = (props) => {
             }
         }
         const justShowInfo = status != ApproveRequestStatus.queued
-        navigateNoti(item, navigation, callback, justShowInfo)
+        navigateNoti(item, navigation, callback, justShowInfo, false)
 
     }
 
@@ -68,7 +71,7 @@ const ApproveRequest = (props) => {
         const itemInforObj = item.item_info
         const { item_request_code = "" } = itemInforObj
         let content = ""
-        const expire_ts = `Ngày hết hạn: ${DateTimeUtil.format("DD/MM/YYYY", (item?.expire_ts ?? 0)*1000)}`
+        const expire_ts = `Ngày hết hạn: ${DateTimeUtil.format("DD/MM/YYYY", (item?.expire_ts ?? 0) * 1000)}`
 
         if (item_request_code == "update_income_plan") {
             content = "Cập nhật kế hoạch doanh thu"
@@ -79,29 +82,40 @@ const ApproveRequest = (props) => {
         }
         content = `${content}\n${expire_ts}`
         return (
-            <BaseBoxComponent onPress={() => onPressItem(item)} title={title} content={content} containerStyle={{ marginVertical: AppSizes.paddingSmall }} numberOfLines={3} />
+            <BaseBoxComponent onPress={() => onPressItem(item)} title={title} content={content} containerStyle={{ margin: AppSizes.paddingSmall, padding: AppSizes.padding }} numberOfLines={3} />
         )
     }
 
     const options = [
-        { label: "CHỜ DUYỆT", value: ApproveRequestStatus.queued, testID: "switch-one", accessibilityLabel: "switch-one" },
-        { label: "ĐÃ DUYỆT", value: ApproveRequestStatus.approved, testID: "switch-two", accessibilityLabel: "switch-two" },
-        { label: "TỪ CHỐI", value: ApproveRequestStatus.denied, testID: "switch-there", accessibilityLabel: "switch-three" },
-        { label: "ĐÃ ĐÓNG", value: ApproveRequestStatus.closed, testID: "switch-four", accessibilityLabel: "switch-four" }
+        { label: "Chờ duyệt", value: ApproveRequestStatus.queued, testID: "switch-one", accessibilityLabel: "switch-one" },
+        { label: "Đã duyệt", value: ApproveRequestStatus.approved, testID: "switch-two", accessibilityLabel: "switch-two" },
+        { label: "Từ chối", value: ApproveRequestStatus.denied, testID: "switch-there", accessibilityLabel: "switch-three" },
+        { label: "Đã đóng", value: ApproveRequestStatus.closed, testID: "switch-four", accessibilityLabel: "switch-four" }
     ];
 
     return (
-        <View style={AppStyles.container}>
+        <View style={{ ...AppStyles.container, backgroundColor: 'white' }}>
             <NavigationBar
-                leftView={() => <Text style={[AppStyles.boldText, { fontSize: 24 }]}>Phê duyệt</Text>} />
+                centerTitle="Phê duyệt"
+                leftView={() => (
+                    <TouchableOpacity
+                        onPress={() => {
+                            navigation.goBack()
+                        }}
+                    >
+                        <SimpleLineIcons name="menu" size={26} color={AppColors.secondaryTextColor} />
+                    </TouchableOpacity>
+                )}
+                containerStyle={{ marginBottom: 10 }} />
             <SwitchSelector
                 options={options}
+                textStyle={AppStyles.baseTextGray}
                 initial={0}
                 onPress={value => setStatus(value)}
-                textColor={AppColors.purple}
+                textColor={AppColors.secondaryTextColor}
                 selectedColor={AppColors.white}
-                buttonColor={AppColors.purple}
-                borderColor={AppColors.purple}
+                buttonColor={AppColors.primaryBackground}
+                borderColor={AppColors.primaryBackground}
                 hasPadding
                 testID="status-switch-selector"
                 accessibilityLabel="status-switch-selector"
@@ -115,7 +129,7 @@ const ApproveRequest = (props) => {
                 listStyle={{ flex: 1, with: '100%', height: '100%', backgroundColor: 'transparent' }}
                 source={source}
                 pageSize={12}
-                renderEmptyView={() => <Text style={AppStyles.baseText}>Không có dữ liệu</Text>}
+                renderEmptyView={() => <Text style={AppStyles.baseTextGray}>Không có dữ liệu</Text>}
                 transformer={transformer}
                 renderItem={renderItem} />
         </View>

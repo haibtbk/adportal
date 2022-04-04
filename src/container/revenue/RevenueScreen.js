@@ -1,16 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, Button, StyleSheet, TouchableOpacity } from 'react-native';
-import FabManager from '@fab/FabManager';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { AppSizes, AppStyles, AppColors } from '@theme';
 import NavigationBar from '@navigation/NavigationBar';
 import AwesomeListComponent from "react-native-awesome-list";
 import { API } from '@network';
-import { useSelector, useDispatch } from 'react-redux';
-import SwitchSelector from "react-native-switch-selector";
 import moment from 'moment';
-import SelectDropdown from 'react-native-select-dropdown'
-import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { LoadingComponent, DateTimePickerComponent } from '@component';
 import { utils, RouterName } from '@navigation';
 import Feather from 'react-native-vector-icons/Feather';
@@ -20,9 +15,22 @@ import { Divider } from 'react-native-paper';
 import { numberWithCommas } from '@utils'
 
 const RevenueScreen = (props) => {
-    const navigation = useNavigation();
+    const { route, navigation } = props;
+    const { isDaily, isMonth, isQuarter, isYearly } = route.params;
     const oneWeek = 7 * 24 * 60 * 60 * 1000
-    let [start_ts, setStartTime] = useState(moment().valueOf() - oneWeek)
+
+    let initStartTime = moment().valueOf() - oneWeek
+    if (isDaily) {
+        initStartTime = DateTimeUtil.getStartOfDay()
+    } else if (isMonth) {
+        initStartTime = DateTimeUtil.getStartOfMonth()
+    } else if (isQuarter) {
+        initStartTime = DateTimeUtil.getStartOfQuarter()
+    } else if (isYearly) {
+        initStartTime = DateTimeUtil.getStartOfYear()
+    }
+
+    let [start_ts, setStartTime] = useState(initStartTime)
     let [end_ts, setEndTime] = useState(moment().valueOf())
 
     const refreshData = () => {
@@ -93,7 +101,7 @@ const RevenueScreen = (props) => {
                             navigation.goBack()
                         }}
                     >
-                        <Feather name="arrow-left" size={26} color="white" />
+                        <Feather name="arrow-left" size={26} color={AppColors.secondaryTextColor} />
                     </TouchableOpacity>
                 )}
                 centerTitle="Doanh thu" />

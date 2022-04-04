@@ -8,9 +8,9 @@ import { API } from '@network'
 import { getUniqueId } from 'react-native-device-info';
 import { Dialog, LottieComponent } from '@component';
 import { AppStyles, AppColors, AppSizes } from '@theme'
+import { RootNavigation } from '@navigation';
 
-
-const logout = async (navigation, dispatch) => {
+const logout = async () => {
     const device_id = getUniqueId()
     const fcm_token = (await LocalStorage.get("FCM_TOKEN")) ?? ""
     const device_type = Platform.OS == 'ios' ? `2` : `1`
@@ -24,14 +24,23 @@ const logout = async (navigation, dispatch) => {
     API.updateDeviceInfo(updateDeviceInfoParam)
         .then(() => {
             AccessTokenManager.clear()
-            dispatch(_logout())
-            navigation.reset({
+            // RootNavigation.navigationRef.dispatch(_logout())
+            RootNavigation.navigationRef.reset({
                 index: 0,
                 routes: [{ name: RouterName.login }],
             })
         })
         .catch(err => console.log(err))
 
+}
+
+const logoutWithoutCallAPI = async () => {
+    AccessTokenManager.clear()
+    // RootNavigation.navigationRef.dispatch(_logout())
+    RootNavigation.navigationRef.reset({
+        index: 0,
+        routes: [{ name: RouterName.login }],
+    })
 }
 
 const showBeautyAlert = (navigation, type, message, callback) => {
@@ -47,7 +56,9 @@ const showBeautyAlert = (navigation, type, message, callback) => {
     Dialog.show(dialogOption)
 }
 
+
 export default {
+    logoutWithoutCallAPI,
     logout,
-    showBeautyAlert
+    showBeautyAlert,
 }

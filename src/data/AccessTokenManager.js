@@ -87,9 +87,9 @@ AccessTokenManager.getBearerAuthentication = () => {
 
 AccessTokenManager.addBasicAuthentication = (config) => {
     config.headers = {
-        ...config.headers,
         'Content-Type': 'application/json',
         'Authorization': BASIC_AUTHENTICATION,
+        ...config.headers,
     };
 
     return config;
@@ -97,9 +97,9 @@ AccessTokenManager.addBasicAuthentication = (config) => {
 
 AccessTokenManager.addBearerAuthentication = (config) => {
     config.headers = {
-        ...config.headers,
         'Content-Type': 'application/json',
         'Authorization': AccessTokenManager.getBearerAuthentication(),
+        ...config.headers,
     };
 
     return config;

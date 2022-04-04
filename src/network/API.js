@@ -1,10 +1,7 @@
 import ApiManager from './ApiManager'
 import Endpoint from './Endpoint'
-
 import { Env } from '@constant/';
-
 import _ from 'lodash';
-import { sprintf } from 'sprintf-js'
 
 /**
  * Init API
@@ -22,8 +19,9 @@ API.getProfile = () => {
 }
 
 API.updateProfile = (account) => {
-    const { phone, code, name } = account
+    const { phone, code, name, avatar } = account
     const params = {
+        avatar,
         phone,
         code,
         name,
@@ -81,6 +79,10 @@ API.updateSchedule = (params) => {
     return API.instance.post(Endpoint.updateSchedule, params)
 }
 
+API.deleteSchedule = (params) => {
+    return API.instance.post(Endpoint.deleteSchedule, params)
+}
+
 API.getNews = (params) => {
     return API.instance.get(Endpoint.getNews, { params })
 }
@@ -101,6 +103,36 @@ API.getUserUnderControl = (params) => {
 }
 API.getRevenue = (params) => {
     return API.instance.get(Endpoint.getRevenue, { params })
+}
+API.getRevenueCorporation = (params) => {
+    return API.instance.get(Endpoint.getRevenueCorporation, { params })
+}
+
+API.signup = (params) => {
+    return API.instance.post(Endpoint.signup, params)
+}
+
+API.getRevenueCompany = (params) => {
+    return API.instance.get(Endpoint.getRevenueCompany, { params })
+}
+API.getRevenueCorporationVer2 = (params) => {
+    return API.instance.get(Endpoint.getRevenueCorporationVer2, { params })
+}
+
+API.getScheduleUser = (params) => {
+    return API.instance.get(Endpoint.getScheduleUser, {
+        params,
+    })
+}
+
+API.uploadAvatar = (formData) => {
+
+    return API.instance.post(Endpoint.uploadAvatar, formData,
+        {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
 }
 
 /* Export Component ==================================================================== */

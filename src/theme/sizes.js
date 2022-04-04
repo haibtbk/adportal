@@ -71,4 +71,5 @@ export default {
     heightSearchBox: 41,
 
     imgButton: 12,
+    iconSize: 20,
 };

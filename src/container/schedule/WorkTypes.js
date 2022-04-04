@@ -72,11 +72,11 @@ const workTypes = [
     {
         value: 52,
         label: 'Thu phí',
-    }, 
+    },
     {
         value: 53,
         label: 'Tiếp cân thị trường',
-    }, 
+    },
     {
         value: 54,
         label: 'Tuyển dụng',
@@ -91,4 +91,42 @@ const workTypes = [
     },
 ]
 
+const workTypeValues = {
+    hop: 1,
+    huanLuyen: 2,
+    lapKeHoach: 3,
+    toChucHoiNghi: 4,
+    hoTro: 5,
+    khac: 6
+}
+
+
+const headerWorkTypes = [
+    {
+        value: workTypeValues.hop,
+        header: "Họp"
+    },
+    {
+        value: workTypeValues.huanLuyen,
+        header: "Huấn luyện"
+    },
+    {
+        value: workTypeValues.lapKeHoach,
+        header: "Lập kế hoạch",
+    },
+    {
+        value: workTypeValues.toChucHoiNghi,
+        header: "Tổ chức hội nghị"
+    },
+    {
+        header: "Hỗ trợ",
+        value: workTypeValues.hoTro
+    },
+    {
+        value: workTypeValues.khac,
+        header: "Khác"
+    }
+]
+
+export { headerWorkTypes, workTypeValues }
 export default workTypes

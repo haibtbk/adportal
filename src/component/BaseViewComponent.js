@@ -6,10 +6,10 @@ const BaseViewComponent = (props) => {
     const { title = "", content = "", containerStyle } = props
     return (
         <View style={[styles.container, containerStyle && containerStyle]}>
-            <Text style={[AppStyles.boldText, { color: AppColors.primaryTextColor }]}>
+            <Text style={[AppStyles.baseTextGray, { color: AppColors.secondaryTextColor }]}>
                 {title + ': '}
             </Text>
-            <Text style={[AppStyles.baseText, { color: AppColors.primaryTextColor }]}>
+            <Text style={[AppStyles.baseTextGray, {flex:1, color: AppColors.secondaryTextColor }]}>
                 {content}
             </Text>
         </View> 
@@ -21,8 +21,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         width: '100%',
         alignContent: 'center',
-        justifyContent: 'space-between',
-        padding: AppSizes.paddingSmall
+        padding: AppSizes.paddingXSmall
     }
 })
 

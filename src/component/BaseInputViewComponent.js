@@ -3,13 +3,13 @@ import { Text, TextInput, View, StyleSheet } from 'react-native'
 import { AppStyles, AppColors, AppSizes } from '@theme'
 
 const BaseInputViewComponent = (props) => {
-    const { title = "", content = "", onChangeText, containerStyle } = props
+    const { title = "", content = "", onChangeText, containerStyle, disable = false } = props
     return (
-        <View style={[styles.container, containerStyle && containerStyle]}>
-            <Text style={[AppStyles.boldText, { color: AppColors.primaryTextColor }]}>
+        <View style={[styles.container,containerStyle && containerStyle]} pointerEvents={disable ? "none" : "auto"}>
+            <Text style={[AppStyles.baseTextGray]}>
                 {title + ': '}
             </Text>
-            <TextInput onChangeText={(text) => onChangeText && onChangeText(text)} style={[AppStyles.baseText, AppStyles.roundButton, styles.input]} value={content}>
+            <TextInput onChangeText={(text) => onChangeText && onChangeText(text)} style={[AppStyles.textInput, styles.input, {backgroundColor: disable?AppColors.grayLight: AppColors.white}]} value={content}>
             </TextInput>
         </View>
     )
@@ -24,7 +24,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         padding: AppSizes.paddingSmall
     },
-    input: {flex:1, padding: AppSizes.paddingSmall, underlineColorAndroid: 'transparent', marginLeft: AppSizes.paddingSmall}
+    input: { flex: 1, padding: AppSizes.paddingSmall, underlineColorAndroid: 'transparent', marginLeft: AppSizes.paddingSmall }
 })
 
 export default BaseInputViewComponent

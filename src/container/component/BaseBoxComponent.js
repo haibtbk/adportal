@@ -9,10 +9,10 @@ const BaseBoxComponent = (props) => {
         <TouchableOpacity
             onPress={() => onPress && onPress()}
             style={[styles.container, containerStyle && containerStyle]}>
-            <Text style={[AppStyles.boldText, { color: AppColors.activeColor, marginBottom: AppSizes.paddingSmall, lineHeight: 20 }]}>
+            <Text style={[AppStyles.baseTextGray, { lineHeight: 24 }]}>
                 {title}
             </Text>
-            <Text style={[AppStyles.baseText, { color: AppColors.secondaryTextColor, lineHeight: 20 }]} numberOfLines={numberOfLines} ellipsizeMode="tail">
+            <Text style={[AppStyles.baseTextGray, { lineHeight: 24 }]} numberOfLines={numberOfLines} ellipsizeMode="tail">
                 {content}
             </Text>
         </TouchableOpacity>
@@ -21,8 +21,8 @@ const BaseBoxComponent = (props) => {
 
 const styles = StyleSheet.create({
     container: {
+        ...AppStyles.boxShadow,
         flex: 1,
-        ...AppStyles.roundButton,
         borderColor: 'transparent',
         backgroundColor: AppColors.secondaryBackground,
         shadowColor: '#000',

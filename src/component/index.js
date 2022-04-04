@@ -14,7 +14,9 @@ import BaseWebViewScreen from './BaseWebViewScreen';
 import LoadingComponent from './LoadingComponent';
 import DateTimePickerComponent from './DateTimePickerComponent';
 import DropdownComponent from './DropdownComponent';
+import VirtualizedList from './VirtualizedList';
 export {
+    VirtualizedList,
     DropdownComponent,
     DateTimePickerComponent,
     BaseWebViewScreen,

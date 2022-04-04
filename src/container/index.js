@@ -28,7 +28,15 @@ import ScheduleUserScreen from './schedule/ScheduleUserScreen';
 import ScheduleCompanyScreen from './schedule/ScheduleCompanyScreen';
 import CreateScheduleScreen from './schedule/CreateScheduleScreen';
 import RevenueScreen from './revenue/RevenueScreen';
+import RevenueAreaScreen from './revenue/RevenueAreaScreen';
+import Title from './home/Title';
+import SimpleListComponent from './component/SimpleListComponent';
+import SimpleSessionListComponent from './component/SimpleSessionListComponent';
 export {
+  SimpleSessionListComponent,
+  SimpleListComponent,
+  Title,
+  RevenueAreaScreen,
   RevenueScreen,
   CreateScheduleScreen,
   ScheduleUserScreen,
