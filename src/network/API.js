@@ -135,5 +135,13 @@ API.uploadAvatar = (formData) => {
         });
 }
 
+API.uploadFileSchedule = (data) => {
+    return API.instance.post(Endpoint.uploadFileSchedule, data);
+}
+
+API.scheduleUpdate = (data) => {
+    return API.instance.post(Endpoint.scheduleUpdate, data);
+}
+
 /* Export Component ==================================================================== */
 export default API;

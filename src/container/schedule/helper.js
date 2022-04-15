@@ -15,7 +15,7 @@ const getStatus = (status) => {
 
 const getStatusColor = (status) => {
     switch (status) {
-        case ScheduleStatus.completed: return AppColors.primaryBackground
+        case ScheduleStatus.completed: return AppColors.success
         case ScheduleStatus.stoped: return AppColors.danger
         case ScheduleStatus.pending: return 'orange'
         default: return 'orange'

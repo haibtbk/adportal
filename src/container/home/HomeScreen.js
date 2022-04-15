@@ -52,13 +52,14 @@ const HomeScreen = ({ route }) => {
   const [scheduleData, setScheduleData] = useState([])
 
   const [roll, setRoll] = useState(ROLLS[0])
-
+  const oneday = 60 * 60 * 24 * 1000
 
   const fetchCompanyData = () => {
     const revenueParam = {
       submit: 1,
-      start_ts: Math.round(DateTimeUtil.getStartOfDay() / 1000),
-      end_ts: Math.round(DateTimeUtil.getEndOfDay(moment().valueOf()) / 1000)
+      start_ts: Math.round((DateTimeUtil.getStartOfDay(moment().valueOf()) - oneday) / 1000),
+      end_ts: Math.round((DateTimeUtil.getEndOfDay(moment().valueOf()) - oneday) / 1000)
+
     }
     setIsLoading(true)
     API.getRevenueCompany(revenueParam)
@@ -74,13 +75,10 @@ const HomeScreen = ({ route }) => {
   }
 
   const fetchCorporationData = () => {
-    const oneday = 60 * 60 * 24 * 1000
     const revenueParam = {
       submit: 1,
-      start_ts: 1648486800,
-      end_ts: 1648573199
-      // start_ts: Math.round(DateTimeUtil.getStartOfDay()  / 1000),
-      // end_ts: Math.round(DateTimeUtil.getEndOfDay(moment().valueOf() ) / 1000)
+      start_ts: Math.round(DateTimeUtil.getStartOfDay(moment().valueOf() - oneday) / 1000),
+      end_ts: Math.round(DateTimeUtil.getEndOfDay(moment().valueOf() - oneday) / 1000)
     }
     setIsLoading(true)
     API.getRevenueCorporationVer2(revenueParam)
@@ -208,16 +206,7 @@ const HomeScreen = ({ route }) => {
         }
       case 2:
         {
-          let revenue = 0
-          _.forEach(revenueCorporation, item => {
-            const temp = (item?.income) ?? 0
-            let intTemp = parseInt(temp)
-            if (item?.name == "Bancassurance") {
-              intTemp = 0
-            }
-            revenue += intTemp
-          })
-          return revenue
+          return revenueCorporation?.[0]?.income ?? 0
         }
       case 3:
         {
@@ -235,16 +224,7 @@ const HomeScreen = ({ route }) => {
         }
       case 2:
         {
-          let revenue = 0
-          _.forEach(revenueCorporation, item => {
-            const temp = item?.yearly?.[0]?.revenue_data?.revenue_yearly ?? 0
-            let intTemp = parseInt(temp)
-            if (item?.name == "Bancassurance") {
-              intTemp = 0
-            }
-            revenue += intTemp
-          })
-          return revenue
+          return revenueCorporation?.[0]?.yearly?.[0]?.revenue_data?.revenue_yearly ?? 0
         }
       case 3:
         {
@@ -262,17 +242,7 @@ const HomeScreen = ({ route }) => {
         }
       case 2:
         {
-          let revenue = 0
-          _.forEach(revenueCorporation, item => {
-
-            const temp = item?.monthly?.[0]?.revenue_data?.revenue_monthly ?? 0
-            let intTemp = parseInt(temp)
-            if (item?.name == "Bancassurance") {
-              intTemp = 0
-            }
-            revenue += intTemp
-          })
-          return revenue
+          return revenueCorporation?.[0]?.monthly?.[0]?.revenue_data?.revenue_monthly ?? 0
         }
       case 3:
         {
@@ -290,16 +260,8 @@ const HomeScreen = ({ route }) => {
         }
       case 2:
         {
-          let revenue = 0
-          _.forEach(revenueCorporation, item => {
-            const temp = item?.quarterly?.[0]?.revenue_data?.revenue_quarterly ?? 0
-            let intTemp = parseInt(temp)
-            if (item?.name == "Bancassurance") {
-              intTemp = 0
-            }
-            revenue += intTemp
-          })
-          return revenue
+          return revenueCorporation?.[0]?.quarterly?.[0]?.revenue_data?.revenue_quarterly ?? 0
+
         }
       case 3:
         {
@@ -339,7 +301,7 @@ const HomeScreen = ({ route }) => {
       })
     } else if (roll.id == 2) {
       navigation.navigate('RevenueArea', {
-        startTime: DateTimeUtil.getStartOfDay()
+        startTime: DateTimeUtil.getStartOfDay() - oneday
       })
     }
 
@@ -382,23 +344,32 @@ const HomeScreen = ({ route }) => {
   }
 
   const getPercentMonth = () => {
-    const percent = revenueCorporation?.[revenueCorporation.length - 1]?.monthly?.[0]?.revenue_data?.revenue_monthly_performance ?? 0
-    if (roll.id == 2) {
+    if (roll.id == 1) {
+      const percent = revenueCompany?.monthly?.[0]?.revenue_data?.revenue_monthly_previous_performance ?? 0
+      return percent
+    } else if (roll.id == 2) {
+      const percent = revenueCorporation?.[0]?.monthly?.[0]?.revenue_data?.revenue_monthly_previous_performance ?? 0
       return percent
     }
     return undefined
   }
 
   const getPercentQuater = () => {
-    const percent = revenueCorporation?.[revenueCorporation.length - 1]?.quarterly?.[0]?.revenue_data?.revenue_quarterly_performance ?? 0
-    if (roll.id == 2) {
+    if (roll.id == 1) {
+      const percent = revenueCompany?.quarterly?.[0]?.revenue_data?.revenue_quarterly_previous_performance ?? 0
+      return percent
+    } else if (roll.id == 2) {
+      const percent = revenueCorporation?.[0]?.quarterly?.[0]?.revenue_data?.revenue_quarterly_previous_performance ?? 0
       return percent
     }
     return undefined
   }
   const getPercentYear = () => {
-    const percent = revenueCorporation?.[revenueCorporation.length - 1]?.yearly?.[0]?.revenue_data?.revenue_yearly_performance ?? 0
-    if (roll.id == 2) {
+    if (roll.id == 1) {
+      const percent = revenueCompany?.yearly?.[0]?.revenue_data?.revenue_yearly_previous_performance ?? 0
+      return percent
+    } else if (roll.id == 2) {
+      const percent = revenueCorporation?.[0]?.yearly?.[0]?.revenue_data?.revenue_yearly_previous_performance ?? 0
       return percent
     }
     return undefined
@@ -408,7 +379,7 @@ const HomeScreen = ({ route }) => {
     let total = 0
     let done = 0
     const scheduleTaskForUser = _.filter(scheduleData, item => {
-      
+
       const checkUser = item?.user_id == user?.user_id
       const checkWorkType = item?.schedule_data?.work_type?.toString()?.charAt(0) == workType.toString()
       const checkTime = item?.start_ts * 1000 <= DateTimeUtil.getEndOfDay()
@@ -481,7 +452,7 @@ const HomeScreen = ({ route }) => {
           <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', marginBottom: AppSizes.paddingSmall }}>
             <BaseDashboardItemComponent
               onPress={onPressDaily}
-              iconName="ios-logo-usd" title="Doanh thu ngày" content="Doanh thu tháng" amount={getDayRevenue()} containerStyle={{ flex: 1, marginRight: AppSizes.paddingSmall }} color={AppColors.primaryBackground} />
+              iconName="ios-logo-usd" title="Doanh thu ngày" content="Doanh thu ngày" amount={getDayRevenue()} containerStyle={{ flex: 1, marginRight: AppSizes.paddingSmall }} color={AppColors.primaryBackground} />
             <BaseDashboardItemComponent
               onPress={onPressMonthly}
               iconName="ios-logo-usd" title="Doanh thu tháng" content="Doanh thu tháng" amount={getMonthRevenue()} percent={getPercentMonth()} containerStyle={{ flex: 1, }} color={AppColors.niceBlue} />
@@ -507,7 +478,7 @@ const HomeScreen = ({ route }) => {
 
         <ScheduleComponent containerStyle={{ marginTop: AppSizes.padding }} isShowDate={false} data={scheduleTodayData()} title="Kế hoạch trong ngày" titleStyle={{ color: AppColors.secondaryTextColor }} />
         {
-          roll.id === 1 && <PerformanceComponent containerStyle={{ marginTop: AppSizes.padding }} data={getDataPerformance()} title="Hiệu suất công việc" titleStyle={{ color: AppColors.secondaryTextColor, paddingLeft: AppSizes.paddingXSmall,fontSize: AppSizes.fontMedium }} />
+          roll.id === 1 && <PerformanceComponent containerStyle={{ marginTop: AppSizes.padding }} data={getDataPerformance()} title="Hiệu suất công việc" titleStyle={{ color: AppColors.secondaryTextColor, paddingLeft: AppSizes.paddingXSmall, fontSize: AppSizes.fontMedium }} />
         }
 
       </ScrollView>

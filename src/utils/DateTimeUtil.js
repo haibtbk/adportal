@@ -99,6 +99,9 @@ const getStartOfWeek = (ts) => {
 const getStartOfMonth = () => {
     return moment().startOf('month').valueOf()
 }
+const getEndOfMonth = () => {
+    return moment().endOf('month').valueOf()
+}
 const getStartOfQuarter = () => {
     return moment().startOf('quarter').valueOf()
 }
@@ -115,6 +118,7 @@ export default {
     getStartOfYear,
     getStartOfQuarter,
     getStartOfMonth,
+    getEndOfMonth,
     getStartOfWeek,
     getStartOfDay,
     getEndOfDay,

@@ -18,6 +18,7 @@ const routes = {
     baseWebViewScreen: "BaseWebViewScreen",
     createSchedule: "CreateSchedule",
     revenue: "Revenue",
+    ScheduleDetail: "ScheduleDetail",
 }
 
 export default routes

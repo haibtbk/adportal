@@ -18,10 +18,11 @@ const RevenueScreen = (props) => {
     const { route, navigation } = props;
     const { isDaily, isMonth, isQuarter, isYearly } = route.params;
     const oneWeek = 7 * 24 * 60 * 60 * 1000
+    const oneday = 24 * 60 * 60 * 1000
 
     let initStartTime = moment().valueOf() - oneWeek
     if (isDaily) {
-        initStartTime = DateTimeUtil.getStartOfDay()
+        initStartTime = DateTimeUtil.getStartOfDay() - oneday
     } else if (isMonth) {
         initStartTime = DateTimeUtil.getStartOfMonth()
     } else if (isQuarter) {

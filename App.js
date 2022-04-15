@@ -3,10 +3,10 @@ import { Component, useRef, useState, useEffect } from 'react';
 import { Text, View, Button, Image, AppState, StyleSheet } from 'react-native';
 import { NavigationContainer, DrawerActions } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import EntypoIcon from 'react-native-vector-icons/FontAwesome';
-import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import Feather from 'react-native-vector-icons/Feather';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 import { createStackNavigator } from '@react-navigation/stack';
 import FabManager from './src/fab/FabManager';
@@ -20,6 +20,7 @@ import Notification from './src/firebaseNotification/index'
 import { MessageBarSimple, MessageBarManagerSimple, Dialog, BaseWebViewScreen } from '@component'
 import DrawerMenuNavigator from './src/stack/DrawerMenuNavigator';
 import { RootNavigation } from '@navigation';
+import { ScheduleDetailScreen } from "@schedule"
 
 import {
   LoginScreen,
@@ -60,7 +61,7 @@ function RootTabs() {
     <Tab.Navigator
       screenOptions={{
         tabBarStyle: { ...AppStyles.boxShadow, borderBottomLeftRadius: 0, borderBottomRightRadius: 0, height: 60 + insets.bottom / 1.5, backgroundColor: 'white', borderTopWidth: 0, paddingTop: 6, alignItems: 'flex-start' },
-        tabBarLabelStyle: { padding: AppSizes.paddingXSmall, fontSize: AppSizes.fontBase, fontFamily: AppFonts.base.family},
+        tabBarLabelStyle: { padding: AppSizes.paddingXSmall, fontSize: AppSizes.fontBase, fontFamily: AppFonts.base.family },
         tabBarIconStyle: { size: 10 }
       }}
       tabBarOptions={{
@@ -68,11 +69,11 @@ function RootTabs() {
         inactiveTintColor: AppColors.activeColor,
       }}>
       <Tab.Screen
-        name="Trang chủ"
+        name="Bảng số liệu"
         options={{
           headerShown: false,
           tabBarIcon: ({ color, size }) => (
-            <MaterialIcons name="home" color={color} size={size} />
+            <Ionicons name="ios-bar-chart" color={color} size={size} />
           ),
         }}>
         {() => (
@@ -90,7 +91,7 @@ function RootTabs() {
         options={{
           headerShown: false,
           tabBarIcon: ({ color, size }) => (
-            <FontAwesome5 name="folder" color={color} size={size} />
+            <AntDesign name="folderopen" color={color} size={size} />
           ),
         }}>
         {() => (
@@ -111,6 +112,7 @@ function RootTabs() {
         {() => (
           <HomeStack.Navigator screenOptions={{ headerShown: false }}>
             <HomeStack.Screen name="Schedule" component={ScheduleScreen} />
+            <HomeStack.Screen name="ScheduleDetail" component={ScheduleDetailScreen} />
           </HomeStack.Navigator>
         )}
       </Tab.Screen>
@@ -120,7 +122,7 @@ function RootTabs() {
         options={{
           headerShown: false,
           tabBarIcon: ({ color, size }) => (
-            <EntypoIcon name="newspaper-o" color={color} size={size} />
+            <MaterialCommunityIcons name="lightbulb-on" color={color} size={size} />
           ),
         }}>
         {() => (

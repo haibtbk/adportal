@@ -17,21 +17,58 @@ import { Helper, actionStatus } from '@schedule';
 
 const MAX_DROPDOWM_WIDTH = 135
 const DROPDOWN_HEIGHT = 35
-
+const oneWeek = 7 * 24 * 60 * 60 * 1000
+const filterOptions = [
+    { label: "Tháng này", id: 1 },
+    { label: "Tháng trước", id: 2 },
+    { label: "Chọn thời gian", id: 3 },
+]
+const allUser = { label: "Tất cả nhân viên", value: -1 }
 const ScheduleScreen = (props) => {
     const navigation = useNavigation();
     const [isLoading, setLoading] = useState(false)
     const [status, setStatus] = useState(1)
-    const oneWeek = 7 * 24 * 60 * 60 * 1000
-    const [start_ts, setStartTime] = useState(moment().valueOf() - oneWeek)
-    const [end_ts, setEndTime] = useState(moment().valueOf() + oneWeek)
+    const [start_ts, setStartTime] = useState(DateTimeUtil.getStartOfMonth())
+    const [end_ts, setEndTime] = useState(DateTimeUtil.getEndOfMonth())
     const isFirstTime = useFirstTime(useRef(true))
+    const [filterOption, setFilterOption] = useState(filterOptions[0])
+    const [dataUserUnderControl, setDataUserUnderControl] = useState([])
+    const [user, setUser] = useState(null)
 
 
     useEffect(() => {
         if (isFirstTime) return
         refreshData()
-    }, [status, start_ts, end_ts])
+    }, [status, start_ts, end_ts, user])
+
+    useEffect(() => {
+        setLoading(true)
+        const paramUserUnderControl = {
+            submit: 1,
+            start_ts: Math.round(DateTimeUtil.getStartOfDay(moment().valueOf())) / 1000,
+            end_ts: Math.round(DateTimeUtil.getEndOfDay(moment().valueOf() + 30 * 24 * 60 * 60 * 1000)) / 1000,
+        }
+        API.getUserUnderControl(paramUserUnderControl)
+            .then(res => {
+                if (res?.data?.success) {
+                    const data = res?.data.result
+                    const dataPretty = data.map(item => {
+                        return {
+                            label: item.name,
+                            value: item.user_id
+                        }
+                    })
+                    setDataUserUnderControl([allUser, ...dataPretty])
+                }
+
+            })
+            .catch(err => {
+                console.log(err)
+            })
+            .finally(() => {
+                setLoading(false)
+            })
+    }, [])
 
     const refreshData = () => {
         listRef.current.refresh()
@@ -40,20 +77,27 @@ const ScheduleScreen = (props) => {
     const source = () => {
 
         const params = {
-            submit: 1
+            submit: 1,
+            start_ts: Math.round(start_ts / 1000),
+            end_ts: Math.round(end_ts / 1000),
         }
 
         const companyParams = {
-            start_ts: Math.round(DateTimeUtil.getStartOfDay(start_ts) / 1000),
-            end_ts: Math.round(DateTimeUtil.getEndOfDay(end_ts) / 1000),
-            submit: 1
+
         }
 
-        return status == 1 ? API.getSchedules(params) : API.getSchedulesCompany(companyParams)
+        return status == 1 ? API.getSchedules(params) : API.getSchedulesCompany(params)
     }
 
     const transformer = (res) => {
-        return res?.data?.result ?? []
+        const data = res?.data?.result ?? []
+        if (user != null) {
+            if (user.value == -1) {
+                return data
+            }
+            return data.filter(item => item.user_id == user.value)
+        }
+        return data
     }
 
     const listRef = useRef(null)
@@ -63,70 +107,12 @@ const ScheduleScreen = (props) => {
     }
 
     const onPressItem = (item) => {
-
+        navigation.navigate(RouterName.ScheduleDetail, {
+            schedule: item,
+            callback
+        })
     }
 
-    const onChangeValueStatus = (item, itemSchedule) => {
-
-        if (item.value == -1) { //xoa ban ghi
-            Alert.alert("Chú ý", "Bạn có chắc chắn muốn xóa lịch này?", [
-                {
-                    text: "Hủy",
-                    onPress: () => {
-                    },
-                    style: "cancel"
-                },
-                {
-                    text: "Xóa",
-                    onPress: () => {
-                        const params = {
-                            id: itemSchedule.id,
-                            submit: 1,
-                            _method: 'DELETE'
-                        }
-                        setLoading(true)
-                        API.deleteSchedule(params)
-                            .then(res => {
-                                if (res?.data?.success) {
-                                    utils.showBeautyAlert(navigation, "success", res?.data?.message ?? "Xóa thành công")
-                                }
-                                refreshData()
-                            })
-                            .catch(err => console.error(err))
-                            .finally(() => {
-                                setLoading(false)
-                            })
-                    }
-                }
-            ])
-
-
-            return
-        }
-
-        const params = {
-            id: itemSchedule.id,
-            status: item.value,
-            _method: "put",
-            submit: 1
-        }
-        setLoading(true)
-        API.updateSchedule(params)
-            .then(res => {
-                if (res?.data?.success) {
-                    utils.showBeautyAlert(navigation, "success", res?.data?.message ?? "Cập nhật thành công")
-                }
-                refreshData()
-            })
-            .catch(err => console.error(err))
-            .finally(() => {
-                setLoading(false)
-            })
-    }
-
-    const getDefaultValue = (status) => {
-        return _.filter(actionStatus, i => i.value == status)?.[0] ?? { label: "Đang chạy", value: status.pending }
-    }
     const renderItem = ({ item }) => {
 
         const name = item?.schedule_data?.name ?? ""
@@ -135,33 +121,22 @@ const ScheduleScreen = (props) => {
         return (
             <TouchableOpacity
                 onPress={() => onPressItem(item)}
-                style={[styles.box]}>
-                <Text style={[AppStyles.baseTextGray]} numberOfLines={2} ellipsizeMode="tail">
-                    Nội dung: {!!name ? name : "Chưa có"}
-                </Text>
-                
-                <Text style={[AppStyles.baseTextGray, { marginVertical: AppSizes.paddingXSmall }]} numberOfLines={2} ellipsizeMode="tail">
-                    Loại công việc: {workType}
-                </Text>
-
-                <Text style={[AppStyles.baseTextGray]} numberOfLines={2} ellipsizeMode="tail">
-                    Người thực hiện: {!!for_user ? for_user : "Chưa có"}
-                </Text>
-
-                <View style={{ flexDirection: 'row', alignItems: 'center', }}>
-                    <Text style={[AppStyles.baseTextGray, { marginRight: AppSizes.padding }]}>
-                        Trạng thái:
+                style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: AppSizes.paddingSmall }}>
+                {/* style={[styles.box]}> */}
+                <Text style={[AppStyles.baseTextGray, { marginRight: AppSizes.paddingSmall }]}>{DateTimeUtil.dateTimeFormat(item.start_ts)}</Text>
+                <View style={{ flex: 1 }}>
+                    <Text style={[AppStyles.baseTextGray]} numberOfLines={2} ellipsizeMode="tail">
+                        Nội dung: {!!name ? name : "Chưa có"}
                     </Text>
 
-                    <DropdownComponent
-                        containerStyle={styles.dropdownBtnStyle}
-                        data={actionStatus}
-                        onSelect={(i) => onChangeValueStatus(i, item)}
-                        defaultValue={getDefaultValue(item.status)}
-                    />
-
+                    <Text style={[AppStyles.baseTextGray, { marginVertical: AppSizes.paddingXSmall }]} numberOfLines={2} ellipsizeMode="tail">
+                        Loại công việc: {workType}
+                    </Text>
+                    <Text style={[AppStyles.baseTextGray]} numberOfLines={2} ellipsizeMode="tail">
+                        Người thực hiện: {!!for_user ? for_user : "Chưa có"}
+                    </Text>
                 </View>
-
+                <Entypo name="dot-single" size={50} color={Helper.getStatusColor(item.status)} style={{ marginLeft: AppSizes.paddingXSmall }} />
 
             </TouchableOpacity>
         )
@@ -203,8 +178,25 @@ const ScheduleScreen = (props) => {
         })
         return sections
     }
-    const renderSectionHeader = ({ section }) => <Text style={[AppStyles.boldTextGray, { marginHorizontal: AppSizes.paddingSmall, paddingTop: AppSizes.padding, backgroundColor: AppColors.white }]}>{section?.title}</Text>
+    const renderSectionHeader = ({ section }) => <Text style={[AppStyles.boldTextGray, { paddingTop: AppSizes.padding, backgroundColor: AppColors.white }]}>{section?.title}</Text>
 
+    const onChangeFilter = (item) => {
+        setFilterOption(item)
+        if (item.id == 1) {
+            setStartTime(DateTimeUtil.getStartOfMonth())
+            setEndTime(DateTimeUtil.getEndOfMonth())
+        } else if (item.id == 2) {
+            setStartTime(moment().subtract(1, 'months').startOf('month'))
+            setEndTime(moment().subtract(1, 'months').endOf('month'))
+        } else if (item.id == 3) {
+            setStartTime(DateTimeUtil.getStartOfDay() - oneWeek)
+            setEndTime(DateTimeUtil.getEndOfDay() + oneWeek)
+        }
+    }
+
+    const onChangeUser = (item) => {
+        setUser(item)
+    }
 
     return (
         <View style={[AppStyles.container]}>
@@ -213,13 +205,38 @@ const ScheduleScreen = (props) => {
                 IconSource={Entypo}
                 iconName="new-message"
                 leftView={() => <Text style={[AppStyles.boldTextGray, { fontSize: 24 }]}>Kế hoạch</Text>} />
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', }}>
+                {
+                    status == 2 && <DropdownComponent
+                        arrowColor={AppColors.primaryBackground}
+                        textStyle={{ ...AppStyles.baseText, color: AppColors.primaryBackground, fontSize: AppSizes.fontMedium }}
+                        containerStyle={{ width: 200, marginBottom: AppSizes.paddingSmall, alignSelf: 'flex-end', backgroundColor: 'transparent', borderColor: 'transparent' }}
+                        data={dataUserUnderControl}
+                        onSelect={(item) => onChangeUser(item)}
+                        defaultValue={dataUserUnderControl[0]}
+                    />
+                }
+                <DropdownComponent
+                    arrowColor={AppColors.primaryBackground}
+                    textStyle={{ ...AppStyles.baseText, color: AppColors.primaryBackground, fontSize: AppSizes.fontMedium }}
+                    containerStyle={{ width: 180, marginBottom: AppSizes.paddingSmall, alignSelf: 'flex-end', backgroundColor: 'transparent', borderColor: 'transparent', justifyContent: "flex-start" }}
+                    data={filterOptions}
+                    onSelect={(item) => onChangeFilter(item)}
+                    defaultValue={filterOptions[0]}
+                />
+
+            </View>
+
 
             <SwitchSelector
                 style={{ marginBottom: AppSizes.paddingSmall, marginHorizontal: AppSizes.paddingSmall }}
                 options={options}
                 textStyle={AppStyles.baseTextGray}
                 initial={0}
-                onPress={value => setStatus(value)}
+                onPress={value => {
+                    setStatus(value)
+                    setUser(allUser)
+                }}
                 textColor={AppColors.secondaryTextColor}
                 selectedColor={AppColors.white}
                 buttonColor={AppColors.primaryBackground}
@@ -228,8 +245,9 @@ const ScheduleScreen = (props) => {
                 testID="status-switch-selector"
                 accessibilityLabel="status-switch-selector"
             />
+
             {
-                status == 2 && (<View style={{ flexDirection: 'row', margin: AppSizes.paddingSmall }}>
+                filterOption.id == 3 && (<View style={{ flexDirection: 'row', margin: AppSizes.paddingXSmall }}>
                     <DateTimePickerComponent
                         containerStyle={{ flex: 1, marginRight: 10 }}
                         value={start_ts}
@@ -244,6 +262,7 @@ const ScheduleScreen = (props) => {
                         onChangeDateTime={onChangeDateTimeEnd} />
                 </View>)
             }
+
             <AwesomeListComponent
                 keyExtractor={(item, index) => item.id + Math.random(1) * 1000}
                 refresh={refreshData}

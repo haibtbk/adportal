@@ -3,13 +3,17 @@ import { Text, TextInput, View, StyleSheet } from 'react-native'
 import { AppStyles, AppColors, AppSizes } from '@theme'
 
 const BaseInputViewComponent = (props) => {
-    const { title = "", content = "", onChangeText, containerStyle, disable = false } = props
+    const { title = "", content = "", onChangeText, containerStyle, textInputStyle, disable = false, keyboardType = "default" } = props
+    const [contentValue, setContent] = useState(content)
+    useEffect(() => {
+        setContent(content)
+    }, [content])
     return (
-        <View style={[styles.container,containerStyle && containerStyle]} pointerEvents={disable ? "none" : "auto"}>
+        <View style={[styles.container, containerStyle && containerStyle]} pointerEvents={disable ? "none" : "auto"}>
             <Text style={[AppStyles.baseTextGray]}>
                 {title + ': '}
             </Text>
-            <TextInput onChangeText={(text) => onChangeText && onChangeText(text)} style={[AppStyles.textInput, styles.input, {backgroundColor: disable?AppColors.grayLight: AppColors.white}]} value={content}>
+            <TextInput keyboardType={keyboardType} onChangeText={(text) => onChangeText && onChangeText(text)} style={[AppStyles.textInput, styles.input, { backgroundColor: disable ? AppColors.grayLight : AppColors.white }, textInputStyle]} defaultValue={contentValue}>
             </TextInput>
         </View>
     )
