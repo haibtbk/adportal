@@ -121,22 +121,25 @@ const ScheduleScreen = (props) => {
         return (
             <TouchableOpacity
                 onPress={() => onPressItem(item)}
-                style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: AppSizes.paddingSmall }}>
+                style={{ flexDirection: 'row', alignItems: 'flex-start', paddingVertical: AppSizes.paddingXSmall, marginBottom: AppSizes.paddingSmall }}>
                 {/* style={[styles.box]}> */}
-                <Text style={[AppStyles.baseTextGray, { marginRight: AppSizes.paddingSmall }]}>{DateTimeUtil.dateTimeFormat(item.start_ts)}</Text>
+                <Text style={[AppStyles.baseTextGray, { marginRight: AppSizes.paddingSmall, }]}>{DateTimeUtil.dateTimeFormat(item.start_ts)}</Text>
                 <View style={{ flex: 1 }}>
+                    <View style={{ justifyContent: 'space-between', flexDirection: 'row', alignItems: 'flex-start' }}>
+                        <Text style={[AppStyles.baseTextGray]} numberOfLines={2} ellipsizeMode="tail">
+                            {workType}
+                        </Text>
+                        <View style={{ flexDirection: 'row', flex: 1, justifyContent: 'flex-end', alignItems: 'center' }}>
+                            <Text style={[AppStyles.baseTextGray]} numberOfLines={2} ellipsizeMode="tail">
+                                {!!for_user ? for_user : "Chưa có"}
+                            </Text>
+                            <Entypo name="dot-single" size={30} color={Helper.getStatusColor(item.status)} style={{ marginLeft: AppSizes.paddingXSmall }} />
+                        </View>
+                    </View>
                     <Text style={[AppStyles.baseTextGray]} numberOfLines={2} ellipsizeMode="tail">
-                        Nội dung: {!!name ? name : "Chưa có"}
-                    </Text>
-
-                    <Text style={[AppStyles.baseTextGray, { marginVertical: AppSizes.paddingXSmall }]} numberOfLines={2} ellipsizeMode="tail">
-                        Loại công việc: {workType}
-                    </Text>
-                    <Text style={[AppStyles.baseTextGray]} numberOfLines={2} ellipsizeMode="tail">
-                        Người thực hiện: {!!for_user ? for_user : "Chưa có"}
+                        {!!name ? name : "Chưa có"}
                     </Text>
                 </View>
-                <Entypo name="dot-single" size={50} color={Helper.getStatusColor(item.status)} style={{ marginLeft: AppSizes.paddingXSmall }} />
 
             </TouchableOpacity>
         )
@@ -178,7 +181,25 @@ const ScheduleScreen = (props) => {
         })
         return sections
     }
-    const renderSectionHeader = ({ section }) => <Text style={[AppStyles.boldTextGray, { paddingTop: AppSizes.padding, backgroundColor: AppColors.white }]}>{section?.title}</Text>
+    const renderSectionHeader = ({ section }) => {
+        console.log("section", section)
+        const { data } = section
+        const firstItem = data?.[0] ?? {}
+        const start_ts = firstItem?.start_ts ?? 0
+        const dayOfWeek = moment(start_ts * 1000).format("dddd")
+        const date = moment(start_ts * 1000).format("MM/YYYY")
+        const day = moment(start_ts * 1000).format("DD")
+
+        return (
+            <View style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: AppSizes.paddingXSmall, backgroundColor: AppColors.grayLight,  }}>
+                <Text style={[AppStyles.boldTextGray, { marginRight: AppSizes.paddingSmall, fontSize: AppSizes.fontTitle }]}>{day}</Text>
+                <View style={{ flex: 1 }}>
+                    <Text style={[AppStyles.baseTextGray, { marginRight: AppSizes.paddingSmall, }]}>{dayOfWeek}</Text>
+                    <Text style={[AppStyles.baseTextGray, { marginRight: AppSizes.paddingSmall, }]}>{date}</Text>
+                </View>
+            </View>
+        )
+    }
 
     const onChangeFilter = (item) => {
         setFilterOption(item)

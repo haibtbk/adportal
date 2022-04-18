@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, Alert, StyleSheet, Platform, TouchableOpacity, ScrollView } from 'react-native';
 import { AppSizes, AppStyles, AppColors } from '@theme';
 import NavigationBar from '@navigation/NavigationBar';
+import { useDispatch, useSelector } from 'react-redux'
 import { API } from '@network';
 import { LoadingComponent, ButtonComponent, DropdownComponent, ButtonIconComponent, Dialog, BaseInputViewComponent } from '@component';
 import { utils, RouterName } from '@navigation';
@@ -30,7 +31,10 @@ const ScheduleDetailScreen = ({ route, navigation }) => {
     const [customer_number, setCustomerNumber] = useState(schedule?.schedule_data?.customer_number ?? 0)
     const [tvv_number, setTvvNumber] = useState(schedule?.schedule_data?.tvv_number ?? 0)
     const [afyp, setAfyp] = useState(schedule?.schedule_data?.afyp ?? 0)
-
+    const account = useSelector((state) => {
+        return state?.user?.account ?? {}
+    })
+    const isEnable = account?.user_id == schedule?.user_id
     const workType = Helper.getWorkHeader(scheduleData?.schedule_data?.work_type ?? "")
     const for_user = scheduleData?.schedule_data?.for_user ?? ""
     const content = scheduleData?.schedule_data?.name ?? ""
@@ -352,7 +356,7 @@ const ScheduleDetailScreen = ({ route, navigation }) => {
                 centerTitle="Kế hoạch chi tiết" />
             <ScrollView
                 showsVerticalScrollIndicator={false}
-                contentContainerStyle={{ margin: AppSizes.paddingXSmall, paddingBottom: AppSizes.padding}}>
+                contentContainerStyle={{ margin: AppSizes.paddingXSmall, paddingBottom: AppSizes.padding }}>
                 <View style={AppStyles.baseBox}>
                     <Text style={[AppStyles.boldTextGray, { marginVertical: AppSizes.paddingXSmall, fontSize: AppSizes.fontLarge }]} numberOfLines={2} ellipsizeMode="tail">
                         {workType}
@@ -377,6 +381,7 @@ const ScheduleDetailScreen = ({ route, navigation }) => {
                         </Text>
 
                         <DropdownComponent
+                            disabled={!isEnable}
                             textStyle={{ color: Helper.getStatusColor(scheduleData.status) }}
                             containerStyle={styles.dropdownBtnStyle}
                             data={actionStatus}
@@ -392,18 +397,23 @@ const ScheduleDetailScreen = ({ route, navigation }) => {
                             Thông tin hội nghị
                         </Text>
                         <BaseInputViewComponent
+                            disable={!isEnable}
                             keyboardType="numeric"
                             title="khách hàng/ ứng viên"
                             content={customer_number}
                             onChangeText={_.debounce(txt => onchangeNumberCustomer(txt), 2000)}
                         />
                         <BaseInputViewComponent
+                            disable={!isEnable}
+
                             keyboardType="numeric"
                             title="Tvv"
                             content={tvv_number}
                             onChangeText={_.debounce(txt => onchangeTvv(txt), 2000)}
                         />
                         <BaseInputViewComponent
+                            disable={!isEnable}
+
                             keyboardType="numeric"
                             title="AFYP"
                             content={afyp}
@@ -419,18 +429,25 @@ const ScheduleDetailScreen = ({ route, navigation }) => {
                     {
                         renderAttachment()
                     }
-                    <ButtonComponent
-                        action={() => { uploadFiles() }}
-                        textStyle={{ color: AppColors.primaryBackground }}
-                        title="Tải lên"
-                        containerStyle={{ ...AppStyles.roundButton, borderColor: 'gray', width: 180, alignSelf: 'center', backgroundColor: AppColors.white, marginVertical: AppSizes.padding }}
-                    />
+                    {
+                        isEnable && <ButtonComponent
+                            action={() => { uploadFiles() }}
+                            textStyle={{ color: AppColors.primaryBackground }}
+                            title="Tải lên"
+                            containerStyle={{ ...AppStyles.roundButton, borderColor: 'gray', width: 180, alignSelf: 'center', backgroundColor: AppColors.white, marginVertical: AppSizes.padding }}
+                        />
+                    }
+
                 </View>
-                <ButtonComponent
-                    textStyle={{ color: AppColors.danger }}
-                    containerStyle={{ ...AppStyles.roundButton, borderColor: 'gray', width: 180, alignSelf: 'center', backgroundColor: AppColors.white, marginVertical: AppSizes.paddingLarge }}
-                    title="Xóa công việc"
-                    action={() => deleteSchedule()} />
+                {
+                    isEnable && <ButtonComponent
+                        textStyle={{ color: AppColors.danger }}
+                        containerStyle={{ ...AppStyles.roundButton, borderColor: 'gray', width: 180, alignSelf: 'center', backgroundColor: AppColors.white, marginVertical: AppSizes.paddingLarge }}
+                        title="Xóa công việc"
+                        action={() => deleteSchedule()} />
+
+                }
+
             </ScrollView>
 
             {

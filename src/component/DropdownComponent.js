@@ -10,10 +10,11 @@ const MAX_DROPDOWM_WIDTH = 150
 const DROPDOWN_HEIGHT = 35
 
 const DropdownComponent = (props) => {
-    const { data, onSelect, defaultValue, defaultButtonText = "", containerStyle, textStyle, arrowColor=AppColors.gray } = props
+    const { data, onSelect, defaultValue, defaultButtonText = "", containerStyle, textStyle, arrowColor = AppColors.gray, disabled = false } = props
 
     return (
         <SelectDropdown
+            disabled={disabled}
             data={data}
             defaultValue={defaultValue}
             onSelect={onSelect}
