@@ -168,7 +168,9 @@ const ScheduleScreen = (props) => {
 
     const createSections = (res) => {
         console.log(res)
-        const groupsDate = _.groupBy(res, (item) => {
+        const dataSorted = _.orderBy(res, ['start_ts'],['asc'])
+
+        const groupsDate = _.groupBy(dataSorted, (item) => {
             return moment(item.start_ts * 1000).format("DD/MM/YYYY")
         })
 
