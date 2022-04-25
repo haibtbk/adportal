@@ -4,10 +4,9 @@ import { Text, View, Button, Image, AppState, StyleSheet } from 'react-native';
 import { NavigationContainer, DrawerActions } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { createStackNavigator } from '@react-navigation/stack';
 import FabManager from './src/fab/FabManager';
 import FabButton from './src/fab/FabButton';
@@ -44,6 +43,8 @@ import {
   CreateScheduleScreen,
   RevenueScreen,
   RevenueAreaScreen,
+  ChangePasswordScreen,
+  AdwardScreen
 } from '@container';
 import * as RNLocalize from 'react-native-localize';
 import Localization from '@localization'
@@ -133,15 +134,19 @@ function RootTabs() {
         )}
       </Tab.Screen>
       <Tab.Screen
-        name="Menu"
+        name="Tài khoản"
         options={{
           headerShown: false,
           tabBarIcon: ({ color, size }) => (
-            <SimpleLineIcons name="menu" color={color} size={size} />
+            <MaterialCommunityIcons name="account" color={color} size={size} />
           ),
         }}>
         {() => (
-          <DrawerMenuNavigator />
+          <Stack.Navigator screenOptions={{ headerShown: false }}>
+            <Stack.Screen name={RouterName.account} component={AccountScreen} />
+            <Stack.Screen name={RouterName.changePassword} component={ChangePasswordScreen} />
+            <Stack.Screen name={RouterName.adward} component={AdwardScreen} />
+          </Stack.Navigator>
         )}
       </Tab.Screen>
 

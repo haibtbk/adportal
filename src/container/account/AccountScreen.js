@@ -1,17 +1,24 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, FlatList, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { AppSizes, AppStyles, AppColors } from '@theme';
 import NavigationBar from '@navigation/NavigationBar';
 import { useNavigation } from '@react-navigation/native';
 import navigationManager from '@navigation/utils'
 import { useDispatch, useSelector } from 'react-redux'
-import { BaseViewComponent, VirtualizedList } from '@component';
+import { Dialog, VirtualizedList, ButtonComponent, LoadingComponent } from '@component';
 import { WebImage } from '@component';
 import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons"
 import MaterialIcons from "react-native-vector-icons/MaterialIcons"
+import AntDesign from "react-native-vector-icons/AntDesign"
 import { RouterName } from '@navigation';
 import { Divider } from 'react-native-paper';
-import { SimpleListComponent, SimpleSessionListComponent } from '@container'
+import _ from 'lodash';
+import ImagePicker from 'react-native-image-crop-picker';
+import GroupManagerComponent from './GroupManagerComponent';
+import { API } from '@network';
+import { saveUser } from '@redux/user/action';
+import { AppConfig } from '@constant';
+
 
 const DEMO_AVATAR = "http://hinhnendepnhat.net/wp-content/uploads/2014/10/hinh-nen-girl-xinh-tien-nu-mong-ao.jpg"
 
@@ -19,10 +26,15 @@ const DEMO_AVATAR = "http://hinhnendepnhat.net/wp-content/uploads/2014/10/hinh-n
 
 const AccountScreen = (props) => {
   const navigation = useNavigation();
+  const dispatch = useDispatch()
   const account = useSelector((state) => {
     return state?.user?.account ?? {}
   })
 
+  const [isLoading, setLoading] = useState(false)
+  const [avatar, setAvatar] = useState(account?.avatar ?? DEMO_AVATAR)
+
+  const manager_group = account?.manager_group ?? {}
 
   const doEditProfile = () => {
     navigation.navigate(RouterName.editProfile, {
@@ -30,71 +42,168 @@ const AccountScreen = (props) => {
     });
   }
 
-  const getAvatar = () => {
-    return account?.avatar ?? DEMO_AVATAR
+
+  const uploadAvatar = (photo) => {
+    var photo = {
+      uri: photo.path,
+      // uri: photo.sourceURL,
+      type: photo.mime,
+      name: photo.filename ?? `image_${new Date().getTime()}`
+    };
+
+    //use formdata
+    var formData = new FormData();
+    formData.append('upload_file', photo);
+    formData.append("submit", 1)
+    formData.append("uploadFileField", "upload_file")
+
+    setLoading(true)
+    API.uploadAvatar(formData)
+      .then(res => {
+        if (res?.data?.success) {
+          const baseURL = AppConfig.API_BASE_URL[API.env]
+          const avatar = baseURL + '/' + res?.data?.result?.path ?? ""
+          setAvatar(avatar)
+          API.updateAvatar(avatar)
+            .then(res => {
+              if (res?.data?.success) {
+                const account = res?.data?.result
+                dispatch(saveUser(account))
+                alert(res?.data?.message ?? "Cập nhật thành công")
+              }
+            })
+            .catch(error => {
+              alert("Có lỗi xảy ra")
+            })
+            .finally(() => {
+              setLoading(false)
+            })
+
+        } else {
+          Alert.alert("Có lỗi xảy ra", "Vui lòng thử lại!!!")
+        }
+
+      })
+      .catch(error => {
+        Alert.alert("Có lỗi xảy ra", "Vui lòng thử lại!!!")
+      })
+      .finally(() => {
+        setLoading(false)
+      })
   }
+
+  const handleOpenCamera = () => {
+    Dialog.hide()
+    ImagePicker.openCamera({
+      width: 300,
+      height: 400,
+      cropping: true,
+    }).then(image => {
+      setAvatar(image?.path)
+      uploadAvatar(image)
+      console.log(image);
+    });
+  }
+
+  const handleOpenPhotoFromLibrary = () => {
+    Dialog.hide()
+    ImagePicker.openPicker({
+      width: 300,
+      height: 400,
+      cropping: true
+    }).then(image => {
+      console.log(image);
+      setAvatar(image?.path)
+      uploadAvatar(image)
+    });
+  }
+
+  const changeAvatar = () => {
+    const dialogOption = {
+      navigation,
+      positiveText: null,
+      title: 'Vui lòng chọn nguồn ảnh',
+      negativeText: "Thoát",
+      customContent: <View>
+        <TouchableOpacity style={{ padding: AppSizes.padding }} onPress={handleOpenPhotoFromLibrary}>
+          <Text style={[AppStyles.baseText, { color: AppColors.balck, textAlign: 'center' }]}>Chọn ảnh từ thư viện</Text>
+        </TouchableOpacity>
+        <Divider style={{ marginHorizontal: '10%' }} />
+        <TouchableOpacity style={{ padding: AppSizes.padding }} onPress={handleOpenCamera}>
+          <Text style={[AppStyles.baseText, { color: AppColors.balck, textAlign: 'center' }]}>Chụp ảnh</Text>
+        </TouchableOpacity>
+        <Divider />
+
+      </View>
+    }
+    Dialog.show(dialogOption)
+  }
+
 
   const logout = () => {
     navigationManager.logout()
   }
 
-  const testData = [
-    {
-      title: "Tin tức",
-      data: ["a", "b", "c"]
-    },
-    {
-      title: "Bài viết",
-      data: ["a", "b", "c"]
-    },]
-
-
+  const getBanNhom = () => {
+    let data = []
+    _.forEach(manager_group, (value, key) => {
+      _.forEach(value, (v) => {
+        data = [...data, { banName: key, groupName: v }]
+      })
+    })
+    return data
+  }
   return (
-    <View style={AppStyles.container}>
+    <View style={[AppStyles.container, { paddingHorizontal: 0 }]}>
       <NavigationBar
-        isBack
-        leftView={() => (
-          <TouchableOpacity
-            onPress={() => {
-              navigation.goBack()
-            }}
-          >
-            <SimpleLineIcons name="menu" size={26} color={AppColors.secondaryTextColor} />
-          </TouchableOpacity>
-        )}
-        centerTitle="Tài khoản"
-        rightView={() => <TouchableOpacity
-          onPress={doEditProfile}
-          style={{ paddingVertical: AppSizes.paddingXSmall }}>
-          <MaterialIcons name="edit" size={22} color={AppColors.secondaryTextColor} />
-        </TouchableOpacity>}
+        leftView={() => <Text style={[AppStyles.boldTextGray, { fontSize: 24 }]}>Tài khoản</Text>}
       />
-      <VirtualizedList contentContainerStyle={{flex:1}}>
+      <VirtualizedList contentContainerStyle={{ flex: 1 }}>
         <WebImage
           containerStyle={{ alignSelf: 'center', marginBottom: AppSizes.margin, }}
           size={90}
           rounded={true}
           placeHolder={require('@images/avatar.png')}
           source={{
-            uri: getAvatar(),
+            uri: avatar,
           }}
         />
-        <View style={[AppStyles.boxShadow, { margin: AppSizes.paddingSmall, padding: AppSizes.paddingSmall }]}>
-          <Text style={[AppStyles.boldTextGray, { marginBottom: AppSizes.paddingSmall }]}>Thông tin chung:</Text>
-          <BaseViewComponent title="Tên" content={account.name} />
-          <BaseViewComponent title="Đơn vị" content={account.organization_name} />
-          <BaseViewComponent title="Chức vụ" content={account.position_name} />
-          <BaseViewComponent title="Email" content={account.mail} />
-          <BaseViewComponent title="Số điện thoại" content={account.phone} />
+        <View style={{ alignItems: 'center', justifyContent: 'center', paddingHorizontal: AppSizes.padding }}>
+          <Text style={AppStyles.boldTextGray}>{account?.name}</Text>
+          <Text style={[AppStyles.baseTextGray, { marginTop: AppSizes.paddingXSmall }]}>{account?.position_name}</Text>
+          <Text style={AppStyles.baseTextGray}>{account?.organization_name}</Text>
         </View>
-        <SimpleListComponent title="Danh hiệu cá nhân" data={account?.achievement ?? []} emptyText="Chưa có danh hiệu" />
-        {/* <SimpleSessionListComponent title="Ban, nhóm quản lý" data={testData} /> */}
+        <View style={{ marginTop: AppSizes.paddingXSmall }}>
+          <ButtonComponent
+            action={() => { changeAvatar() }}
+            title="Thay ảnh đại diện"
+            textStyle={{ color: AppColors.success }}
+            containerStyle={styles.button} />
+          <Divider />
+          <ButtonComponent
+            action={() => { navigation.navigate(RouterName.changePassword) }}
+            title="Đổi mật khẩu"
+            textStyle={{ color: AppColors.success }}
+            containerStyle={styles.button} />
+        </View>
+
+        {/* <SimpleListComponent title="Danh hiệu cá nhân" data={account?.achievement ?? []} emptyText="Chưa có danh hiệu" /> */}
+        <GroupManagerComponent data={getBanNhom()} />
+
+        <TouchableOpacity
+          onPress={() => { navigation.navigate(RouterName.adward) }}
+          style={{ flexDirection: 'row', width: '100%', justifyContent: 'space-between', padding: AppSizes.padding, backgroundColor: AppColors.grayLight }}>
+          <Text style={[AppStyles.baseTextGray, { color: AppColors.success }]}>Danh hiệu cá nhân</Text>
+          <AntDesign name="right" size={18} color={AppColors.success} />
+        </TouchableOpacity>
+
         <TouchableOpacity
           onPress={logout}
           style={[AppStyles.roundButton, styles.logoutButton]}>
           <Text style={AppStyles.baseText}>Đăng xuất</Text>
         </TouchableOpacity>
       </VirtualizedList>
+      {isLoading && <LoadingComponent />}
 
     </View>
   );
@@ -103,7 +212,7 @@ const AccountScreen = (props) => {
 const styles = StyleSheet.create({
   logoutButton: {
     padding: AppSizes.padding,
-    backgroundColor: AppColors.primaryBackground,
+    backgroundColor: AppColors.danger,
     width: 150, alignItems: 'center', justifyContent: 'center', alignSelf: 'center', marginTop: AppSizes.paddingMedium
   },
   personalArward: {
@@ -111,6 +220,7 @@ const styles = StyleSheet.create({
     margin: AppSizes.paddingSmall,
     padding: AppSizes.paddingSmall,
   },
+  button: { width: '100%', backgroundColor: 'transparent' }
 
 })
 export default AccountScreen;

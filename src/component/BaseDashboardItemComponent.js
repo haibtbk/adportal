@@ -23,7 +23,7 @@ const BaseDashboardItemComponent = (props) => {
                 </Text>
             </View>
             <Text style={[AppStyles.boldText, { color: AppColors.primaryTextColor, fontSize: AppSizes.fontLarge, textAlign: 'center' }]}>
-                {getAmount()}
+                {getAmount()+ " trđ"}
             </Text>
             {
                 percent != undefined && <Text style={[AppStyles.boldText, { color: AppColors.primaryTextColor, textAlign: 'center' }]}>

@@ -4,6 +4,7 @@ import HomeScreen from './home/HomeScreen';
 import NewsScreen from './news/NewsScreen';
 import NotificationsScreen from './notification/NotificationsScreen';
 import AccountScreen from './account/AccountScreen';
+import ChangePasswordScreen from './account/ChangePasswordScreen';
 import SplashScreen from './SplashScreen';
 import EditAccountScreen from './account/EditAccountScreen';
 import BaseNewsComponent from './component/BaseNewsComponent';
@@ -32,7 +33,10 @@ import RevenueAreaScreen from './revenue/RevenueAreaScreen';
 import Title from './home/Title';
 import SimpleListComponent from './component/SimpleListComponent';
 import SimpleSessionListComponent from './component/SimpleSessionListComponent';
+import AdwardScreen from './account/AdwardScreen';
 export {
+  AdwardScreen,
+  ChangePasswordScreen,
   SimpleSessionListComponent,
   SimpleListComponent,
   Title,

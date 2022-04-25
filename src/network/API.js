@@ -143,5 +143,26 @@ API.scheduleUpdate = (data) => {
     return API.instance.post(Endpoint.scheduleUpdate, data);
 }
 
+API.changePassword = (data) => {
+    const params = {
+        password: data.password,
+        password_repeat: data.password_repeat,
+        _method: "PUT",
+        id: data.id,
+        submit: 1
+    }
+    return API.instance.post(Endpoint.changePassword, params);
+}
+
+API.updateAvatar = (avatar) => {
+    const params = {
+        avatar,
+        _method: "put",
+        submit: 1
+    }
+    return API.instance.post(Endpoint.updateProfile, params);
+}
+
+
 /* Export Component ==================================================================== */
 export default API;

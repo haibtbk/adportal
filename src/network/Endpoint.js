@@ -27,6 +27,7 @@ const Endpoint = {
     getScheduleUser: '/api/schedule/search-schedule-of-user-iids',
     uploadFileSchedule: '/api/file-manager/upload-schedule-attachment',
     scheduleUpdate: '/api/schedule/update',
+    changePassword: '/api/user/update',
 }
 
 export default Endpoint

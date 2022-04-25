@@ -465,18 +465,8 @@ const HomeScreen = ({ route }) => {
               onPress={onPressYearly}
               iconName="ios-logo-usd" title="Doanh thu năm" content="Doanh thu năm" amount={getYearRevenue()} percent={getPercentYear()} containerStyle={{ flex: 1, }} color={AppColors.success} />
           </View>
-          <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
-            <BaseDashboardItemComponent iconName="newspaper" onPress={() => navigation.navigate("Tin tức")} title="Bản tin" content="Bản tin" amount={dashboardInfo?.news?.total ?? 0} containerStyle={{ flex: 1, marginRight: AppSizes.paddingSmall, }} color={AppColors.danger} />
-            <BaseDashboardItemComponent onPress={() => {
-              navigation.navigate("Menu")
-              setTimeout(() => {
-                navigation.navigate("Phê duyệt")
-              }, 500)
-            }} title="Yêu cầu phê duyệt" content="Yêu cầu phê duyệt" amount={dashboardInfo?.approve_request?.length ?? 0} containerStyle={{ flex: 1, }} color={AppColors.info} />
-          </View>
         </View>
 
-        <ScheduleComponent containerStyle={{ marginTop: AppSizes.padding }} isShowDate={false} data={scheduleTodayData()} title="Kế hoạch trong ngày" titleStyle={{ color: AppColors.secondaryTextColor }} />
         {
           roll.id === 1 && <PerformanceComponent containerStyle={{ marginTop: AppSizes.padding }} data={getDataPerformance()} title="Hiệu suất công việc" titleStyle={{ color: AppColors.secondaryTextColor, paddingLeft: AppSizes.paddingXSmall, fontSize: AppSizes.fontMedium }} />
         }

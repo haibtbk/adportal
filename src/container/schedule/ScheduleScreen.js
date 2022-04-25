@@ -82,10 +82,6 @@ const ScheduleScreen = (props) => {
             end_ts: Math.round(end_ts / 1000),
         }
 
-        const companyParams = {
-
-        }
-
         return status == 1 ? API.getSchedules(params) : API.getSchedulesCompany(params)
     }
 
@@ -121,7 +117,7 @@ const ScheduleScreen = (props) => {
         return (
             <TouchableOpacity
                 onPress={() => onPressItem(item)}
-                style={{ flexDirection: 'row', alignItems: 'flex-start', paddingVertical: AppSizes.paddingXSmall, marginBottom: AppSizes.paddingSmall }}>
+                style={{ flexDirection: 'row', alignItems: 'flex-start', paddingVertical: AppSizes.paddingXSmall, paddingHorizontal: AppSizes.padding, marginBottom: AppSizes.paddingSmall }}>
                 {/* style={[styles.box]}> */}
                 <Text style={[AppStyles.baseTextGray, { marginRight: AppSizes.paddingSmall, }]}>{DateTimeUtil.dateTimeFormat(item.start_ts)}</Text>
                 <View style={{ flex: 1 }}>
@@ -168,7 +164,7 @@ const ScheduleScreen = (props) => {
 
     const createSections = (res) => {
         console.log(res)
-        const dataSorted = _.orderBy(res, ['start_ts'],['asc'])
+        const dataSorted = _.orderBy(res, ['start_ts'], ['asc'])
 
         const groupsDate = _.groupBy(dataSorted, (item) => {
             return moment(item.start_ts * 1000).format("DD/MM/YYYY")
@@ -193,7 +189,7 @@ const ScheduleScreen = (props) => {
         const day = moment(start_ts * 1000).format("DD")
 
         return (
-            <View style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: AppSizes.paddingXSmall, backgroundColor: AppColors.grayLight,  }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: AppSizes.paddingSmall, backgroundColor: AppColors.grayLight, paddingHorizontal: AppSizes.padding }}>
                 <Text style={[AppStyles.boldTextGray, { marginRight: AppSizes.paddingSmall, fontSize: AppSizes.fontTitle }]}>{day}</Text>
                 <View style={{ flex: 1 }}>
                     <Text style={[AppStyles.baseTextGray, { marginRight: AppSizes.paddingSmall, }]}>{dayOfWeek}</Text>
@@ -222,12 +218,12 @@ const ScheduleScreen = (props) => {
     }
 
     return (
-        <View style={[AppStyles.container]}>
+        <View style={[AppStyles.container, { paddingHorizontal: 0 }]}>
             <NavigationBar
                 onRightPress={() => { navigation.navigate(RouterName.createSchedule, { callback }) }}
                 IconSource={Entypo}
                 iconName="new-message"
-                leftView={() => <Text style={[AppStyles.boldTextGray, { fontSize: 24 }]}>Kế hoạch</Text>} />
+                leftView={() => <Text style={[AppStyles.boldTextGray, { fontSize: 24 }]}>Lịch hoạt động</Text>} />
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', }}>
                 {
                     status == 2 && <DropdownComponent

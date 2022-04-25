@@ -19,6 +19,8 @@ const routes = {
     createSchedule: "CreateSchedule",
     revenue: "Revenue",
     ScheduleDetail: "ScheduleDetail",
+    changePassword: "ChangePassword",
+    adward: "Adward",
 }
 
 export default routes
