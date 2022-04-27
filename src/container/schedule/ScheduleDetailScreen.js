@@ -37,47 +37,11 @@ const ScheduleDetailScreen = ({ route, navigation }) => {
     const isEnable = account?.user_id == schedule?.user_id
     const workType = Helper.getWorkHeader(scheduleData?.schedule_data?.work_type ?? "")
     const for_user = scheduleData?.schedule_data?.for_user ?? ""
+    const form_user = scheduleData?.schedule_data?.form_user ?? ""
     const content = scheduleData?.schedule_data?.name ?? ""
-    const isToChucSuKien = _.includes(scheduleData?.schedule_data?.work_type, workTypeValues.toChucHoiNghi)
-
+    const isToChucSuKien = scheduleData?.schedule_data?.work_type?.toString()?.charAt(0) == workTypeValues.toChucHoiNghi
 
     const onChangeValueStatus = (item, itemSchedule) => {
-
-        if (item.value == -1) { //xoa ban ghi
-            Alert.alert("Chú ý", "Bạn có chắc chắn muốn xóa lịch này?", [
-                {
-                    text: "Hủy",
-                    onPress: () => {
-                    },
-                    style: "cancel"
-                },
-                {
-                    text: "Xóa",
-                    onPress: () => {
-                        const params = {
-                            id: itemSchedule.id,
-                            submit: 1,
-                            _method: 'DELETE'
-                        }
-                        setLoading(true)
-                        API.deleteSchedule(params)
-                            .then(res => {
-                                if (res?.data?.success) {
-                                    utils.showBeautyAlert(navigation, "success", res?.data?.message ?? "Xóa thành công")
-                                }
-                                refreshData()
-                            })
-                            .catch(err => console.error(err))
-                            .finally(() => {
-                                setLoading(false)
-                            })
-                    }
-                }
-            ])
-
-
-            return
-        }
 
         const params = {
             id: itemSchedule.id,
@@ -326,18 +290,6 @@ const ScheduleDetailScreen = ({ route, navigation }) => {
         }
     }
 
-    const onchangeNumberCustomer = (value) => {
-        setCustomerNumber(value)
-    }
-
-    const onchangeTvv = (value) => {
-        setTvvNumber(value)
-    }
-
-    const onchangeAfyp = (value) => {
-        setAfyp(value)
-    }
-
     useEffect(() => {
         if (isFirstRender.current) {
             isFirstRender.current = false;
@@ -347,6 +299,20 @@ const ScheduleDetailScreen = ({ route, navigation }) => {
         updateSchedule()
 
     }, [afyp, tvv_number, customer_number, attachments])
+
+    const editReport = () => {
+        navigation.navigate("ScheduleReport", {
+            callback: (data) => {
+                if(data){
+                    callback && callback()
+                    setAfyp(data.afyp)
+                    setTvvNumber(data.tvv_number)
+                    setCustomerNumber(data.customer_number)
+                }
+            },
+            schedule,
+        })
+    }
 
     return (
         <View style={[AppStyles.container]}>
@@ -362,7 +328,7 @@ const ScheduleDetailScreen = ({ route, navigation }) => {
                         {workType}
                     </Text>
                     <Text style={[AppStyles.baseTextGray]}>
-                        Nội dung: {!!content ? content : "Chưa có"}
+                        {!!content ? content : "Chưa có"}
                     </Text>
 
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -374,6 +340,9 @@ const ScheduleDetailScreen = ({ route, navigation }) => {
                     </View>
                     <Text style={[AppStyles.baseTextGray]} numberOfLines={2} ellipsizeMode="tail">
                         Người thực hiện: {!!for_user ? for_user : "Chưa có"}
+                    </Text>
+                    <Text style={[AppStyles.baseTextGray]} numberOfLines={2} ellipsizeMode="tail">
+                        Người giao việc: {!!form_user ? form_user : "Chưa có"}
                     </Text>
                     <View style={{ flexDirection: 'row', alignItems: 'center', }}>
                         <Text style={[AppStyles.baseTextGray, { marginRight: AppSizes.padding }]}>
@@ -394,31 +363,23 @@ const ScheduleDetailScreen = ({ route, navigation }) => {
                 {
                     isToChucSuKien && <View style={{ ...AppStyles.baseBox, marginTop: AppSizes.padding }}>
                         <Text style={[AppStyles.boldTextGray, { marginVertical: AppSizes.paddingXSmall, fontSize: AppSizes.fontLarge }]} numberOfLines={2} ellipsizeMode="tail">
-                            Thông tin hội nghị
+                            Báo cáo kết quả
                         </Text>
-                        <BaseInputViewComponent
-                            disable={!isEnable}
-                            keyboardType="numeric"
-                            title="khách hàng/ ứng viên"
-                            content={customer_number}
-                            onChangeText={_.debounce(txt => onchangeNumberCustomer(txt), 2000)}
-                        />
-                        <BaseInputViewComponent
-                            disable={!isEnable}
+                        <Text style={[AppStyles.baseTextGray, { marginVertical: AppSizes.paddingXSmall }]} numberOfLines={2} ellipsizeMode="tail">
+                            {customer_number} Khách hàng/Ứng viên tham gia
+                        </Text>
+                        <Text style={[AppStyles.baseTextGray, { marginVertical: AppSizes.paddingXSmall }]} numberOfLines={2} ellipsizeMode="tail">
+                            {tvv_number} customer_number
+                        </Text>
+                        <Text style={[AppStyles.baseTextGray, { marginVertical: AppSizes.paddingXSmall }]} numberOfLines={2} ellipsizeMode="tail">
+                            {afyp} trđ AFYP
+                        </Text>
 
-                            keyboardType="numeric"
-                            title="Tvv"
-                            content={tvv_number}
-                            onChangeText={_.debounce(txt => onchangeTvv(txt), 2000)}
-                        />
-                        <BaseInputViewComponent
-                            disable={!isEnable}
-
-                            keyboardType="numeric"
-                            title="AFYP"
-                            content={afyp}
-                            onChangeText={_.debounce(txt => onchangeAfyp(txt), 2000)}
-                        />
+                        <ButtonComponent
+                            textStyle={{ color: AppColors.primaryBackground }}
+                            containerStyle={{ ...AppStyles.roundButton, borderColor: 'gray', width: 180, alignSelf: 'center', backgroundColor: AppColors.white, marginVertical: AppSizes.padding, }}
+                            title="Báo cáo"
+                            action={editReport} />
                     </View>
                 }
 
@@ -437,19 +398,16 @@ const ScheduleDetailScreen = ({ route, navigation }) => {
                             containerStyle={{ ...AppStyles.roundButton, borderColor: 'gray', width: 180, alignSelf: 'center', backgroundColor: AppColors.white, marginVertical: AppSizes.padding }}
                         />
                     }
-
                 </View>
                 {
                     isEnable && <ButtonComponent
                         textStyle={{ color: AppColors.danger }}
-                        containerStyle={{ ...AppStyles.roundButton, borderColor: 'gray', width: 180, alignSelf: 'center', backgroundColor: AppColors.white, marginVertical: AppSizes.paddingLarge }}
+                        containerStyle={{ ...AppStyles.roundButton, borderColor: 'gray', width: 180, alignSelf: 'center', backgroundColor: AppColors.white, marginVertical: AppSizes.paddingLarge, }}
                         title="Xóa công việc"
                         action={() => deleteSchedule()} />
 
                 }
-
             </ScrollView>
-
             {
                 isLoading && <LoadingComponent />
             }
@@ -501,7 +459,13 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         marginBottom: AppSizes.padding
-    }
+    },
+    button: {
+        alignSelf: 'center',
+        width: 180,
+        height: 35,
+        marginTop: AppSizes.padding
+    },
 })
 
 

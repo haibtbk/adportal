@@ -227,11 +227,10 @@ const PathView = (props) => {
     const { data = [], onPressItem } = props
     return (
         <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: AppSizes.paddingXSmall, flexWrap: 'wrap', marginBottom: AppSizes.paddingSmall }}>
-            <Text style={[AppStyles.baseTextGray]}>Path://</Text>
+            <Text style={[AppStyles.baseTextGray]}></Text>
             {
                 _.map(data, (item, index) => {
                     const name = item?.name
-                    const isHideSplash = index == data.length - 1
                     return (
                         <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: AppSizes.paddingXSmall }}>
                             <TouchableOpacity
@@ -239,7 +238,6 @@ const PathView = (props) => {
                                 style={{ ...AppStyles.roundButton, paddingVertical: AppSizes.paddingXSmall, backgroundColor: AppColors.primaryBackground }}>
                                 <Text key={index} style={[AppStyles.baseText, { marginRight: AppSizes.paddingSmall }]}>{name}</Text>
                             </TouchableOpacity>
-                            <Text style={[AppStyles.baseTextGray]}>{isHideSplash ? "" : '/'}</Text>
                         </View>
 
                     )

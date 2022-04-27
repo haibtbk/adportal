@@ -24,6 +24,7 @@ import { RouterName } from '@navigation';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { workTypeValues } from "@schedule/WorkTypes";
 import { ScheduleStatus } from "@schedule"
+import ChartComponent from './ChartComponent';
 
 const ROLLS = [
   {
@@ -466,6 +467,8 @@ const HomeScreen = ({ route }) => {
               iconName="ios-logo-usd" title="Doanh thu năm" content="Doanh thu năm" amount={getYearRevenue()} percent={getPercentYear()} containerStyle={{ flex: 1, }} color={AppColors.success} />
           </View>
         </View>
+
+        <ChartComponent tile="Nhom" data={{first: 100, third:200, second: 200}}/>
 
         {
           roll.id === 1 && <PerformanceComponent containerStyle={{ marginTop: AppSizes.padding }} data={getDataPerformance()} title="Hiệu suất công việc" titleStyle={{ color: AppColors.secondaryTextColor, paddingLeft: AppSizes.paddingXSmall, fontSize: AppSizes.fontMedium }} />

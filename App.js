@@ -50,6 +50,7 @@ import * as RNLocalize from 'react-native-localize';
 import Localization from '@localization'
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import ScheduleReportScreen from './src/container/schedule/ScheduleReportScreen';
 const Tab = createBottomTabNavigator();
 const HomeStack = createStackNavigator();
 const NewsStack = createStackNavigator();
@@ -114,6 +115,7 @@ function RootTabs() {
           <HomeStack.Navigator screenOptions={{ headerShown: false }}>
             <HomeStack.Screen name="Schedule" component={ScheduleScreen} />
             <HomeStack.Screen name="ScheduleDetail" component={ScheduleDetailScreen} />
+            <HomeStack.Screen name="ScheduleReport" component={ScheduleReportScreen} />
           </HomeStack.Navigator>
         )}
       </Tab.Screen>

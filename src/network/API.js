@@ -71,6 +71,9 @@ API.getSchedules = (params) => {
     return API.instance.get(Endpoint.getSchedules, { params })
 }
 
+API.getSchedulesManager = (params) => {
+    return API.instance.get(Endpoint.getSchedulesManager, { params })
+}
 API.getSchedulesCompany = (params) => {
     return API.instance.get(Endpoint.getSchedulesCompany, { params })
 }

@@ -5,7 +5,7 @@ import {actionStatus} from './ScheduleStatus'
 import { ScheduleStatus } from "@schedule"
 
 const getWorkHeader = (work_type) => {
-    const workType = _.filter(headerWorkTypes, i => (work_type ?? 0).toString().includes(i.value?.toString()))?.[0]?.header ?? ""
+    const workType = _.filter(headerWorkTypes, i => (work_type ?? 0).toString()?.charAt(0) == (i.value?.toString()))?.[0]?.header ?? ""
     return workType
 }
 

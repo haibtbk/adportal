@@ -13,10 +13,10 @@ const baseMonserrat = {
   lineHeight: lineHeight(14),
   ...Platform.select({
     ios: {
-      family: 'Montserrat-Regular',
+      family: 'ProximaNova-Regular',
     },
     android: {
-      family: 'Montserrat-Regular',
+      family: 'ProximaNova-Regular',
     },
   }),
 };
@@ -26,10 +26,10 @@ const boldMontserrat = {
   lineHeight: lineHeight(14),
   ...Platform.select({
     ios: {
-      family: 'Montserrat-Bold',
+      family: 'ProximaNova-Bold',
     },
     android: {
-      family: 'Montserrat-Bold',
+      family: 'ProximaNova-Bold',
     },
   }),
 };

@@ -68,6 +68,8 @@
 		<string>Zocial.ttf</string>
 		<string>Montserrat-Bold.ttf</string>
 		<string>Montserrat-Regular.ttf</string>
+		<string>ProximaNova-Bold.ttf</string>
+		<string>ProximaNova-Regular.ttf</string>
 	</array>
 	<key>UIBackgroundModes</key>
 	<array>

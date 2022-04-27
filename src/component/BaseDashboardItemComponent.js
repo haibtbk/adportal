@@ -23,11 +23,11 @@ const BaseDashboardItemComponent = (props) => {
                 </Text>
             </View>
             <Text style={[AppStyles.boldText, { color: AppColors.primaryTextColor, fontSize: AppSizes.fontLarge, textAlign: 'center' }]}>
-                {getAmount()+ " trđ"}
+                {getAmount() + " trđ"}
             </Text>
             {
-                percent != undefined && <Text style={[AppStyles.boldText, { color: AppColors.primaryTextColor, textAlign: 'center' }]}>
-                    {`${Math.round(percent * 100)}% cùng kỳ`}
+                percent != undefined && <Text style={[AppStyles.baseText, { color: AppColors.primaryTextColor, textAlign: 'center', }]}>
+                    {`${Math.round(percent * 100)}% so với cùng kỳ`}
                 </Text>
             }
 
