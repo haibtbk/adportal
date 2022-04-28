@@ -23,6 +23,7 @@ const Endpoint = {
     signup: 'api/register',
     deleteSchedule: '/api/schedule/delete',
     getRevenueCompany: '/api/revenue/get-my-company-revenue-record-by-time',
+    getRevenueCompanies: '/api/revenue/get-company-revenue-record-by-time',
     getRevenueCorporationVer2: '/api/revenue/get-all-company-revenue-summary',
     uploadAvatar: '/api/file-manager/upload-avatar',
     getScheduleUser: '/api/schedule/search-schedule-of-user-iids',

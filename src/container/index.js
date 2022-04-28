@@ -22,8 +22,6 @@ import GroupUserPerfomance from './home/GroupUserPerfomance';
 import MonthlyScheduled from './home/MonthlyScheduled';
 import DailySchedule from './home/DailySchedule'
 import WorkingPerformance from './home/WorkingPerformance'
-import DashBoardCompany from './home/DashBoardCompany';
-import HomeScreenCompany from './home/HomeScreenCompany';
 import ScheduleScreen from './schedule/ScheduleScreen';
 import ScheduleUserScreen from './schedule/ScheduleUserScreen';
 import ScheduleCompanyScreen from './schedule/ScheduleCompanyScreen';
@@ -46,8 +44,6 @@ export {
   ScheduleUserScreen,
   ScheduleCompanyScreen,
   ScheduleScreen,
-  HomeScreenCompany,
-  DashBoardCompany,
   WorkingPerformance,
   DailySchedule,
   MonthlyScheduled,

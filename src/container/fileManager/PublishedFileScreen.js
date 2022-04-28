@@ -15,7 +15,7 @@ import _ from 'lodash';
 
 let categoriesFixed = []
 const ROOT_ITEM_PATH = {
-    name: "Root",
+    name: "Thư mục gốc",
     parent_id: null,
     id: null,
     level: -1,

@@ -118,6 +118,10 @@ API.signup = (params) => {
 API.getRevenueCompany = (params) => {
     return API.instance.get(Endpoint.getRevenueCompany, { params })
 }
+API.getRevenueCompanies = (params) => {
+    return API.instance.get(Endpoint.getRevenueCompanies, { params })
+}
+
 API.getRevenueCorporationVer2 = (params) => {
     return API.instance.get(Endpoint.getRevenueCorporationVer2, { params })
 }

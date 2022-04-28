@@ -35,8 +35,6 @@ import {
   MoreScreen,
   PublishedFileScreen,
   DashBoard,
-  DashBoardCompany,
-  HomeScreenCompany,
   ScheduleScreen,
   ScheduleCompanyScreen,
   ScheduleUserScreen,
@@ -62,8 +60,8 @@ function RootTabs() {
   return (
     <Tab.Navigator
       screenOptions={{
-        tabBarStyle: { ...AppStyles.boxShadow, borderBottomLeftRadius: 0, borderBottomRightRadius: 0, height: 60 + insets.bottom / 1.5, backgroundColor: 'white', borderTopWidth: 0, paddingTop: 6, alignItems: 'flex-start' },
-        tabBarLabelStyle: { padding: AppSizes.paddingXSmall, fontSize: AppSizes.fontBase, fontFamily: AppFonts.base.family },
+        tabBarStyle: { ...AppStyles.boxShadow, borderBottomLeftRadius: 0, borderBottomRightRadius: 0, height: 60 + insets.bottom / 1.5, backgroundColor: 'white', borderTopWidth: 0, paddingTop: 4, alignItems: 'flex-start' },
+        tabBarLabelStyle: { padding: AppSizes.paddingXSmall, fontSize: AppSizes.fontSmall, fontFamily: AppFonts.base.family },
         tabBarIconStyle: { size: 10 }
       }}
       tabBarOptions={{
