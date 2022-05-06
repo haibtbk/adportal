@@ -5,8 +5,8 @@ const status = {
 }
 const actionStatus = [
     { label: "Hoàn thành", value: status.completed },
-    { label: "Dừng", value: status.stoped },
-    { label: "Đang chạy", value: status.pending },
+    { label: "Bị Dừng", value: status.stoped },
+    { label: "Đang diễn ra", value: status.pending },
 ]
 
 export {actionStatus}

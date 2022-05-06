@@ -8,6 +8,7 @@ import FontAwesome from "react-native-vector-icons/FontAwesome"
 
 const DateTimePickerComponent = (props) => {
     const {
+        enable = true,
         label = "",
         value = moment().valueOf(),
         containerStyle,
@@ -39,9 +40,10 @@ const DateTimePickerComponent = (props) => {
     }
     return (
         <TouchableOpacity
+            disabled={!enable}
             onPress={showDatePicker}
-            style={[styles.container, containerStyle && containerStyle]}>
-            <Text style={[AppStyles.baseTextGray]}>
+            style={[styles.container, containerStyle && containerStyle, { backgroundColor: enable ? 'white' : AppColors.grayLight }]}>
+            <Text style={[AppStyles.boldTextGray]}>
                 {label}
             </Text>
             <Text style={[AppStyles.baseTextGray, { paddingTop: AppSizes.paddingSmall }]}>
@@ -56,7 +58,7 @@ const DateTimePickerComponent = (props) => {
                 onCancel={hideDatePicker}
             />
             <FontAwesome
-                style={{ position:'absolute', right: 10, top: 10 }}
+                style={{ position: 'absolute', right: 10, top: 10 }}
                 name="chevron-down"
                 color={AppColors.gray}
                 size={16}

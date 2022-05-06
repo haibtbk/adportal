@@ -1,0 +1,6 @@
+export default {
+    SL_HNKH_DATOCHUC: "SL_HNKH_DATOCHUC",
+    HQ_TOCHU_HNKH: "HQ_TOCHU_HNKH",
+    DT_DK_HNKH: "DT_DK_HNKH",
+    SL_HDDT: "SL_HDDT",
+}

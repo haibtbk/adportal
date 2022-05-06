@@ -9,12 +9,13 @@ import { useDispatch, useSelector } from 'react-redux'
 import moment from 'moment';
 import { LoadingComponent, DateTimePickerComponent, DropdownComponent, ButtonComponent } from '@component';
 import { utils, RouterName } from '@navigation';
-import Entypo from 'react-native-vector-icons/Entypo';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { DateTimeUtil } from "@utils"
 import _ from 'lodash'
 import { useFirstTime } from '@hook';
 import { Helper, actionStatus } from '@schedule';
+import ScreenName from "@redux/refresh/ScreenName"
 
 const MAX_DROPDOWM_WIDTH = 135
 const DROPDOWN_HEIGHT = 35
@@ -26,26 +27,40 @@ const filterOptions = [
 ]
 const allUser = { label: "Chọn cán bộ", value: -1 }
 const ScheduleTabScreen = (props) => {
-    const { isShowSearch = false, start_tsProp = DateTimeUtil.getStartOfMonth(), end_tsProp = DateTimeUtil.getEndOfMonth() } = props
+    const { orgUnderControl = [], isShowSearch = false, start_tsProp = DateTimeUtil.getStartOfMonth(), end_tsProp = DateTimeUtil.getEndOfMonth() } = props
+    const isTongCongTy = (orgUnderControl?.length ?? 0) > 1
     const navigation = useNavigation();
     const [isLoading, setLoading] = useState(false)
     const [status, setStatus] = useState(1)
     const [start_ts, setStartTime] = useState(start_tsProp)
     const [end_ts, setEndTime] = useState(end_tsProp)
     const isFirstTime = useFirstTime(useRef(true))
-    const [dataUserUnderControl, setDataUserUnderControl] = useState([])
-    const [user, setUser] = useState(null)
+    const [dataUserUnderControl, setDataUserUnderControl] = useState([allUser])
+    const [org, setOrg] = useState(orgUnderControl?.[0] ?? null)
+    const [user, setUser] = useState(allUser)
     const account = useSelector((state) => {
         return state?.user?.account ?? {}
     })
 
+    const refreshEvent = useSelector((state) => {
+        return state?.refresh?.event ?? {}
+    })
+
+    useEffect(() => {
+        if (refreshEvent?.timeUnix && refreshEvent?.types?.includes(ScreenName.schedule)) {
+            refreshData()
+        }
+    }, [refreshEvent?.timeUnix])
 
     useEffect(() => {
         if (isFirstTime) return
         refreshData()
-    }, [status, start_ts, end_ts, user])
+    }, [status, start_ts, end_ts, user, org])
 
     useEffect(() => {
+        if (isTongCongTy) {
+            return
+        }
         setLoading(true)
         const paramUserUnderControl = {
             submit: 1,
@@ -83,28 +98,51 @@ const ScheduleTabScreen = (props) => {
     }
 
     const source = () => {
+        if (!isTongCongTy) {
+            const params = {
+                submit: 1,
+                start_ts: Math.round(start_ts / 1000),
+                end_ts: Math.round(end_ts / 1000),
+            }
+            const scheduleManagerPromise = API.getSchedulesManager(params)
+            const scheduleCompanyPromise = API.getSchedulesCompany(params)
 
-        const params = {
-            submit: 1,
-            start_ts: Math.round(start_ts / 1000),
-            end_ts: Math.round(end_ts / 1000),
+            return Promise.all([scheduleManagerPromise, scheduleCompanyPromise])
+        } else {
+            const params = {
+                submit: 1,
+                start_ts: Math.round(start_ts / 1000),
+                end_ts: Math.round(end_ts / 1000),
+                org_id: org?.value
+            }
+            return API.getScheduleFromTCT(params)
         }
-        const scheduleManagerPromise = API.getSchedulesManager(params)
-        const scheduleCompanyPromise = API.getSchedulesCompany(params)
 
-        return Promise.all([scheduleManagerPromise, scheduleCompanyPromise])
     }
 
     const transformer = (res) => {
-        const scheduleManager = res?.[0]?.data?.result ?? []
-        const scheduleCompany = (res?.[1]?.data?.result ?? []).map(item => {
-            return {
-                ...item,
-                is_company: true
-            }
-        })
+        let data = []
+        if (!isTongCongTy) {
+            const scheduleManager = res?.[0]?.data?.result ?? []
+            const scheduleCompany = (res?.[1]?.data?.result ?? []).map(item => {
+                return {
+                    ...item,
+                    is_company: true
+                }
+            })
+            data = [...scheduleManager, ...scheduleCompany]
+        } else {
+            data = res?.data?.result?.schedule ?? []
+            let userUnderControl = res?.data?.result?.profile ?? []
+            const dataPretty = userUnderControl.map(item => {
+                return {
+                    label: item.name,
+                    value: item.user_id
+                }
+            })
 
-        let data = [...scheduleManager, ...scheduleCompany]
+            setDataUserUnderControl([allUser, ...dataPretty])
+        }
         if (user != null) {
             if (user.value == -1) {
                 return data
@@ -112,6 +150,23 @@ const ScheduleTabScreen = (props) => {
             return data.filter(item => item.user_id == user.value)
         }
         return data
+    }
+
+    const createSections = (res) => {
+        const dataSorted = _.orderBy(res, ['start_ts'], ['asc'])
+
+        const groupsDate = _.groupBy(dataSorted, (item) => {
+            return moment(item.start_ts * 1000).format("DD/MM/YYYY")
+        })
+
+        let sections = []
+        _.forEach(groupsDate, (value, key) => {
+            sections.push({
+                title: key,
+                data: value
+            })
+        })
+        return sections
     }
 
     const listRef = useRef(null)
@@ -135,19 +190,19 @@ const ScheduleTabScreen = (props) => {
         return (
             <TouchableOpacity
                 onPress={() => onPressItem(item)}
-                style={{ flexDirection: 'row', alignItems: 'flex-start', paddingVertical: AppSizes.paddingXSmall, paddingHorizontal: AppSizes.padding, margin: item?.is_company ? AppSizes.paddingSmall : 0, marginBottom: AppSizes.paddingSmall, borderColor: AppColors.success, borderRadius: 6, borderWidth: item?.is_company ? StyleSheet.hairlineWidth : 0, }}>
+                style={{ flexDirection: 'row', alignItems: 'flex-start', paddingVertical: AppSizes.paddingXSmall, paddingHorizontal: AppSizes.padding, margin: item?.is_company ? AppSizes.paddingSmall : 0, marginBottom: AppSizes.paddingSmall, borderColor: AppColors.success, borderRadius: 6, borderWidth: item?.is_company ? 1 : 0, }}>
                 {/* style={[styles.box]}> */}
                 <Text style={[AppStyles.baseTextGray, { marginRight: AppSizes.paddingSmall, }]}>{DateTimeUtil.dateTimeFormat(item.start_ts)}</Text>
                 <View style={{ flex: 1 }}>
                     <View style={{ justifyContent: 'space-between', flexDirection: 'row', alignItems: 'flex-start' }}>
-                        <Text style={[AppStyles.boldTextGray]} numberOfLines={2} ellipsizeMode="tail">
+                        <Text style={[AppStyles.boldTextGray, { textDecorationLine: (item?.status == 4) ? "line-through" : "none" }]} numberOfLines={2} ellipsizeMode="tail">
                             {workType}
                         </Text>
                         <View style={{ flexDirection: 'row', flex: 1, justifyContent: 'flex-end', alignItems: 'center', paddingLeft: AppSizes.paddingSmall }}>
-                            <Text style={[AppStyles.baseTextGray, {flex:1, textAlign:'right' }]} numberOfLines={2} ellipsizeMode="tail">
+                            <Text style={[AppStyles.baseTextGray, { flex: 1, textAlign: 'right' }]} numberOfLines={2} ellipsizeMode="tail">
                                 {!!for_user ? for_user : "Chưa có"}
                             </Text>
-                            <Entypo name="dot-single" size={30} color={Helper.getStatusColor(item.status)} style={{ marginLeft: AppSizes.paddingXSmall }} />
+                            <MaterialCommunityIcons name="circle" size={14} color={Helper.getStatusColor(item.status)} style={{ marginLeft: AppSizes.paddingXSmall }} />
                         </View>
                     </View>
                     <Text style={[AppStyles.baseTextGray]} numberOfLines={2} ellipsizeMode="tail">
@@ -176,22 +231,7 @@ const ScheduleTabScreen = (props) => {
         setEndTime(date)
     }
 
-    const createSections = (res) => {
-        const dataSorted = _.orderBy(res, ['start_ts'], ['asc'])
 
-        const groupsDate = _.groupBy(dataSorted, (item) => {
-            return moment(item.start_ts * 1000).format("DD/MM/YYYY")
-        })
-
-        let sections = []
-        _.forEach(groupsDate, (value, key) => {
-            sections.push({
-                title: key,
-                data: value
-            })
-        })
-        return sections
-    }
     const renderSectionHeader = ({ section }) => {
         const { data } = section
         const firstItem = data?.[0] ?? {}
@@ -215,18 +255,37 @@ const ScheduleTabScreen = (props) => {
         setUser(item)
     }
 
+    const onChangeOrg = (item) => {
+        setOrg(item)
+        setUser(allUser)
+    }
+
     return (
         <View style={[AppStyles.container, { paddingHorizontal: 0 }]}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', marginBottom: AppSizes.paddingXSmall }}>
-                <DropdownComponent
-                    arrowColor={AppColors.primaryBackground}
-                    textStyle={{ ...AppStyles.baseText, color: AppColors.primaryBackground, fontSize: AppSizes.fontMedium }}
-                    containerStyle={{ width: 200, alignSelf: 'flex-end', backgroundColor: 'transparent', borderColor: 'transparent' }}
-                    data={dataUserUnderControl}
-                    onSelect={(item) => onChangeUser(item)}
-                    defaultValue={dataUserUnderControl[0]}
-                />
+            <View style={{ flexDirection: 'row', width: '100%', justifyContent: isTongCongTy ? 'space-between' : 'flex-end' }}>
+                {isTongCongTy && <View style={{ flexDirection: 'row', alignItems: 'center', alignSelf: 'flex-start', marginBottom: AppSizes.paddingXSmall }}>
+                    <DropdownComponent
+                        arrowColor={AppColors.primaryBackground}
+                        textStyle={{ ...AppStyles.baseText, color: AppColors.primaryBackground, fontSize: AppSizes.fontMedium, textAlign: 'left' }}
+                        containerStyle={{ width: 170, borderColor: 'transparent' }}
+                        data={orgUnderControl}
+                        onSelect={(item) => onChangeOrg(item)}
+                        defaultValue={org}
+                    />
+                </View>}
+
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', marginBottom: AppSizes.paddingXSmall }}>
+                    <DropdownComponent
+                        arrowColor={AppColors.primaryBackground}
+                        textStyle={{ ...AppStyles.baseText, color: AppColors.primaryBackground, fontSize: AppSizes.fontMedium }}
+                        containerStyle={{ width: 200, alignSelf: 'flex-end', backgroundColor: 'transparent', borderColor: 'transparent' }}
+                        data={dataUserUnderControl}
+                        onSelect={(item) => onChangeUser(item)}
+                        defaultValue={user}
+                    />
+                </View>
             </View>
+
 
             {
                 isShowSearch && (<View style={{ flexDirection: 'row', margin: AppSizes.paddingSmall }}>

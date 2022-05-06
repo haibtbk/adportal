@@ -3,28 +3,74 @@ import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, Button, StyleSheet, Alert, TextInput } from 'react-native';
 import { AppSizes, AppStyles, AppColors } from '@theme';
 import { API } from '@network';
-import { DateTimePickerComponent, DropdownComponent, LoadingComponent, ButtonComponent } from '@component'
+import { DateTimePickerComponent, DropdownComponent, LoadingComponent, ButtonComponent, RowButton } from '@component'
 import { useSelector, useDispatch } from 'react-redux';
 import NavigationBar from '@navigation/NavigationBar';
 import { utils, RouterName } from '@navigation';
-import workTypes from './WorkTypes';
-import workPriority from './WorkPriority';
-import Entypo from 'react-native-vector-icons/Entypo';
 import moment from 'moment';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { DateTimeUtil } from "@utils"
+import { SelectBoxComponent } from '../../component';
+import { refresh } from '@redux/refresh/actions';
+import ScreenName from "@redux/refresh/ScreenName"
+import { ScheduleStatus } from "@schedule"
+import { Helper } from '@schedule';
+
 
 const CreateScheduleScreen = (props) => {
     const { navigation, route } = props;
-    const [isLoading, setLoading] = useState(false)
-    const { callback } = route.params;
+    const { isEdit = false, scheduleData = {}, callback } = route.params ?? {};
 
-    const [name, setName] = useState('')
-    const [work_type, setWorkType] = useState(workTypes[0])
-    const [level, setLevel] = useState(workPriority[0])
-    const [start_ts, setStartTime] = useState(moment().valueOf())
-    const [end_ts, setEndTime] = useState(moment().valueOf())
-    const [for_user, setForUser] = useState(null)
+    const getDefaultName = () => {
+        if (isEdit) {
+            return scheduleData?.schedule_data?.name
+        }
+        return ""
+    }
+
+    const getDefaultForUser = () => {
+        if (isEdit) {
+            return {
+                label: scheduleData?.schedule_data?.for_user,
+                value: scheduleData?.schedule_data?.user_id
+            }
+        }
+        return null
+    }
+
+    const getDefaultWorkType = () => {
+        if (isEdit) {
+            return {
+                id: scheduleData?.schedule_data?.work_type,
+                name: Helper.getWorkTypeName(scheduleData?.schedule_data?.work_type)
+            }
+        }
+        return {
+            id: 1,
+            name: 'Họp',
+        }
+    }
+
+    const getDefaultStartTime = () => {
+        if (isEdit) {
+            return (scheduleData?.start_ts ?? 0) * 1000
+        }
+        return moment().valueOf()
+    }
+
+    const getDefaultEndtime = () => {
+        if (isEdit) {
+            return (scheduleData?.end_ts ?? 0) * 1000
+        }
+        return moment().valueOf()
+    }
+    const dispatch = useDispatch();
+    const [isLoading, setLoading] = useState(false)
+    const [name, setName] = useState(getDefaultName())
+    const [work_type, setWorkType] = useState(getDefaultWorkType())
+    const [start_ts, setStartTime] = useState(getDefaultStartTime())
+    const [end_ts, setEndTime] = useState(getDefaultEndtime())
+    const [for_user, setForUser] = useState(getDefaultForUser())
     const [dataUserUnderControl, setDataUserUnderControl] = useState([])
     const account = useSelector((state) => {
         return state?.user?.account ?? {}
@@ -67,27 +113,31 @@ const CreateScheduleScreen = (props) => {
     const createSchedule = () => {
 
         setLoading(true)
-        API.createSchedule({
+        const params = {
             schedule_data: {
                 name,
-                work_type: work_type.value,
-                level: level.value,
+                work_type: work_type.id,
                 for_user: for_user?.label,
-                form_user: account?.name,
+                from_user: account?.name,
                 from_user_id: account?.user_id,
             },
             user_id: for_user?.value,
             start_ts: Math.round(start_ts / 1000),
             end_ts: Math.round(end_ts / 1000),
-            status: 2,
+            status: isEdit ? scheduleData?.status : ScheduleStatus.pending,
             submit: 1
-        }).then(res => {
-            console.log(res)
+        }
+        if (isEdit) {
+            params.id = scheduleData?.id
+            params._method = "put"
+        }
+        API.createSchedule(isEdit, params).then(res => {
             navigation.goBack()
             callback && callback()
-            utils.showBeautyAlert(navigation, "success", "Tạo kế hoạch thành công")
+            utils.showBeautyAlert(navigation, "success", `${isEdit ? "Cập nhật" : "Tạo"} kế hoạch thành công`)
+            dispatch(refresh([ScreenName.schedule], moment().valueOf()))
         }).catch(err => {
-            utils.showBeautyAlert(navigation, "fail", "Tạo kế hoạch thất bại")
+            utils.showBeautyAlert(navigation, "fail", `${isEdit ? "Cập nhật" : "Tạo"} kế hoạch thất bại`)
         }).finally(() => {
             setLoading(false)
         })
@@ -114,6 +164,14 @@ const CreateScheduleScreen = (props) => {
         setForUser(item)
     }
 
+    const checkEditAbleTime = () => {
+        if (!isEdit) {
+            return true
+        }
+        const now = moment().valueOf()
+        return now < start_ts
+    }
+
     return (
         <KeyboardAwareScrollView style={AppStyles.container}>
             <NavigationBar
@@ -124,38 +182,40 @@ const CreateScheduleScreen = (props) => {
                 ])}
                 centerTitle="Tạo kế hoạch" />
 
-
-            <View style={{ flexDirection: 'row', alignItems: "center", justifyContent: 'space-between' }}>
-                <Text style={AppStyles.boldTextGray}>Nhóm: </Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', marginBottom: AppSizes.padding, }}>
+                <Text style={[AppStyles.boldTextGray, { marginRight: AppSizes.padding }]}>Người thực hiện: </Text>
                 <DropdownComponent
-                    containerStyle={{ marginBottom: AppSizes.padding, width: '50%' }}
-                    data={workTypes}
-                    onSelect={(item) => onChangeValueWorkType(item)}
-                    defaultValue={workTypes[0]}
-                />
-            </View>
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                <Text style={AppStyles.boldTextGray}>Người thực hiện: </Text>
-                <DropdownComponent
-                    containerStyle={{ marginBottom: AppSizes.padding, width: '50%' }}
+                    containerStyle={{ width: '50%' }}
                     data={dataUserUnderControl}
                     onSelect={(item) => onChangeUser(item)}
                     defaultValue={dataUserUnderControl[0]}
                 />
             </View>
 
+            <SelectBoxComponent
+                action={() => {
+                    navigation.navigate(RouterName.workTypes, {
+                        selectedItem: work_type,
+                        callback: onChangeValueWorkType
+                    })
+                }}
+                label="Nhóm"
+                value={work_type.name} />
+
             <DateTimePickerComponent
+                enable={checkEditAbleTime()}
                 value={start_ts}
                 dateTimeFomat="DD/MM/YYYY HH:mm"
                 mode="datetime"
-                label="Thời gian bắt đầu"
+                label="Bắt đầu"
                 onChangeDateTime={onChangeDateTimeStart}
-                containerStyle={{ marginBottom: AppSizes.padding }} />
+                containerStyle={{ marginVertical: AppSizes.padding }} />
             <DateTimePickerComponent
+                enable={checkEditAbleTime()}
                 value={end_ts}
                 dateTimeFomat="DD/MM/YYYY HH:mm"
                 mode="datetime"
-                label="Thời gian kết thúc"
+                label="Kết thúc"
                 onChangeDateTime={onChangeDateTimeEnd}
                 containerStyle={{ marginBottom: AppSizes.padding }} />
 
@@ -166,6 +226,7 @@ const CreateScheduleScreen = (props) => {
                 placeholderTextColor={AppColors.gray}
                 keyboardType="default"
                 onChangeText={onChangeTextName}
+                value={name}
                 style={[AppStyles.textInput, { marginBottom: AppSizes.padding, height: 90, textAlignVertical: "top", }]} />
 
             <ButtonComponent

@@ -71,8 +71,8 @@ const PerformanceComponent = (props) => {
 
 
   return (
-    <View style={[containerStyle, { ...AppStyles.boxShadow, height: 180 + (data?.length??0) * 35, backgroundColor: 'white', padding: AppSizes.paddingSmall }]}>
-      <Title title={title} containerStyle={titleStyle} />
+    <View style={[containerStyle, { height: 180 + (data?.length ?? 0) * 35, backgroundColor: 'white' }]}>
+      <Title title={title} containerStyle={[{ marginHorizontal: AppSizes.padding }, titleStyle]} />
       <Tab.Navigator
         swipeEnabled={true}
         initialRouteName="Hop"
@@ -82,7 +82,7 @@ const PerformanceComponent = (props) => {
             height: 2,
           }
         }}
-        sceneContainerStyle={{ flex: 1, backgroundColor: "white" }}
+        sceneContainerStyle={{ flex: 1, backgroundColor: "white", padding: AppSizes.padding }}
       >
         <Tab.Screen
           name="Hop"
@@ -95,14 +95,14 @@ const PerformanceComponent = (props) => {
           options={{ tabBarLabel: 'Huấn luyện', }}
         />
         <Tab.Screen
-          name="LapKeHoach"
-          children={() => <PerfomanceView title="Họp" data={data} type={workTypeValues.lapKeHoach} />}
-          options={{ tabBarLabel: 'Lập kế hoạch', }}
+          name="HoiNghiTuyenDung"
+          children={() => <PerfomanceView title="Họp" data={data} type={workTypeValues.hoiNghiTuyenDung} />}
+          options={{ tabBarLabel: 'Hội nghị tuyển dụng', }}
         />
         <Tab.Screen
-          name="ToChucHoiNghi"
-          children={() => <PerfomanceView title="Họp" data={data} type={workTypeValues.toChucHoiNghi} />}
-          options={{ tabBarLabel: 'Tổ chức hội nghị', }}
+          name="HNKH"
+          children={() => <PerfomanceView title="Họp" data={data} type={workTypeValues.HNKH} />}
+          options={{ tabBarLabel: 'HNKH', }}
         />
         <Tab.Screen
           name="HoTro"

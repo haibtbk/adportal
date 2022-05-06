@@ -30,6 +30,9 @@ const Endpoint = {
     uploadFileSchedule: '/api/file-manager/upload-schedule-attachment',
     scheduleUpdate: '/api/schedule/update',
     changePassword: '/api/user/update',
+    personRanking: "/api/schedule/get-company-schedule-performance-ranking",
+    getOrgUnderControl: "/api/organization/search-org-under-control",
+    getScheduleFromTCT: "/api/schedule/search-company-schedule",
 }
 
 export default Endpoint

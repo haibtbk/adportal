@@ -5,11 +5,8 @@ import NavigationBar from '@navigation/NavigationBar';
 import { useNavigation } from '@react-navigation/native';
 import navigationManager from '@navigation/utils'
 import { useDispatch, useSelector } from 'react-redux'
-import { Dialog, VirtualizedList, ButtonComponent, LoadingComponent } from '@component';
+import { Dialog, VirtualizedList, ButtonComponent, LoadingComponent, RowButton } from '@component';
 import { WebImage } from '@component';
-import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons"
-import MaterialIcons from "react-native-vector-icons/MaterialIcons"
-import AntDesign from "react-native-vector-icons/AntDesign"
 import { RouterName } from '@navigation';
 import { Divider } from 'react-native-paper';
 import _ from 'lodash';
@@ -18,7 +15,6 @@ import GroupManagerComponent from './GroupManagerComponent';
 import { API } from '@network';
 import { saveUser } from '@redux/user/action';
 import { AppConfig } from '@constant';
-
 
 const DEMO_AVATAR = "http://hinhnendepnhat.net/wp-content/uploads/2014/10/hinh-nen-girl-xinh-tien-nu-mong-ao.jpg"
 
@@ -190,12 +186,7 @@ const AccountScreen = (props) => {
         {/* <SimpleListComponent title="Danh hiệu cá nhân" data={account?.achievement ?? []} emptyText="Chưa có danh hiệu" /> */}
         <GroupManagerComponent data={getBanNhom()} />
 
-        <TouchableOpacity
-          onPress={() => { navigation.navigate(RouterName.adward) }}
-          style={{ flexDirection: 'row', width: '100%', justifyContent: 'space-between', padding: AppSizes.padding, backgroundColor: AppColors.grayLight }}>
-          <Text style={[AppStyles.baseTextGray, { color: AppColors.success }]}>Danh hiệu cá nhân</Text>
-          <AntDesign name="right" size={18} color={AppColors.success} />
-        </TouchableOpacity>
+        <RowButton action={() => { navigation.navigate(RouterName.adward) }} label="Danh hiệu cá nhân" />
 
         <TouchableOpacity
           onPress={logout}

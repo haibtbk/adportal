@@ -179,3 +179,7 @@ export const stripHTML = (html) => {
 
 export const isEmailString = (str) =>
   /^[_a-zA-Z0-9-]+(.[_a-zA-Z0-9-]+)*@[a-zA-Z0-9-]+\.(.[a-zA-Z0-9-]+)+$/.test(str);
+
+export const getNumberFromString = (str) => {
+  return (str?.toString()?.match(/\d+/)) || 0
+}

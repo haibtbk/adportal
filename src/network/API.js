@@ -97,8 +97,9 @@ API.getEventNews = (params) => {
 API.getFileCategories = (params) => {
     return API.instance.get(Endpoint.getFileCategories, { params })
 }
-API.createSchedule = (params) => {
-    return API.instance.post(Endpoint.createSchedule, params)
+API.createSchedule = (isEdit, params) => {
+    const url = isEdit ? Endpoint.updateSchedule : Endpoint.createSchedule
+    return API.instance.post(url, params)
 }
 
 API.getUserUnderControl = (params) => {
@@ -170,6 +171,17 @@ API.updateAvatar = (avatar) => {
     return API.instance.post(Endpoint.updateProfile, params);
 }
 
+API.personRanking = (params) => {
+    return API.instance.get(Endpoint.personRanking, { params })
+}
+
+API.getOrgUnderControl = (params) => {
+    return API.instance.get(Endpoint.getOrgUnderControl, { params })
+}
+
+API.getScheduleFromTCT = (params) => {
+    return API.instance.get(Endpoint.getScheduleFromTCT, { params })
+}
 
 /* Export Component ==================================================================== */
 export default API;

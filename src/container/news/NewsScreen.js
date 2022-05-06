@@ -21,19 +21,44 @@ const DEFAULT_IMAGE = "https://www.baoviet.com.vn/Uploads/Library/Images/logo.pn
 const EventNewsScreen = (props) => {
   const { eventNews } = props
 
+  const getStatus = (start_ts, end_ts) => {
+    const now = moment()
+    const start = moment(start_ts * 1000)
+    const end = moment(end_ts * 1000)
+    if (now.isBefore(start)) {
+      return "Chưa diễn ra"
+    } else if (now.isAfter(end)) {
+      return "Đã kết thúc"
+    } else {
+      return "Đang diễn ra"
+    }
+  }
+
+  const getStatusColor = (start_ts, end_ts) => {
+    const now = moment()
+    const start = moment(start_ts * 1000)
+    const end = moment(end_ts * 1000)
+    if (now.isBefore(start)) {
+      return AppColors.warning
+    } else if (now.isAfter(end)) {
+      return AppColors.danger
+    } else {
+      return AppColors.primaryBackground
+    }
+  }
+
   const renderItem = ({ item }) => {
     const startTime = (item?.start_ts ?? 0) * 1000
     const endTime = (item?.end_ts ?? 0) * 1000
     const startTimeString = `${moment(startTime).format("HH:mm DD/MM/YYYY")}`
     const endTimeString = `${moment(endTime).format("HH:mm DD/MM/YYYY")}`
-    const statusEvent = moment().isBetween(startTime, endTime)
 
     return (
       <View key={item.id} style={[AppStyles.boxShadow, { minHeight: 110, padding: AppSizes.padding, margin: AppSizes.margin, marginBottom: 0, justifyContent: 'center', }]}>
         <Text style={AppStyles.boldTextGray}>{item?.event_title ?? ""}</Text>
         <Text style={AppStyles.baseTextGray}>Thời gian bắt đầu: {startTimeString}</Text>
         <Text style={AppStyles.baseTextGray}>Thời gian kết thúc: {endTimeString}</Text>
-        <Text style={[AppStyles.baseTextGray, { color: statusEvent ? AppColors.primaryBackground : 'red' }]}>Trạng thái: {statusEvent ? "Đang diễn ra" : "Đã kết thúc"}</Text>
+        <Text style={[AppStyles.baseTextGray, { color: getStatusColor(item?.start_ts, item?.end_ts) }]}>Trạng thái: {getStatus(item?.start_ts, item?.end_ts)}</Text>
       </View>
     )
   }

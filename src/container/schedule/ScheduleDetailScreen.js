@@ -16,7 +16,9 @@ import ImagePicker from 'react-native-image-crop-picker';
 import { AppConfig } from '@constant/';
 import moment from 'moment';
 import { workTypeValues } from "@schedule/WorkTypes";
-
+import ActionSheet, { SheetManager } from "react-native-actions-sheet";
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ScheduleStatus } from "@schedule"
 
 const MAX_DROPDOWM_WIDTH = 135
 const DROPDOWN_HEIGHT = 35
@@ -24,6 +26,7 @@ const DROPDOWN_HEIGHT = 35
 const ScheduleDetailScreen = ({ route, navigation }) => {
     const { schedule, callback } = route.params
     const isFirstRender = useRef(true);
+    const insets = useSafeAreaInsets();
 
     const [isLoading, setLoading] = useState(false)
     const [scheduleData, setScheduleData] = useState(schedule)
@@ -37,15 +40,15 @@ const ScheduleDetailScreen = ({ route, navigation }) => {
     const isEnable = account?.user_id == schedule?.user_id
     const workType = Helper.getWorkHeader(scheduleData?.schedule_data?.work_type ?? "")
     const for_user = scheduleData?.schedule_data?.for_user ?? ""
-    const form_user = scheduleData?.schedule_data?.form_user ?? ""
+    const from_user = scheduleData?.schedule_data?.from_user ?? (scheduleData?.schedule_data?.form_user ?? "")
     const content = scheduleData?.schedule_data?.name ?? ""
-    const isToChucSuKien = scheduleData?.schedule_data?.work_type?.toString()?.charAt(0) == workTypeValues.toChucHoiNghi
+    const isToChucSuKien = scheduleData?.schedule_data?.work_type?.toString()?.charAt(0) == workTypeValues.HNKH
 
-    const onChangeValueStatus = (item, itemSchedule) => {
+    const updateStatus = (status) => {
 
         const params = {
-            id: itemSchedule.id,
-            status: item.value,
+            id: scheduleData?.id,
+            status,
             _method: "put",
             submit: 1
         }
@@ -54,8 +57,8 @@ const ScheduleDetailScreen = ({ route, navigation }) => {
             .then(res => {
                 if (res?.data?.success) {
                     callback && callback()
-                    utils.showBeautyAlert(navigation, "success", res?.data?.message ?? "Cập nhật thành công")
-                    setScheduleData(Object.assign({}, scheduleData, { status: item.value }))
+                    utils.showBeautyAlert(navigation, "success", "Cập nhật thành công")
+                    setScheduleData(Object.assign({}, scheduleData, { status }))
                 }
             })
             .catch(err => console.error(err))
@@ -88,10 +91,9 @@ const ScheduleDetailScreen = ({ route, navigation }) => {
                     API.deleteSchedule(params)
                         .then(res => {
                             if (res?.data?.success) {
-                                utils.showBeautyAlert(navigation, "success", res?.data?.message ?? "Xóa thành công")
+                                utils.showBeautyAlert(navigation, "success", "Xóa thành công")
                                 navigation.goBack()
                                 callback && callback()
-
                             }
                         })
                         .catch(err => console.error(err))
@@ -149,7 +151,7 @@ const ScheduleDetailScreen = ({ route, navigation }) => {
             .then(res => {
                 if (res?.data?.success) {
                     callback && callback()
-                    utils.showBeautyAlert(navigation, "success", res?.data?.message ?? "Cập nhật thành công")
+                    utils.showBeautyAlert(navigation, "success", "Cập nhật thành công")
                 }
             })
             .catch(err => console.error(err))
@@ -260,7 +262,7 @@ const ScheduleDetailScreen = ({ route, navigation }) => {
                             attachments.map((item, index) => {
                                 return (
                                     <View key={index} style={styles.attachmentItem} onPress={() => downloadFile(item)}>
-                                        <Text style={AppStyles.baseTextGray}>{item.name}</Text>
+                                        <Text numberOfLines={1} ellipsizeMode='tail' style={[AppStyles.baseTextGray, { flex: 1 }]}>{item.name}</Text>
                                         <View style={{ flexDirection: 'row' }}>
                                             <ButtonIconComponent
                                                 containerStyle={{ marginRight: AppSizes.padding }}
@@ -303,7 +305,7 @@ const ScheduleDetailScreen = ({ route, navigation }) => {
     const editReport = () => {
         navigation.navigate("ScheduleReport", {
             callback: (data) => {
-                if(data){
+                if (data) {
                     callback && callback()
                     setAfyp(data.afyp)
                     setTvvNumber(data.tvv_number)
@@ -312,6 +314,10 @@ const ScheduleDetailScreen = ({ route, navigation }) => {
             },
             schedule,
         })
+    }
+
+    const showActionSheet = () => {
+        SheetManager.show("action_sheet");
     }
 
     return (
@@ -331,9 +337,8 @@ const ScheduleDetailScreen = ({ route, navigation }) => {
                         {!!content ? content : "Chưa có"}
                     </Text>
 
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <MaterialIcons name='schedule' size={20} color={AppColors.gray} />
-                        <Text style={[AppStyles.baseTextGray, { marginLeft: AppSizes.paddingXSmall }]}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: AppSizes.paddingXSmall }}>
+                        <Text style={[AppStyles.boldTextGray, {color: AppColors.primaryBackground, marginTop: AppSizes.paddingSmall}]}>
                             {DateTimeUtil.format("HH:mm dddd DD/MM/YYYY", (scheduleData?.start_ts ?? 0) * 1000)}
                         </Text>
 
@@ -341,37 +346,43 @@ const ScheduleDetailScreen = ({ route, navigation }) => {
                     <Text style={[AppStyles.baseTextGray]} numberOfLines={2} ellipsizeMode="tail">
                         Người thực hiện: {!!for_user ? for_user : "Chưa có"}
                     </Text>
-                    <Text style={[AppStyles.baseTextGray]} numberOfLines={2} ellipsizeMode="tail">
-                        Người giao việc: {!!form_user ? form_user : "Chưa có"}
+                    <Text style={[AppStyles.baseTextGray, { paddingVertical: AppSizes.paddingXSmall }]} numberOfLines={2} ellipsizeMode="tail">
+                        Người giao việc: {!!from_user ? from_user : "Chưa có"}
                     </Text>
                     <View style={{ flexDirection: 'row', alignItems: 'center', }}>
                         <Text style={[AppStyles.baseTextGray, { marginRight: AppSizes.padding }]}>
                             Trạng thái:
                         </Text>
 
-                        <DropdownComponent
-                            disabled={!isEnable}
-                            textStyle={{ color: Helper.getStatusColor(scheduleData.status) }}
-                            containerStyle={styles.dropdownBtnStyle}
-                            data={actionStatus}
-                            onSelect={(i) => onChangeValueStatus(i, scheduleData)}
-                            defaultValue={getDefaultValue(scheduleData.status)}
-                        />
-
+                        <Text style={[AppStyles.baseTextGray, { marginRight: AppSizes.padding, color: Helper.getStatusColor(scheduleData.status) }]}>
+                            {Helper.getStatus(scheduleData.status, scheduleData)}
+                        </Text>
                     </View>
+                    {
+                        isEnable && <ButtonIconComponent
+                            name="ellipsis-vertical-circle-sharp"
+                            source="Ionicons"
+                            action={() => { showActionSheet() }}
+                            color="#41cd7d"
+                            size={35}
+                            containerStyle={{ position: 'absolute', right: AppSizes.paddingSmall, top: AppSizes.paddingSmall }}
+                        />
+                    }
+
+
                 </View>
                 {
                     isToChucSuKien && <View style={{ ...AppStyles.baseBox, marginTop: AppSizes.padding }}>
                         <Text style={[AppStyles.boldTextGray, { marginVertical: AppSizes.paddingXSmall, fontSize: AppSizes.fontLarge }]} numberOfLines={2} ellipsizeMode="tail">
                             Báo cáo kết quả
                         </Text>
-                        <Text style={[AppStyles.baseTextGray, { marginVertical: AppSizes.paddingXSmall }]} numberOfLines={2} ellipsizeMode="tail">
+                        <Text style={[AppStyles.baseTextGray,]} numberOfLines={2} ellipsizeMode="tail">
                             {customer_number} Khách hàng/Ứng viên tham gia
                         </Text>
                         <Text style={[AppStyles.baseTextGray, { marginVertical: AppSizes.paddingXSmall }]} numberOfLines={2} ellipsizeMode="tail">
-                            {tvv_number} customer_number
+                            {tvv_number} TVV tham gia
                         </Text>
-                        <Text style={[AppStyles.baseTextGray, { marginVertical: AppSizes.paddingXSmall }]} numberOfLines={2} ellipsizeMode="tail">
+                        <Text style={[AppStyles.baseTextGray,]} numberOfLines={2} ellipsizeMode="tail">
                             {afyp} trđ AFYP
                         </Text>
 
@@ -411,11 +422,61 @@ const ScheduleDetailScreen = ({ route, navigation }) => {
             {
                 isLoading && <LoadingComponent />
             }
+            <ActionSheet id="action_sheet">
+                <View style={{ minHeight: 150, paddingTop: AppSizes.paddingLarge }}>
+                    <ButtonComponent
+                        containerStyle={styles.itemActionSheet}
+                        title="Hoàn thành"
+                        textStyle={AppStyles.baseTextGray}
+                        action={async () => {
+                            await SheetManager.hide("action_sheet");
+                            updateStatus(ScheduleStatus.completed);
+                        }} />
+                    <Divider style={{ width: '80%', alignSelf: 'center' }} />
+                    <ButtonComponent
+                        containerStyle={styles.itemActionSheet}
+                        title="Đang diễn ra"
+                        textStyle={AppStyles.baseTextGray}
+                        action={async () => {
+                            await SheetManager.hide("action_sheet");
+                            updateStatus(ScheduleStatus.pending);
+                        }} />
+                    <Divider style={{ width: '80%', alignSelf: 'center' }} />
+                    <ButtonComponent
+                        containerStyle={styles.itemActionSheet}
+                        title="Hủy"
+                        textStyle={AppStyles.baseTextGray}
+                        action={async () => {
+                            await SheetManager.hide("action_sheet");
+                            updateStatus(ScheduleStatus.stoped);
+                        }} />
+                    <Divider style={{ width: '80%', alignSelf: 'center' }} />
+                    <ButtonComponent
+                        containerStyle={styles.itemActionSheet}
+                        title="Sửa lịch"
+                        textStyle={AppStyles.baseTextGray}
+                        action={async () => {
+                            await SheetManager.hide("action_sheet");
+                            navigation.navigate(RouterName.createSchedule, { scheduleData: scheduleData, isEdit: true, callback: () => { navigation.goBack() } });
+                        }} />
+
+                </View>
+                <ButtonComponent
+                    containerStyle={[styles.button, { marginBottom: insets.bottom + AppSizes.paddingXSmall, padding: 0 }]}
+                    title="Thoát"
+                    action={async () => {
+                        await SheetManager.hide("action_sheet");
+                    }} />
+            </ActionSheet>
         </View>
     );
 }
 
 const styles = StyleSheet.create({
+    itemActionSheet: {
+        backgroundColor: "transparent",
+        alignSelf: "center",
+    },
     box: {
         flex: 1,
         ...AppStyles.boxShadow,
@@ -463,7 +524,7 @@ const styles = StyleSheet.create({
     button: {
         alignSelf: 'center',
         width: 180,
-        height: 35,
+        height: 45,
         marginTop: AppSizes.padding
     },
 })

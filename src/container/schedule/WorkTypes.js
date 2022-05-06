@@ -1,101 +1,115 @@
-const workTypes = [
+const workTypeList = [
     {
-        value: 11,
-        label: 'Họp công ty',
-        header: "Họp"
-    },
-    {
-        value: 12,
-        label: 'Họp 1:1',
-    },
-    {
-        value: 13,
-        label: 'Họp nhóm',
-    },
-    {
-        value: 14,
-        label: 'Họp toàn khu vực',
-    },
-    {
-        value: 15,
-        label: 'Họp khác',
-    },
-    {
-        value: 21,
-        label: 'Giảng BVLN',
-        header: "Huấn luyện"
-    },
-    {
-        value: 22,
-        label: 'Giảng NTTC',
-    },
-    {
-        value: 23,
-        label: 'Sản phẩm',
-    },
-    {
-        value: 24,
-        label: 'Chính sách',
-    },
-    {
-        value: 25,
-        label: 'Huấn luyện khác',
-    }
-    ,
-    {
-        header: "Lập kế hoạch",
-        value: 31,
-        label: 'Thiết lập mục tiêu tháng',
-    },
-    {
-        value: 32,
-        label: 'Thiết lập mục tiêu quý',
-    },
-    {
-        value: 41,
-        header: "Tổ chức hội nghị",
-        label: 'HNKH',
-    },
-    {
-        value: 42,
-        label: 'HN',
-    },
-    {
-        value: 43,
-        label: 'BOSS',
-    },
-    {
-        header: "Hỗ trợ",
-        value: 51,
-        label: 'Bán hàng',
-    },
-    {
-        value: 52,
-        label: 'Thu phí',
-    },
-    {
-        value: 53,
-        label: 'Tiếp cân thị trường',
-    },
-    {
-        value: 54,
-        label: 'Tuyển dụng',
-    },
-    {
-        value: 55,
-        label: 'Sự kiện TCT',
-    },
-    {
-        value: 6,
-        label: 'Khác'
+        id: 1,
+        name: 'Họp',
+        children: [
+            {
+                id: 11,
+                name: 'Họp giao ban công ty',
+            }, {
+                id: 16,
+                name: 'Họp kinh doanh công ty',
+            },
+            {
+                id: 12,
+                name: 'Họp 1:1',
+            }, {
+                id: 14,
+                name: 'Họp CQL khu vực/Ban',
+            }, {
+                id: 13,
+                name: 'Họp nhóm',
+            }, {
+                id: 17,
+                name: 'Họp Ban',
+            }, {
+                id: 15,
+                name: 'Họp khác',
+            },
+        ]
+    }, {
+        id: 2,
+        name: 'Huấn luyện',
+        children: [
+            {
+                id: 21,
+                name: 'Giảng BVLN',
+            }, {
+                id: 22,
+                name: 'Giảng NTTC',
+            }, {
+                id: 23,
+                name: 'Sản phẩm',
+            }, {
+                id: 24,
+                name: 'Chính sách',
+            }, {
+                id: 25,
+                name: 'Huấn luyện khác',
+            },
+        ]
+    }, {
+        id: 3,
+        name: 'Hội nghị tuyển dụng',
+        type: "header"
+    }, {
+        id: 4,
+        name: 'HNKH',
+        children: [
+            {
+                id: 44,
+                name: 'HN VIP công ty',
+            }, {
+                id: 45,
+                name: 'HN VIP khu vực/Ban',
+            }, {
+                id: 46,
+                name: 'HN Chọn lọc(Nhóm)',
+            }, {
+                id: 41,
+                name: 'BHNN',
+            }, {
+                id: 43,
+                name: 'HN BOSS',
+            }, {
+                id: 42,
+                name: 'HNOL',
+            }
+        ]
+    }, {
+        id: 5,
+        name: 'Hỗ trợ',
+        children: [
+            {
+                id: 51,
+                name: 'Bán hàng',
+            }, {
+                id: 52,
+                name: 'Thu phí',
+            }, {
+                id: 53,
+                name: 'Tiếp cân thị trường',
+            }, {
+                id: 54,
+                name: 'Tuyển dụng',
+            }, {
+                id: 55,
+                name: 'Sự kiện TCT',
+            },
+        ]
+    }, {
+        id: 6,
+        name: 'Khác',
+        type: "header"
     },
 ]
+
 
 const workTypeValues = {
     hop: 1,
     huanLuyen: 2,
-    lapKeHoach: 3,
-    toChucHoiNghi: 4,
+    hoiNghiTuyenDung: 3,
+    HNKH: 4,
     hoTro: 5,
     khac: 6
 }
@@ -111,12 +125,12 @@ const headerWorkTypes = [
         header: "Huấn luyện"
     },
     {
-        value: workTypeValues.lapKeHoach,
-        header: "Lập kế hoạch",
+        value: workTypeValues.hoiNghiTuyenDung,
+        header: "Hội nghị tuyển dụng",
     },
     {
-        value: workTypeValues.toChucHoiNghi,
-        header: "Tổ chức hội nghị"
+        value: workTypeValues.HNKH,
+        header: "HNKH"
     },
     {
         header: "Hỗ trợ",
@@ -129,4 +143,4 @@ const headerWorkTypes = [
 ]
 
 export { headerWorkTypes, workTypeValues }
-export default workTypes
+export default workTypeList

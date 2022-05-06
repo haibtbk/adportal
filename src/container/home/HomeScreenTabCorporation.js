@@ -3,6 +3,7 @@ import {
   ScrollView,
   View,
   StyleSheet,
+  Text,
 } from 'react-native';
 import { LoadingComponent, BaseDashboardItemComponent, ButtonComponent, DropdownComponent } from '@component';
 import { AppSizes, AppColors, AppStyles } from '@theme';
@@ -13,9 +14,10 @@ import _ from 'lodash'
 import moment from 'moment';
 import DateTimeUtil from '../../utils/DateTimeUtil';
 import ChartComponent from './ChartComponent';
+import { Separator } from '../../component';
 
-const HomeScreenTabCorporation = ({ route }) => {
-
+const HomeScreenTabCorporation = (props) => {
+  const { callbackUpdatedDateTime } = props
   const navigation = useNavigation()
   const [isLoading, setIsLoading] = useState(false)
   const [revenueCorporation, setRevenueCorporation] = useState([])
@@ -34,6 +36,7 @@ const HomeScreenTabCorporation = ({ route }) => {
     API.getRevenueCorporationVer2(revenueParam)
       .then(res => {
         setRevenueCorporation(res?.data?.result)
+        callbackUpdatedDateTime && callbackUpdatedDateTime(res?.data?.result?.[0]?.yearly?.[0]?.updated_at ?? 0)
       })
       .catch(err => {
         console.log(err)
@@ -44,31 +47,20 @@ const HomeScreenTabCorporation = ({ route }) => {
   }
 
   const procressRevenueData = (revenues = []) => {
-    const temp = _.orderBy(revenues, revenue => {
-      const rv = revenue?.yearly?.[0]?.revenue_data?.revenue_yearly ?? "0"
-      return parseInt(rv)
-    }, ["desc"])
-    const group1 = _.filter(temp, item => {
-      const rv = item?.yearly?.[0]?.revenue_data?.revenue_yearly ?? "0"
-      const rvInt = parseInt(rv)
-      return rvInt >= 96000
+    const group1 = _.filter(revenues, item => {
+      return item.group === 1
     })
     const group1Filtered = _.orderBy(group1, ["income"], ["desc"])
 
-    const group2 = _.filter(temp, item => {
-      const rv = item?.yearly?.[0]?.revenue_data?.revenue_yearly ?? "0"
-      const rvInt = parseInt(rv)
-      return rvInt < 96000 && rvInt >= 60000
+    const group2 = _.filter(revenues, item => {
+      return item.group === 2
     })
     const group2Filtered = _.orderBy(group2, ["income"], ["desc"])
 
-    const group3 = _.filter(temp, item => {
-      const rv = item?.yearly?.[0]?.revenue_data?.revenue_yearly ?? "0"
-      const rvInt = parseInt(rv)
-      return rvInt < 60000
+    const group3 = _.filter(revenues, item => {
+      return item.group === 3
     })
     const group3Filtered = _.orderBy(group3, ["income"], ["desc"])
-
 
     const topGroup1 = [
       {
@@ -208,9 +200,9 @@ const HomeScreenTabCorporation = ({ route }) => {
         nestedScrollEnabled={true}
         showsVerticalScrollIndicator={false}
         style={{ flex: 1, }}
-        contentContainerStyle={{ paddingHorizontal: AppSizes.padding, paddingBottom: AppSizes.padding }}>
+        contentContainerStyle={{ paddingBottom: AppSizes.padding }}>
 
-        <View>
+        <View style={{ paddingHorizontal: AppSizes.padding }}>
           <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', marginBottom: AppSizes.paddingSmall }}>
             <BaseDashboardItemComponent
               onPress={onPressDaily}
@@ -229,10 +221,13 @@ const HomeScreenTabCorporation = ({ route }) => {
           </View>
         </View>
 
-        <ChartComponent title="Nhóm trên 96 tỉ" data={revenueCompanies?.topGroup1} />
-        <ChartComponent title="Nhóm trên 60 tỉ" data={revenueCompanies?.topGroup2} />
-        <ChartComponent title="Nhóm dưới 60 tỉ" data={revenueCompanies?.topGroup2} />
-
+        <Separator />
+        <View style={{ paddingHorizontal: AppSizes.padding }}>
+          <Text style={[AppStyles.boldTextGray, { marginTop: AppSizes.padding }]}>Xếp hạng doanh thu ngày</Text>
+          <ChartComponent title="Nhóm trên 96 tỉ" data={revenueCompanies?.topGroup1} />
+          <ChartComponent title="Nhóm trên 60 tỉ" data={revenueCompanies?.topGroup2} />
+          <ChartComponent title="Nhóm dưới 60 tỉ" data={revenueCompanies?.topGroup3} />
+        </View>
       </ScrollView>
       {isLoading && <LoadingComponent size='large' />}
     </View >

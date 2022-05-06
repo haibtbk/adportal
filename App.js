@@ -42,13 +42,14 @@ import {
   RevenueScreen,
   RevenueAreaScreen,
   ChangePasswordScreen,
-  AdwardScreen
+  AdwardScreen,
 } from '@container';
 import * as RNLocalize from 'react-native-localize';
 import Localization from '@localization'
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import ScheduleReportScreen from './src/container/schedule/ScheduleReportScreen';
+import WorkTypesScreen  from './src/container/schedule/WorkTypesScreen';
 const Tab = createBottomTabNavigator();
 const HomeStack = createStackNavigator();
 const NewsStack = createStackNavigator();
@@ -73,7 +74,7 @@ function RootTabs() {
         options={{
           headerShown: false,
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="ios-bar-chart" color={color} size={size} />
+            <Ionicons name="ios-bar-chart" color={color} size={size - 3} />
           ),
         }}>
         {() => (
@@ -91,7 +92,7 @@ function RootTabs() {
         options={{
           headerShown: false,
           tabBarIcon: ({ color, size }) => (
-            <AntDesign name="folderopen" color={color} size={size} />
+            <AntDesign name="folderopen" color={color} size={size - 3} />
           ),
         }}>
         {() => (
@@ -106,7 +107,7 @@ function RootTabs() {
         options={{
           headerShown: false,
           tabBarIcon: ({ color, size }) => (
-            <MaterialIcons name="dashboard" color={color} size={size} />
+            <MaterialIcons name="dashboard" color={color} size={size - 3} />
           ),
         }}>
         {() => (
@@ -230,6 +231,7 @@ export default App = (props) => {
             />
             <Stack.Screen name={RouterName.baseWebViewScreen} component={BaseWebViewScreen} />
             <Stack.Screen name={RouterName.createSchedule} component={CreateScheduleScreen} />
+            <Stack.Screen name={RouterName.workTypes} component={WorkTypesScreen} />
           </RootStack.Navigator>
           <FabButton ref={fabRef} navigationRef={navigationRef} />
           <MessageBarSimple ref={ref => {

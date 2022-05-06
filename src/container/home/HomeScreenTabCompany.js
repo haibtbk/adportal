@@ -7,82 +7,96 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from 'react-native';
-import { LoadingComponent, BaseDashboardItemComponent, ButtonComponent, DropdownComponent } from '@component';
+import { LoadingComponent, BaseDashboardItemComponent, ButtonComponent, DropdownComponent, Separator } from '@component';
 import { AppSizes, AppColors, AppStyles } from '@theme';
-import messaging from '@react-native-firebase/messaging';
-import { navigateNoti } from '../../firebaseNotification/NavigationNotificationManager';
-import { handleMessageBar } from '../../firebaseNotification/MessageBarManager'
 import { useNavigation } from '@react-navigation/native';
 import { API } from '@network'
 import _ from 'lodash'
 import moment from 'moment';
-import ScheduleComponent from './ScheduleComponent';
 import PerformanceComponent from './PerfomanceComponent';
+import UserActivitiesComponent from './UserActivitiesComponent';
 import DateTimeUtil from '../../utils/DateTimeUtil';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { RouterName } from '@navigation';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { workTypeValues } from "@schedule/WorkTypes";
 import { ScheduleStatus } from "@schedule"
 import ChartComponent from './ChartComponent';
+import activityType from './activityType';
+import { useSelector } from 'react-redux';
 
-const ROLLS = [
-  {
-    id: 1,
-    label: "Công ty",
-  },
-  {
-    id: 2,
-    label: "Tổng công ty",
-  },
-  {
-    id: 3,
-    label: "Cá nhân",
-  }
 
-]
+const HomeScreenTabCompany = (props) => {
+  const { orgUnderControl } = props
+  const account = useSelector((state) => {
+    return state?.user?.account ?? {}
+  })
 
-const HomeScreenTabCompany = () => {
+  const isTongCongTy = (orgUnderControl?.length ?? 0) > 1
   const navigation = useNavigation()
   const [isLoading, setIsLoading] = useState(false)
   const [dataUserUnderControl, setDataUserUnderControl] = useState([])
   const [revenueCompany, setRevenueCompany] = useState([])
   const [scheduleData, setScheduleData] = useState([])
+  const [personRanking, setPersonRanking] = useState([])
+  const [org, setOrg] = useState(orgUnderControl?.[0] ?? null)
+  const currentMonth = moment().format("MM/YYYY")
+  const [month, setMonth] = useState({
+    label: currentMonth,
+    value: currentMonth
+  })
+
   const oneday = 60 * 60 * 24 * 1000
 
   const fetchUserUnderControl = () => {
-    setIsLoading(true)
     const paramUserUnderControl = {
+      org_id: org?.value,
       submit: 1,
       start_ts: Math.round(DateTimeUtil.getStartOfDay(moment().valueOf())) / 1000,
       end_ts: Math.round(DateTimeUtil.getEndOfDay(moment().valueOf() + 30 * 24 * 60 * 60 * 1000)) / 1000,
+      include_me: 1,
     }
-    API.getUserUnderControl(paramUserUnderControl)
-    .then(res => {
-      if (res?.data?.success) {
-        setDataUserUnderControl(res?.data.result)
-      }
+    return API.getUserUnderControl(paramUserUnderControl)
+  }
 
-    })
-    .catch(err => {
-      console.log(err)
-    })
-    .finally(() => {
-      setIsLoading(false)
-    })
+  const fetchPersonRanking = () => {
+    const { start_ts, end_ts } = getStartTimeEndTime(month.value)
+    const revenueParam = {
+      org_id: org?.value,
+      submit: 1,
+      start_ts,
+      end_ts
+    }
+    return API.personRanking(revenueParam)
   }
 
   const fetchCompanyData = () => {
     const revenueParam = {
+      org_id: org?.value,
       submit: 1,
       start_ts: Math.round((DateTimeUtil.getStartOfDay(moment().valueOf()) - oneday) / 1000),
       end_ts: Math.round((DateTimeUtil.getEndOfDay(moment().valueOf()) - oneday) / 1000)
-
     }
+    return API.getRevenueCompany(revenueParam)
+  }
+
+  const getStartTimeEndTime = (time) => {
+    const startTime = moment(time, "MM/YYYY").startOf('month').valueOf()
+    const endTime = moment(time, "MM/YYYY").endOf('month').valueOf()
+    let start_ts = Math.round(startTime / 1000)
+    let end_ts = Math.round(endTime / 1000)
+
+    return {
+      start_ts,
+      end_ts
+    }
+  }
+
+  useEffect(() => {
     setIsLoading(true)
-    API.getRevenueCompany(revenueParam)
+    fetchPersonRanking()
       .then(res => {
-        setRevenueCompany(res?.data?.result)
+        if (res?.data?.success) {
+          setPersonRanking(res?.data?.result)
+        }
       })
       .catch(err => {
         console.log(err)
@@ -90,12 +104,30 @@ const HomeScreenTabCompany = () => {
       .finally(() => {
         setIsLoading(false)
       })
-  }
+  }, [org, month])
 
   useEffect(() => {
-    fetchCompanyData()
-    fetchUserUnderControl()
-  }, [])
+    const fetchCompanyDataPromise = fetchCompanyData()
+    const fetchUserUnderControlPromise = fetchUserUnderControl()
+    Promise.all([fetchCompanyDataPromise, fetchUserUnderControlPromise])
+      .then(res => {
+        const companyData = res[0]
+        const userUnderControl = res[1]
+        if (companyData?.data?.success) {
+          setRevenueCompany(companyData?.data?.result)
+        }
+        if (userUnderControl?.data?.success) {
+          setDataUserUnderControl(userUnderControl?.data?.result)
+        }
+
+      })
+      .catch(err => {
+        console.log(err)
+      })
+      .finally(() => {
+        setIsLoading(false)
+      })
+  }, [org])
 
   useEffect(() => {
     if (dataUserUnderControl?.length > 0) {
@@ -213,13 +245,10 @@ const HomeScreenTabCompany = () => {
 
   const getDataPerformance = () => {
     return _.map(dataUserUnderControl, item => {
-      if (item.name == "Phạm Thị Hà Trang") {
-        console.log(item)
-      }
       const hop = getPerfomancePercent(item, workTypeValues.hop)
       const huanLuyen = getPerfomancePercent(item, workTypeValues.huanLuyen)
-      const lapKeHoach = getPerfomancePercent(item, workTypeValues.lapKeHoach)
-      const toChucHoiNghi = getPerfomancePercent(item, workTypeValues.toChucHoiNghi)
+      const hoiNghiTuyenDung = getPerfomancePercent(item, workTypeValues.hoiNghiTuyenDung)
+      const HNKH = getPerfomancePercent(item, workTypeValues.HNKH)
       const hoTro = getPerfomancePercent(item, workTypeValues.hoTro)
       const khac = getPerfomancePercent(item, workTypeValues.khac)
 
@@ -227,24 +256,146 @@ const HomeScreenTabCompany = () => {
         name: item.name,
         [workTypeValues.hop]: hop,
         [workTypeValues.huanLuyen]: huanLuyen,
-        [workTypeValues.lapKeHoach]: lapKeHoach,
-        [workTypeValues.toChucHoiNghi]: toChucHoiNghi,
+        [workTypeValues.hoiNghiTuyenDung]: hoiNghiTuyenDung,
+        [workTypeValues.HNKH]: HNKH,
         [workTypeValues.hoTro]: hoTro,
         [workTypeValues.khac]: khac
       }
     })
   }
 
+  const getDataChart1 = () => {
+    const temp = _.map(personRanking, item => {
+      const performance_hnkh = item?.performance_hnkh ?? 0
+      let performance_hnkh_total = item?.performance_hnkh_total ?? 100000000
+      if (performance_hnkh_total == 0) {
+        performance_hnkh_total = 100000000
+      }
+      const performance_hnkh_percent_real = Math.round((performance_hnkh / performance_hnkh_total) * 100)
+      const performance_hnkh_percent = `${performance_hnkh_percent_real} %`
+      return {
+        ...item,
+        performance_hnkh_percent,
+        performance_hnkh_percent_real
+      }
+    })
+    const temp_ordered = _.orderBy(temp, ['performance_hnkh_percent_real'], ['desc']) ?? []
+
+    return [
+      {
+        value: temp_ordered[0]?.performance_hnkh_percent ?? 0,
+        label: temp_ordered[0]?.name ?? '',
+      },
+      {
+        value: temp_ordered[1]?.performance_hnkh_percent ?? 0,
+        label: temp_ordered[1]?.name ?? '',
+      },
+      {
+        value: temp_ordered[2]?.performance_hnkh_percent ?? 0,
+        label: temp_ordered[2]?.name ?? '',
+      },
+    ]
+  }
+
+  const getDataChart2 = () => {
+    const temp = _.orderBy(personRanking, ['performance_afyp'], ['desc']) ?? []
+    return [
+      {
+        value: `${temp[0]?.performance_afyp ?? 0} trđ`,
+        label: temp[0]?.name ?? '',
+      },
+      {
+        value: `${temp[1]?.performance_afyp ?? 0} trđ`,
+        label: temp[1]?.name ?? '',
+      },
+      {
+        value: `${temp[2]?.performance_afyp ?? 0} trđ`,
+        label: temp[2]?.name ?? '',
+      },
+    ]
+  }
+
+  const getDataChart3 = () => {
+    const temp = _.orderBy(personRanking, ['performance_trainning'], ['desc']) ?? []
+    return [
+      {
+        value: temp[0]?.performance_trainning ?? 0,
+        label: temp[0]?.name ?? '',
+      },
+      {
+        value: temp[1]?.performance_trainning ?? 0,
+        label: temp[1]?.name ?? '',
+      },
+      {
+        value: temp[2]?.performance_trainning ?? 0,
+        label: temp[2]?.name ?? '',
+      },
+    ]
+  }
+
+  const onChangeOrg = (item) => {
+    setOrg(item)
+  }
+
+  const getDataUserActivities = () => {
+    return _.map(personRanking, item => {
+      const SL_HNKH_DATOCHUC = item?.performance_hnkh_total ?? 0
+      const performance_hnkh = item?.performance_hnkh ?? 0
+      let performance_hnkh_total = item?.performance_hnkh_total ?? 100000000
+      if (performance_hnkh_total == 0) {
+        performance_hnkh_total = 100000000
+      }
+      const HQ_TOCHU_HNKH = `${Math.round((performance_hnkh / performance_hnkh_total) * 100)} %`
+      const DT_DK_HNKH = item?.performance_afyp ?? 0
+      const SL_HDDT = item?.performance_trainning ?? 0
+
+
+      return {
+        name: item.name,
+        [activityType.SL_HNKH_DATOCHUC]: SL_HNKH_DATOCHUC,
+        [activityType.HQ_TOCHU_HNKH]: HQ_TOCHU_HNKH,
+        [activityType.DT_DK_HNKH]: DT_DK_HNKH,
+        [activityType.SL_HDDT]: SL_HDDT,
+      }
+    })
+  }
+
+  const getMonthData = () => {
+    const startMonthStr = "2022-03-01" // startTime from 1/3/2022 to now
+    const endMonthStr = moment().format('YYYY-MM-DD')
+    const data = DateTimeUtil.getMonthBetween(startMonthStr, endMonthStr, "DD/MM/YYYY")
+    const dataMap = _.map(data, item => {
+      return {
+        label: item,
+        value: item
+      }
+    })
+    return dataMap
+  }
+
+  const onChangeMonth = (item) => {
+    setMonth(item)
+  }
 
   return (
     <View style={[AppStyles.container, { paddingHorizontal: 0 }]}>
+      {isTongCongTy ? <View style={{ flexDirection: 'row', alignItems: 'center', alignSelf: 'flex-end', marginBottom: AppSizes.paddingXSmall }}>
+        <DropdownComponent
+          arrowColor={AppColors.primaryBackground}
+          textStyle={{ ...AppStyles.baseText, color: AppColors.primaryBackground, fontSize: AppSizes.fontMedium }}
+          containerStyle={{ width: 200, borderColor: 'transparent' }}
+          data={orgUnderControl}
+          onSelect={(item) => onChangeOrg(item)}
+          defaultValue={org}
+        />
+      </View> : <Text style={[AppStyles.baseTextGray, { color: AppColors.primaryBackground, textAlign: 'right', paddingHorizontal: AppSizes.padding, paddingBottom: AppSizes.paddingSmall }]}>{account?.root_organization ?? ""}</Text>}
       <ScrollView
         nestedScrollEnabled={true}
         showsVerticalScrollIndicator={false}
         style={{ flex: 1, }}
-        contentContainerStyle={{ paddingHorizontal: AppSizes.padding, paddingBottom: AppSizes.padding }}>
+        contentContainerStyle={{ paddingBottom: AppSizes.padding }}>
 
-        <View>
+        <View style={{ paddingHorizontal: AppSizes.padding }}>
           <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', marginBottom: AppSizes.paddingSmall }}>
             <BaseDashboardItemComponent
               onPress={onPressDaily}
@@ -262,20 +413,27 @@ const HomeScreenTabCompany = () => {
               iconName="ios-logo-usd" title="Doanh thu năm" content="Doanh thu năm" amount={getYearRevenue()} percent={getPercentYear()} containerStyle={{ flex: 1, }} color={AppColors.success} />
           </View>
         </View>
+        <Separator />
+        <View style={{ paddingHorizontal: AppSizes.padding }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginVertical: AppSizes.padding }}>
+            <Text style={[AppStyles.boldTextGray, { flex: 1 }]}>Xếp hạng hoạt động trong tháng</Text>
+            <DropdownComponent
+              arrowColor={AppColors.primaryBackground}
+              textStyle={{ ...AppStyles.baseText, color: AppColors.primaryBackground, fontSize: AppSizes.fontMedium }}
+              containerStyle={{ width: 120, borderColor: 'transparent' }}
+              data={getMonthData()}
+              onSelect={(item) => onChangeMonth(item)}
+              defaultValue={month}
+            />
+          </View>
 
-        <ChartComponent title="Nhóm trên 96 tỉ" data={{
-          first: {
-            value: 100,
-            label: "Sơn La"
-          }, third: {
-            value: 300,
-            label: "Hà Nội"
-          }, second: {
-            value: 200,
-            label: "Thành Phố Hồ Chí Minh"
-          }
-        }} />
-
+          <ChartComponent title="TOP AD tổ chức hoạt động HNKH hiệu quả
+(Tỉ lệ Hội nghị có doanh thu/tổng số Hội nghị cao nhất)" data={getDataChart1()} />
+          <ChartComponent title="TOP AD có doanh thu đăng ký tại Hội nghị cao nhất" data={getDataChart2()} />
+          <ChartComponent title="TOP AD tổ chức hoạt động đào tạo nhiều nhất" data={getDataChart3()} />
+        </View>
+        <UserActivitiesComponent containerStyle={{ marginTop: AppSizes.padding }} data={getDataUserActivities()} title="Chi tiết tất cả nhân viên" titleStyle={{ color: AppColors.secondaryTextColor, paddingLeft: AppSizes.paddingXSmall, fontSize: AppSizes.fontMedium }} />
+        <Separator />
         <PerformanceComponent containerStyle={{ marginTop: AppSizes.padding }} data={getDataPerformance()} title="Hiệu suất công việc" titleStyle={{ color: AppColors.secondaryTextColor, paddingLeft: AppSizes.paddingXSmall, fontSize: AppSizes.fontMedium }} />
 
       </ScrollView>

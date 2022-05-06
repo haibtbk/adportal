@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
   ScrollView,
   View,
+  Text,
   StyleSheet,
 } from 'react-native';
 import { LoadingComponent, BaseDashboardItemComponent, ButtonComponent, DropdownComponent } from '@component';
@@ -95,6 +96,7 @@ const HomeScreenTabPersonal = () => {
               iconName="ios-logo-usd" title="Doanh thu năm" content="Doanh thu năm" amount={getYearRevenue()} percent={getPercentYear()} containerStyle={{ flex: 1, }} color={AppColors.success} />
           </View>
         </View>
+        <Text style={[AppStyles.baseTextGray, { margin: AppSizes.padding, textAlign: 'center' }]}>Hiện tại chưa có dữ liệu cá nhân</Text>
 
 
       </ScrollView>

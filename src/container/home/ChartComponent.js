@@ -2,27 +2,31 @@ import React, { useState, useEffect } from "react";
 import { Text, TextInput, View, StyleSheet } from "react-native";
 import { AppStyles, AppColors, AppSizes } from "@theme";
 import { Divider } from "react-native-paper";
+import { getNumberFromString } from '@utils/string';
 
 const ChartComponent = (props) => {
     const { title = "", data } = props
+    const first = data?.[0] ?? {}
+    const second = data?.[1] ?? {}
+    const third = data?.[2] ?? {}
     return (
         <View style={[styles.container]}>
             <View style={[styles.chartContainer]}>
                 <View style={[styles.chart]}>
                     <Text style={[AppStyles.baseTextGray]}>
-                        {data?.third?.value ?? 0}
+                        {third?.value ?? 0}
                     </Text>
                     <View style={[styles.chartThird]} />
                 </View>
                 <View style={[styles.chart]}>
                     <Text style={[AppStyles.baseTextGray]}>
-                        {data?.first?.value ?? 0}
+                        {first?.value ?? 0}
                     </Text>
                     <View style={[styles.chartFirst]} />
                 </View>
                 <View style={[styles.chart]}>
                     <Text style={[AppStyles.baseTextGray]}>
-                        {data?.second?.value ?? 0}
+                        {second?.value ?? 0}
                     </Text>
                     <View style={[styles.chartSecond]} />
                 </View>
@@ -30,25 +34,25 @@ const ChartComponent = (props) => {
             <View style={[styles.chartContainer, { marginTop: AppSizes.paddingSmall }]}>
                 <View style={[styles.chartLabel]}>
                     <Text style={styles.chartLabelText} numberOfLines={2} ellipsizeMode="tail">
-                        {data?.third?.label ?? ""}
+                        {getNumberFromString(third?.value) > 0 ? (third?.label ?? "") : ""}
                     </Text>
                 </View>
                 <View style={[styles.chartLabel]}>
                     <Text style={styles.chartLabelText} numberOfLines={2} ellipsizeMode="tail">
-                        {data?.first?.label ?? ""}
+                        {getNumberFromString(first?.value) > 0 ? (first?.label ?? "") : ""}
                     </Text>
                 </View>
                 <View style={[styles.chartLabel]}>
                     <Text style={styles.chartLabelText} numberOfLines={2} ellipsizeMode="tail">
-                        {data?.second?.label ?? ""}
+                        {getNumberFromString(second?.value) > 0 ? (second?.label ?? "") : ""}
                     </Text>
                 </View>
             </View>
 
-            <Text style={[AppStyles.baseTextGray, {marginTop: AppSizes.paddingSmall}]}>
+            <Text style={[AppStyles.baseTextGray, { marginTop: AppSizes.padding, textAlign: 'center' }]}>
                 {title}
             </Text>
-            <Divider style={{ width: '50%', margin: AppSizes.paddingSmall, backgroundColor: AppColors.primaryBackground }} />
+            <Divider style={{ width: '50%', margin: AppSizes.padding, backgroundColor: AppColors.primaryBackground }} />
 
         </View>)
 }
@@ -76,8 +80,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     chartLabelText: {
-        ...AppStyles.baseTextGray,
-        fontSize: 14
+        ...AppStyles.boldTextGray,
+        fontSize: 14,
+        color: AppColors.primaryBackground
     },
     chartThird: {
         width: '100%',
