@@ -51,7 +51,11 @@ const workTypeList = [
     }, {
         id: 3,
         name: 'Hội nghị tuyển dụng',
-        type: "header"
+        children: [
+            {
+                id: 31,
+                name: 'BNNN',
+            }]
     }, {
         id: 4,
         name: 'HNKH',
@@ -111,7 +115,8 @@ const workTypeValues = {
     hoiNghiTuyenDung: 3,
     HNKH: 4,
     hoTro: 5,
-    khac: 6
+    khac: 6,
+    BNNN: 31,
 }
 
 

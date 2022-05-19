@@ -183,3 +183,11 @@ export const isEmailString = (str) =>
 export const getNumberFromString = (str) => {
   return (str?.toString()?.match(/\d+/)) || 0
 }
+
+export const getExtension = (filename) => {
+  if (!filename) {
+    return '';
+  }
+  const parts = filename.split('.');
+  return parts[parts.length - 1];
+}

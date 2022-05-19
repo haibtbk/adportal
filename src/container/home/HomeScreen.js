@@ -26,8 +26,8 @@ import moment from 'moment';
 import 'moment/locale/vi'  // without this line it didn't work
 moment.locale('vi')
 moment.updateLocale('vi', {
-  weekdays : [
-      "Chủ nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"
+  weekdays: [
+    "Chủ nhật", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy"
   ]
 });
 
@@ -48,13 +48,17 @@ const HomeScreen = ({ route }) => {
       .then(res => {
         if (res?.data?.success) {
           const data = res?.data?.result ?? [];
-          const dataPretty = data.map(item => {
-            return {
-              label: item.name,
-              value: item.id
+          let orgUnderControl = [];
+          _.forEach(data, item => {
+            if (item?.level == 1) {
+              const org = {
+                label: item.name,
+                value: item.id
+              }
+              orgUnderControl = [...orgUnderControl, org];
             }
           })
-          setOrgUnderControl(dataPretty)
+          setOrgUnderControl(orgUnderControl)
         }
       })
       .catch(err => {
@@ -126,7 +130,7 @@ const HomeScreen = ({ route }) => {
             <Tab.Screen
               name="corporation"
               children={() => <HomeScreenTabCorporation callbackUpdatedDateTime={callbackUpdatedDateTime} />}
-              options={{ tabBarLabel: 'Tổng công ty', }}
+              options={{ tabBarLabel: 'Toàn hệ thống', }}
             />
           </Tab.Navigator>
         </View> : <LoadingComponent size='large' />

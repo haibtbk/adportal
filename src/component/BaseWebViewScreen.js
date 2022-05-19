@@ -19,7 +19,7 @@ const BaseWebViewScreen = ({ route, navigation }) => {
               callback && callback()
             }}
           >
-            <Feather name="arrow-left" size={26} color="white" />
+            <Feather name="arrow-left" size={26} color="black" />
           </TouchableOpacity>
         )}
         centerTitle={title}

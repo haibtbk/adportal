@@ -430,7 +430,7 @@ const HomeScreenTabCompany = (props) => {
           <ChartComponent title="TOP AD tổ chức hoạt động HNKH hiệu quả
 (Tỉ lệ Hội nghị có doanh thu/tổng số Hội nghị cao nhất)" data={getDataChart1()} />
           <ChartComponent title="TOP AD có doanh thu đăng ký tại Hội nghị cao nhất" data={getDataChart2()} />
-          <ChartComponent title="TOP AD tổ chức hoạt động đào tạo nhiều nhất" data={getDataChart3()} />
+          <ChartComponent title="TOP AD tổ chức BNNN nhiều nhất" data={getDataChart3()} />
         </View>
         <UserActivitiesComponent containerStyle={{ marginTop: AppSizes.padding }} data={getDataUserActivities()} title="Chi tiết tất cả nhân viên" titleStyle={{ color: AppColors.secondaryTextColor, paddingLeft: AppSizes.paddingXSmall, fontSize: AppSizes.fontMedium }} />
         <Separator />

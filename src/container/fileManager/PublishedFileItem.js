@@ -17,12 +17,12 @@ const PublishedFileItem = (props) => {
                     {content}
                 </Text>
                 <View style={{ flexDirection: 'row' }}>
-                    {/* <ButtonIconComponent
+                    <ButtonIconComponent
                         containerStyle={{marginRight: AppSizes.padding}}
                         name="eye"
                         size={25}
                         color="#6d6dab"
-                        action={viewFile} /> */}
+                        action={viewFile} />
                     <ButtonIconComponent
                         name="download"
                         size={25}

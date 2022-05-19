@@ -44,6 +44,7 @@
     "react-native-device-info": "^6.2.0",
     "react-native-dots-pagination": "^0.2.0",
     "react-native-fast-image": "^8.5.11",
+    "react-native-file-viewer": "^2.1.5",
     "react-native-fs": "^2.18.0",
     "react-native-gesture-handler": "^1.8.0",
     "react-native-image-crop-picker": "^0.37.2",

@@ -19,6 +19,7 @@ import { workTypeValues } from "@schedule/WorkTypes";
 import ActionSheet, { SheetManager } from "react-native-actions-sheet";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ScheduleStatus } from "@schedule"
+import { getExtension } from '@utils/string';
 
 const MAX_DROPDOWM_WIDTH = 135
 const DROPDOWN_HEIGHT = 35
@@ -34,6 +35,11 @@ const ScheduleDetailScreen = ({ route, navigation }) => {
     const [customer_number, setCustomerNumber] = useState(schedule?.schedule_data?.customer_number ?? 0)
     const [tvv_number, setTvvNumber] = useState(schedule?.schedule_data?.tvv_number ?? 0)
     const [afyp, setAfyp] = useState(schedule?.schedule_data?.afyp ?? 0)
+
+    // const [recruiter, setRecruiter] = useState(schedule?.schedule_data?.recruiter ?? 0)
+    // const []
+
+
     const account = useSelector((state) => {
         return state?.user?.account ?? {}
     })
@@ -43,6 +49,7 @@ const ScheduleDetailScreen = ({ route, navigation }) => {
     const from_user = scheduleData?.schedule_data?.from_user ?? (scheduleData?.schedule_data?.form_user ?? "")
     const content = scheduleData?.schedule_data?.name ?? ""
     const isToChucSuKien = scheduleData?.schedule_data?.work_type?.toString()?.charAt(0) == workTypeValues.HNKH
+    const isBNNN = scheduleData?.schedule_data?.work_type == workTypeValues.BNNN
 
     const updateStatus = (status) => {
 
@@ -103,6 +110,22 @@ const ScheduleDetailScreen = ({ route, navigation }) => {
                 }
             }
         ])
+    }
+
+    const viewFile = (item) => {
+        let { url, name } = item
+        if (Platform.OS === 'android') {
+            const extension = getExtension(name)
+            if (!_.includes(['png', 'jpg', 'jpeg', 'bmp', 'svg', 'gif'], extension?.toLowerCase())) {
+                url = 'http://docs.google.com/gview?embedded=true&url=' + url
+            }
+        }
+        navigation.navigate(
+            RouterName.baseWebViewScreen,
+            {
+                url,
+                title: name,
+            })
     }
 
     const downloadFile = (item) => {
@@ -178,7 +201,6 @@ const ScheduleDetailScreen = ({ route, navigation }) => {
         API.uploadFileSchedule(formData)
             .then(res => {
                 if (res?.data?.success) {
-                    console.log(res?.data)
                     const baseURL = AppConfig.API_BASE_URL[API.env]
                     const photoUrl = baseURL + '/' + res?.data?.result?.path ?? ""
                     const attachment = {
@@ -248,9 +270,25 @@ const ScheduleDetailScreen = ({ route, navigation }) => {
     }
 
     const removeFile = (item) => {
-        const temp_attachments = attachments.filter(attachment => attachment.id != item.id)
-        updateSchedule(temp_attachments)
-        setAttachments(temp_attachments)
+
+        Alert.alert("Chú ý", "Bạn có chắc chắn muốn xóa file này?", [
+            {
+                text: "Hủy",
+                onPress: () => {
+                },
+                style: "cancel"
+            },
+            {
+                text: "Xóa",
+                onPress: () => {
+                    const temp_attachments = attachments.filter(attachment => attachment.id != item.id)
+                    updateSchedule(temp_attachments)
+                    setAttachments(temp_attachments)
+                }
+            }
+        ])
+
+
     }
 
     const renderAttachment = () => {
@@ -261,7 +299,7 @@ const ScheduleDetailScreen = ({ route, navigation }) => {
                         {
                             attachments.map((item, index) => {
                                 return (
-                                    <View key={index} style={styles.attachmentItem} onPress={() => downloadFile(item)}>
+                                    <View key={index} style={styles.attachmentItem}>
                                         <Text numberOfLines={1} ellipsizeMode='tail' style={[AppStyles.baseTextGray, { flex: 1 }]}>{item.name}</Text>
                                         <View style={{ flexDirection: 'row' }}>
                                             <ButtonIconComponent
@@ -272,10 +310,10 @@ const ScheduleDetailScreen = ({ route, navigation }) => {
                                                 color={AppColors.danger}
                                                 action={() => removeFile(item)} />
                                             <ButtonIconComponent
-                                                name="download"
+                                                name="eye"
                                                 size={25}
                                                 color={AppColors.primaryBackground}
-                                                action={() => downloadFile(item)} />
+                                                action={() => viewFile(item)} />
                                         </View>
 
                                     </View>
@@ -302,7 +340,7 @@ const ScheduleDetailScreen = ({ route, navigation }) => {
 
     }, [afyp, tvv_number, customer_number, attachments])
 
-    const editReport = () => {
+    const editReportHNKH = () => {
         navigation.navigate("ScheduleReport", {
             callback: (data) => {
                 if (data) {
@@ -310,6 +348,18 @@ const ScheduleDetailScreen = ({ route, navigation }) => {
                     setAfyp(data.afyp)
                     setTvvNumber(data.tvv_number)
                     setCustomerNumber(data.customer_number)
+                }
+            },
+            schedule,
+        })
+    }
+    const editReportBNNN = () => {
+        navigation.navigate("ScheduleBNNNReport", {
+            callback: (data) => {
+                if (data) {
+                    const tem = _.cloneDeep(scheduleData)
+                    tem.schedule_data = data
+                    setScheduleData(tem)
                 }
             },
             schedule,
@@ -338,7 +388,7 @@ const ScheduleDetailScreen = ({ route, navigation }) => {
                     </Text>
 
                     <View style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: AppSizes.paddingXSmall }}>
-                        <Text style={[AppStyles.boldTextGray, {color: AppColors.primaryBackground, marginTop: AppSizes.paddingSmall}]}>
+                        <Text style={[AppStyles.boldTextGray, { color: AppColors.primaryBackground, marginTop: AppSizes.paddingSmall }]}>
                             {DateTimeUtil.format("HH:mm dddd DD/MM/YYYY", (scheduleData?.start_ts ?? 0) * 1000)}
                         </Text>
 
@@ -390,7 +440,29 @@ const ScheduleDetailScreen = ({ route, navigation }) => {
                             textStyle={{ color: AppColors.primaryBackground }}
                             containerStyle={{ ...AppStyles.roundButton, borderColor: 'gray', width: 180, alignSelf: 'center', backgroundColor: AppColors.white, marginVertical: AppSizes.padding, }}
                             title="Báo cáo"
-                            action={editReport} />
+                            action={editReportHNKH} />
+                    </View>
+                }
+                {
+                    isBNNN && <View style={{ ...AppStyles.baseBox, marginTop: AppSizes.padding }}>
+                        <Text style={[AppStyles.boldTextGray, { marginVertical: AppSizes.paddingXSmall, fontSize: AppSizes.fontLarge }]} numberOfLines={2} ellipsizeMode="tail">
+                            Báo cáo kết quả
+                        </Text>
+                        <Text style={[AppStyles.baseTextGray,]} numberOfLines={2} ellipsizeMode="tail">
+                            Tên người tuyển dụng:{scheduleData?.schedule_data?.recruiter ?? ""}
+                        </Text>
+                        <Text style={[AppStyles.baseTextGray, { marginVertical: AppSizes.paddingXSmall }]} numberOfLines={2} ellipsizeMode="tail">
+                            {scheduleData?.schedule_data?.candidate_number ?? 0} Ứng viên tham dự
+                        </Text>
+                        <Text style={[AppStyles.baseTextGray,]} numberOfLines={2} ellipsizeMode="tail">
+                            {scheduleData?.schedule_data?.candidate_number_join ?? 0} Ứng viên đồng ý học BVLN
+                        </Text>
+
+                        <ButtonComponent
+                            textStyle={{ color: AppColors.primaryBackground }}
+                            containerStyle={{ ...AppStyles.roundButton, borderColor: 'gray', width: 180, alignSelf: 'center', backgroundColor: AppColors.white, marginVertical: AppSizes.padding, }}
+                            title="Báo cáo"
+                            action={editReportBNNN} />
                     </View>
                 }
 

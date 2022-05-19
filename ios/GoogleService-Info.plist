@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>826777219449-0ms63c52fame5ma085jaidgtfkv4pvpg.apps.googleusercontent.com</string>
+	<string>826777219449-0qv1orq9nnrae9r8aqmt2ga8vu07pvp8.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.826777219449-0ms63c52fame5ma085jaidgtfkv4pvpg</string>
+	<string>com.googleusercontent.apps.826777219449-0qv1orq9nnrae9r8aqmt2ga8vu07pvp8</string>
 	<key>API_KEY</key>
 	<string>AIzaSyAsP39-ujzmNcEyR33e5TMygiA35JeLsd0</string>
 	<key>GCM_SENDER_ID</key>
@@ -13,7 +13,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.baoviet.ad.portal</string>
+	<string>com.baoviet.bvl.ad.portal</string>
 	<key>PROJECT_ID</key>
 	<string>adportal-de46a</string>
 	<key>STORAGE_BUCKET</key>
@@ -29,6 +29,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:826777219449:ios:617fcd912a0e43667b7fa8</string>
+	<string>1:826777219449:ios:c2d92599a624a1767b7fa8</string>
 </dict>
 </plist>

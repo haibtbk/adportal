@@ -12,6 +12,7 @@ import RNFS from 'react-native-fs'
 import Icon from 'react-native-vector-icons/AntDesign';
 import moment from 'moment';
 import _ from 'lodash';
+import FileViewer from 'react-native-file-viewer';
 
 let categoriesFixed = []
 const ROOT_ITEM_PATH = {
@@ -93,19 +94,20 @@ const PublishedFileScreen = (props) => {
                 RNFS.writeFile(localFile, file_content, 'base64')
                     .then(() => {
                         let url = localFile
-                        RNFS.openDocument(url)
+                        // RNFS.openDocument(url)
                         // if (Platform.OS === 'android') {
                         //     const extension  = item.file_type
                         //     if (!_.includes(['png', 'jpg', 'jpeg', 'bmp', 'svg', 'gif'], extension)) {
                         //         url = 'http://docs.google.com/gview?embedded=true&url=' + url
                         //     }
                         // }
-                        navigation.navigate(
-                            RouterName.baseWebViewScreen,
-                            {
-                                url,
-                                title: fileName,
-                            })
+                        FileViewer.open(url)
+                        // navigation.navigate(
+                        //     RouterName.baseWebViewScreen,
+                        //     {
+                        //         url,
+                        //         title: fileName,
+                        //     })
                     })
                     .catch(error => console.log(error.message));
             })

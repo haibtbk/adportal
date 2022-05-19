@@ -81,14 +81,14 @@ const UserActivitiesComponent = (props) => {
     first: () => <ActivityView title="SL HNKH đã tổ chức" data={dataSL_HNKH_DATOCHUC} type={activityType.SL_HNKH_DATOCHUC} />,
     second: () => <ActivityView title="Hiệu quả tổ chức HNKH" data={dataHQ_TOCHU_HNKH} type={activityType.HQ_TOCHU_HNKH} />,
     third: () => <ActivityView title="Doanh thu đăng ký tại HNKH" data={dataDT_DK_HNKH} type={activityType.DT_DK_HNKH} />,
-    forth: () => <ActivityView title="SL hoạt động đào tạo" data={dataSL_HDDT} type={activityType.SL_HDDT} />,
+    forth: () => <ActivityView title="SL tổ chức BNNN" data={dataSL_HDDT} type={activityType.SL_HDDT} />,
   });
   const [index, setIndex] = React.useState(0);
   const [routes] = React.useState([
     { key: 'first', title: 'SL HNKH đã tổ chức' },
     { key: 'second', title: 'Hiệu quả tổ chức HNKH' },
     { key: 'third', title: 'Doanh thu đăng ký tại HNKH' },
-    { key: 'forth', title: 'SL hoạt động đào tạo' },
+    { key: 'forth', title: 'SL tổ chức BNNN' },
   ]);
 
   const renderTabBar = props => (

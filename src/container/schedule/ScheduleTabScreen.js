@@ -26,21 +26,19 @@ const filterOptions = [
     { label: "Chọn thời gian", id: 3 },
 ]
 const allUser = { label: "Chọn cán bộ", value: -1 }
+const scheduleCompany = { label: "Kế hoạch công ty", value: -2 }
 const ScheduleTabScreen = (props) => {
     const { orgUnderControl = [], isShowSearch = false, start_tsProp = DateTimeUtil.getStartOfMonth(), end_tsProp = DateTimeUtil.getEndOfMonth() } = props
     const isTongCongTy = (orgUnderControl?.length ?? 0) > 1
     const navigation = useNavigation();
     const [isLoading, setLoading] = useState(false)
-    const [status, setStatus] = useState(1)
     const [start_ts, setStartTime] = useState(start_tsProp)
     const [end_ts, setEndTime] = useState(end_tsProp)
     const isFirstTime = useFirstTime(useRef(true))
     const [dataUserUnderControl, setDataUserUnderControl] = useState([allUser])
     const [org, setOrg] = useState(orgUnderControl?.[0] ?? null)
     const [user, setUser] = useState(allUser)
-    const account = useSelector((state) => {
-        return state?.user?.account ?? {}
-    })
+    const [currentSessionDay, setCurrentSessionDay] = useState(null)
 
     const refreshEvent = useSelector((state) => {
         return state?.refresh?.event ?? {}
@@ -55,7 +53,7 @@ const ScheduleTabScreen = (props) => {
     useEffect(() => {
         if (isFirstTime) return
         refreshData()
-    }, [status, start_ts, end_ts, user, org])
+    }, [start_ts, end_ts, user, org])
 
     useEffect(() => {
         if (isTongCongTy) {
@@ -66,6 +64,7 @@ const ScheduleTabScreen = (props) => {
             submit: 1,
             start_ts: Math.round(DateTimeUtil.getStartOfYear()) / 1000,
             end_ts: Math.round(DateTimeUtil.getEndOfDay(moment().valueOf() + 30 * 24 * 60 * 60 * 1000)) / 1000,
+            include_me: 1,
         }
         API.getUserUnderControl(paramUserUnderControl)
             .then(res => {
@@ -77,11 +76,7 @@ const ScheduleTabScreen = (props) => {
                             value: item.user_id
                         }
                     })
-                    const myAccount = {
-                        label: account?.name,
-                        value: account?.user_id
-                    }
-                    setDataUserUnderControl([allUser, myAccount, ...dataPretty])
+                    setDataUserUnderControl([allUser, ...dataPretty])
                 }
 
             })
@@ -104,10 +99,17 @@ const ScheduleTabScreen = (props) => {
                 start_ts: Math.round(start_ts / 1000),
                 end_ts: Math.round(end_ts / 1000),
             }
-            const scheduleManagerPromise = API.getSchedulesManager(params)
+            const user_ids = dataUserUnderControl.map(item => item.value) ?? []
+            const user_ids_without_all = user_ids.filter(item => item !== allUser.value)
+            const params2 = {
+                user_ids: user_ids_without_all,
+                ...params
+            }
+            const scheduleUsersPromise = API.getScheduleUser(params2)
+
             const scheduleCompanyPromise = API.getSchedulesCompany(params)
 
-            return Promise.all([scheduleManagerPromise, scheduleCompanyPromise])
+            return Promise.all([scheduleUsersPromise, scheduleCompanyPromise])
         } else {
             const params = {
                 submit: 1,
@@ -166,6 +168,7 @@ const ScheduleTabScreen = (props) => {
                 data: value
             })
         })
+        setCurrentSessionDay(sections?.[3])
         return sections
     }
 

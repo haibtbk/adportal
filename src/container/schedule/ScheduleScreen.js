@@ -29,13 +29,17 @@ const ScheduleScreen = (props) => {
             .then(res => {
                 if (res?.data?.success) {
                     const data = res?.data?.result ?? [];
-                    const dataPretty = data.map(item => {
-                        return {
-                            label: item.name,
-                            value: item.id
+                    let orgUnderControl = [];
+                    _.forEach(data, item => {
+                        if (item?.level == 1) {
+                            const org = {
+                                label: item.name,
+                                value: item.id
+                            }
+                            orgUnderControl = [...orgUnderControl, org];
                         }
                     })
-                    setOrgUnderControl(dataPretty)
+                    setOrgUnderControl(orgUnderControl)
                 }
             })
             .catch(err => {
