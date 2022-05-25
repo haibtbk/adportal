@@ -117,7 +117,7 @@ const HomeScreen = ({ route }) => {
             }}
             tabBarOptions={{
               tabStyle: {
-                width: AppSizes.screen.width / 2
+                width: AppSizes.screen.width / 3
               }
             }}
             sceneContainerStyle={{ flex: 1, backgroundColor: "white" }}
@@ -131,6 +131,11 @@ const HomeScreen = ({ route }) => {
               name="corporation"
               children={() => <HomeScreenTabCorporation callbackUpdatedDateTime={callbackUpdatedDateTime} />}
               options={{ tabBarLabel: 'Toàn hệ thống', }}
+            />
+            <Tab.Screen
+              name="personal"
+              children={() => <HomeScreenTabPersonal/>}
+              options={{ tabBarLabel: 'Cá nhân', }}
             />
           </Tab.Navigator>
         </View> : <LoadingComponent size='large' />

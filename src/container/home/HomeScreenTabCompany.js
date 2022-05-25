@@ -20,6 +20,7 @@ import { RouterName } from '@navigation';
 import { workTypeValues } from "@schedule/WorkTypes";
 import { ScheduleStatus } from "@schedule"
 import ChartComponent from './ChartComponent';
+import ChartFourComponent from './ChartFourComponent';
 import activityType from './activityType';
 import { useSelector } from 'react-redux';
 
@@ -43,6 +44,7 @@ const HomeScreenTabCompany = (props) => {
     label: currentMonth,
     value: currentMonth
   })
+  const [bNNNData, setBNNNData] = useState([])
 
   const oneday = 60 * 60 * 24 * 1000
 
@@ -66,6 +68,16 @@ const HomeScreenTabCompany = (props) => {
       end_ts
     }
     return API.personRanking(revenueParam)
+  }
+  const fetchBNNNEvent = () => {
+    const { start_ts, end_ts } = getStartTimeEndTime(month.value)
+    const params = {
+      org_id: org?.value,
+      submit: 1,
+      start_ts,
+      end_ts
+    }
+    return API.getBNNNEvent(params)
   }
 
   const fetchCompanyData = () => {
@@ -96,6 +108,22 @@ const HomeScreenTabCompany = (props) => {
       .then(res => {
         if (res?.data?.success) {
           setPersonRanking(res?.data?.result)
+        }
+      })
+      .catch(err => {
+        console.log(err)
+      })
+      .finally(() => {
+        setIsLoading(false)
+      })
+  }, [org, month])
+
+  useEffect(() => {
+    setIsLoading(true)
+    fetchBNNNEvent()
+      .then(res => {
+        if (res?.data?.success) {
+          setBNNNData(res?.data?.result)
         }
       })
       .catch(err => {
@@ -332,6 +360,69 @@ const HomeScreenTabCompany = (props) => {
       },
     ]
   }
+  const getDataChart4 = () => {
+    const adoTemp = _.filter(personRanking, item => {
+      return item.is_ado
+    })
+    const temp = _.orderBy(adoTemp, ['performance_trainning'], ['desc']) ?? []
+    return [
+      {
+        value: temp[0]?.performance_trainning ?? 0,
+        label: temp[0]?.name ?? '',
+      },
+      {
+        value: temp[1]?.performance_trainning ?? 0,
+        label: temp[1]?.name ?? '',
+      },
+      {
+        value: temp[2]?.performance_trainning ?? 0,
+        label: temp[2]?.name ?? '',
+      },
+      {
+        value: temp[2]?.performance_trainning ?? 0,
+        label: temp[2]?.name ?? '',
+      },
+    ]
+  }
+  const getDataChart5 = () => {
+    const admTemp = _.filter(personRanking, item => {
+      return item.is_adm
+    })
+
+    const admTempMaped = _.map(admTemp, item => {
+      const organization_id = item?.organization_id ?? 0
+      let performance_trainning_adm = 0
+      _.forEach(personRanking, item => {
+        if (item?.organization_id == organization_id) {
+          performance_trainning_adm += item?.performance_trainning ?? 0
+        }
+      })
+      return {
+        ...item,
+        performance_trainning_adm
+      }
+    })
+
+    const temp = _.orderBy(admTempMaped, ['performance_trainning_adm'], ['desc']) ?? []
+    return [
+      {
+        value: temp[0]?.performance_trainning_adm ?? 0,
+        label: temp[0]?.name ?? '',
+      },
+      {
+        value: temp[1]?.performance_trainning_adm ?? 0,
+        label: temp[1]?.name ?? '',
+      },
+      {
+        value: temp[2]?.performance_trainning_adm ?? 0,
+        label: temp[2]?.name ?? '',
+      },
+      {
+        value: temp[2]?.performance_trainning_adm ?? 0,
+        label: temp[2]?.name ?? '',
+      },
+    ]
+  }
 
   const onChangeOrg = (item) => {
     setOrg(item)
@@ -376,6 +467,38 @@ const HomeScreenTabCompany = (props) => {
   const onChangeMonth = (item) => {
     setMonth(item)
   }
+
+  const getBNNNSetup = () => {
+    let real = 0
+    let total = 0
+
+    _.forEach(bNNNData, item => {
+      const total_bnnn = item?.total_bnnn ?? 0
+      const success_bnnn = item?.success_bnnn ?? 0
+      total += total_bnnn
+      real += success_bnnn
+    })
+    return `${real} / ${total}`
+  }
+
+  const getBNNNAttendance = () => {
+    let total = 0
+    _.forEach(bNNNData, item => {
+      const total_result_bnnn = item?.total_result_bnnn ?? 0
+      total += total_result_bnnn
+    })
+    return `${total}`
+  }
+
+  const getBNNNRegister = () => {
+    let total = 0
+    _.forEach(bNNNData, item => {
+      const total_join_bvln = item?.total_join_bvln ?? 0
+      total += total_join_bvln
+    })
+    return `${total}`
+  }
+
 
   return (
     <View style={[AppStyles.container, { paddingHorizontal: 0 }]}>
@@ -426,11 +549,37 @@ const HomeScreenTabCompany = (props) => {
               defaultValue={month}
             />
           </View>
+          {
+            bNNNData?.length > 0 &&
+            <View style={{}}>
+              <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', marginBottom: AppSizes.paddingSmall }}>
+                <BaseDashboardItemComponent
+                  isHideCurrency={true}
+                  iconName="ios-logo-usd" title="Số lượng BNNN đã tổ chức/ Tổng số đã lên kế hoạch" amount={getBNNNSetup()}
+                  containerStyle={{ flex: 1 }} color={AppColors.primaryBackground} />
+              </View>
+              <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', marginBottom: AppSizes.paddingSmall }}>
+                <BaseDashboardItemComponent
+                  isHideCurrency={true}
+                  iconName="ios-logo-usd" title="Số lượng Ứng viên tham gia" content="Số lượng Ứng viên tham gia" amount={getBNNNAttendance()}
+                  containerStyle={{ flex: 1, marginRight: AppSizes.paddingSmall }} color={AppColors.primaryBackground} />
+                <BaseDashboardItemComponent
+                  isHideCurrency={true}
+                  iconName="ios-logo-usd" title="Số lượng Ứng viên đăng kí học BVLN" content="Số lượng Ứng viên đăng kí học BVLN" amount={getBNNNRegister()}
+                  containerStyle={{ flex: 1 }} color={AppColors.primaryBackground} />
+              </View>
+              <Text style={[AppStyles.boldTextGray, { textAlign: 'center', flex: 1, color: AppColors.primaryBackground }]}>Chiến dịch Bán nghề nhóm nhỏ</Text>
 
-          <ChartComponent title="TOP AD tổ chức hoạt động HNKH hiệu quả
-(Tỉ lệ Hội nghị có doanh thu/tổng số Hội nghị cao nhất)" data={getDataChart1()} />
-          <ChartComponent title="TOP AD có doanh thu đăng ký tại Hội nghị cao nhất" data={getDataChart2()} />
-          <ChartComponent title="TOP AD tổ chức BNNN nhiều nhất" data={getDataChart3()} />
+            </View>
+          }
+
+
+          {/* <ChartComponent title="TOP AD tổ chức hoạt động HNKH hiệu quả
+(Tỉ lệ Hội nghị có doanh thu/tổng số Hội nghị cao nhất)" data={getDataChart1()} /> */}
+          {/* <ChartComponent title="TOP AD có doanh thu đăng ký tại Hội nghị cao nhất" data={getDataChart2()} /> */}
+          {/* <ChartComponent title="TOP AD tổ chức BNNN nhiều nhất" data={getDataChart3()} /> */}
+          <ChartFourComponent title="TOP ADO tổ chức BNNN nhiều nhất" data={getDataChart4()} />
+          <ChartFourComponent title="TOP ADM tổ chức BNNN nhiều nhất" data={getDataChart5()} />
         </View>
         <UserActivitiesComponent containerStyle={{ marginTop: AppSizes.padding }} data={getDataUserActivities()} title="Chi tiết tất cả nhân viên" titleStyle={{ color: AppColors.secondaryTextColor, paddingLeft: AppSizes.paddingXSmall, fontSize: AppSizes.fontMedium }} />
         <Separator />

@@ -6,7 +6,7 @@ import { ColorUtil } from '@utils'
 import { numberWithCommas } from '@utils'
 
 const BaseDashboardItemComponent = (props) => {
-    const { color = AppColors.danger, title = "", content = "", amount = 0, containerStyle, showPercent, onPress, iconName = "layers", percent } = props
+    const { color = AppColors.danger, title = "", content = "", amount = 0, containerStyle, showPercent, onPress, iconName = "layers", percent, isHideCurrency = false } = props
     const getAmount = () => {
         return `${numberWithCommas(amount)}${showPercent ? '%' : ""}`
     }
@@ -23,7 +23,7 @@ const BaseDashboardItemComponent = (props) => {
                 </Text>
             </View>
             <Text style={[AppStyles.boldText, { color: AppColors.primaryTextColor, fontSize: AppSizes.fontLarge, textAlign: 'center' }]}>
-                {getAmount() + " trđ"}
+                {`${getAmount()} ${!isHideCurrency ? " trđ" : ""}`}
             </Text>
             {
                 percent != undefined && <Text style={[AppStyles.baseText, { color: AppColors.primaryTextColor, textAlign: 'center', }]}>

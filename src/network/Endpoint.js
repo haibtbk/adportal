@@ -33,6 +33,7 @@ const Endpoint = {
     personRanking: "/api/schedule/get-company-schedule-performance-ranking",
     getOrgUnderControl: "/api/organization/search-org-under-control",
     getScheduleFromTCT: "/api/schedule/search-company-schedule",
+    getBNNNEvent: "/api/schedule/get-bnnn-event-result"
 }
 
 export default Endpoint

@@ -182,6 +182,9 @@ API.getOrgUnderControl = (params) => {
 API.getScheduleFromTCT = (params) => {
     return API.instance.get(Endpoint.getScheduleFromTCT, { params })
 }
+API.getBNNNEvent = (params) => {
+    return API.instance.get(Endpoint.getBNNNEvent, { params })
+}
 
 /* Export Component ==================================================================== */
 export default API;

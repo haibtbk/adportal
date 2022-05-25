@@ -78,7 +78,7 @@ const HomeScreenTabPersonal = () => {
         style={{ flex: 1, }}
         contentContainerStyle={{ paddingHorizontal: AppSizes.padding, paddingBottom: AppSizes.padding }}>
 
-        <View>
+        {/* <View>
           <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', marginBottom: AppSizes.paddingSmall }}>
             <BaseDashboardItemComponent
               onPress={onPressDaily}
@@ -95,7 +95,7 @@ const HomeScreenTabPersonal = () => {
               onPress={onPressYearly}
               iconName="ios-logo-usd" title="Doanh thu năm" content="Doanh thu năm" amount={getYearRevenue()} percent={getPercentYear()} containerStyle={{ flex: 1, }} color={AppColors.success} />
           </View>
-        </View>
+        </View> */}
         <Text style={[AppStyles.baseTextGray, { margin: AppSizes.padding, textAlign: 'center' }]}>Hiện tại chưa có dữ liệu cá nhân</Text>
 
 
