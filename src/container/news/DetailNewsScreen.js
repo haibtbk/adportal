@@ -6,7 +6,8 @@ import { AppSizes, AppStyles, AppColors } from '@theme';
 import { CloseButtonComponent } from '@container';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { WebViewComponent } from '@component'
-import htmlSource from './TestWebContent'
+
+
 
 const DetailNewScreen = ({ route, navigation }) => {
   const insets = useSafeAreaInsets();
@@ -36,10 +37,12 @@ const DetailNewScreen = ({ route, navigation }) => {
       <CloseButtonComponent containerStyle={[styles.closeButton, { top: insets.top + 10 }]} />
 
       <ScrollView contentContainerStyle={[styles.contentContainerStyle, { marginTop: insets.top + 30 }]}>
-        <Text style={[AppStyles.boldTextGray, { fontSize: AppSizes.fontMedium, marginTop: 16, marginHorizontal: 8 }]}>{title}</Text>
-        <View style={{ padding: AppSizes.paddingSmall }}>
-          <WebViewComponent source={content} mode="offline" />
-        </View>
+        <Text style={[AppStyles.boldTextGray, { fontSize: AppSizes.fontMedium, marginVertical: 16, marginHorizontal: 8 }]}>{title}</Text>
+        <WebViewComponent
+          source={`<html><head><meta name="viewport" content="width=device-width, initial-scale=1.0"></head><body>
+    ${content}
+    </body></html>`}
+          mode="offline" />
       </ScrollView>
 
 
@@ -52,8 +55,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   contentContainerStyle: {
-    // flex: 1,
-    paddingBottom: 100,
+    flex: 1,
+    paddingBottom: 5,
     paddingHorizontal: AppSizes.padding,
   },
   closeButton: {

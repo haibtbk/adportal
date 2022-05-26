@@ -15,9 +15,8 @@ const BaseDashboardItemComponent = (props) => {
         <TouchableOpacity
             onPress={onPress}
             style={[styles.container, { backgroundColor: ColorUtil.convertHexToRGBA(color, 0.8), justifyContent: 'space-between', }, containerStyle && containerStyle]} >
-
             <View style={{ width: '100%', flexDirection: 'row' }}>
-                <Icon name={iconName} size={22} color='white' />
+                {!isHideCurrency && <Icon name={iconName} size={22} color='white' />}
                 <Text style={[AppStyles.baseText, { color: AppColors.primaryTextColor, paddingLeft: AppSizes.paddingSmall, flex: 1 }]}>
                     {title}
                 </Text>

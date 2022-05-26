@@ -379,8 +379,8 @@ const HomeScreenTabCompany = (props) => {
         label: temp[2]?.name ?? '',
       },
       {
-        value: temp[2]?.performance_trainning ?? 0,
-        label: temp[2]?.name ?? '',
+        value: temp[3]?.performance_trainning ?? 0,
+        label: temp[3]?.name ?? '',
       },
     ]
   }
@@ -418,8 +418,8 @@ const HomeScreenTabCompany = (props) => {
         label: temp[2]?.name ?? '',
       },
       {
-        value: temp[2]?.performance_trainning_adm ?? 0,
-        label: temp[2]?.name ?? '',
+        value: temp[3]?.performance_trainning_adm ?? 0,
+        label: temp[3]?.name ?? '',
       },
     ]
   }

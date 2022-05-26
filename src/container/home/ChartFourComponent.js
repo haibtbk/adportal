@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
     },
     chartLabelText: {
         ...AppStyles.boldTextGray,
-        fontSize: 14,
+        fontSize: 12,
         color: AppColors.primaryBackground
     },
     chartThird: {

@@ -52,7 +52,7 @@ const ScheduleScreen = (props) => {
     }, [])
 
     return (
-        <View style={[AppStyles.container, { paddingHorizontal: 0 }]}>
+        <View style={[AppStyles.container, { paddingHorizontal: 0, paddingBottom: 0 }]}>
             <NavigationBar
                 rightView={() => {
                     return (

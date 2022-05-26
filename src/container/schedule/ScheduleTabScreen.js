@@ -189,13 +189,13 @@ const ScheduleTabScreen = (props) => {
 
         const name = item?.schedule_data?.name ?? ""
         const for_user = item?.schedule_data?.for_user ?? ""
-        const workType = Helper.getWorkHeader(item?.schedule_data?.work_type ?? "")
+        const workType = Helper.getWorkTypeName(item?.schedule_data?.work_type ?? "")
         return (
             <TouchableOpacity
                 onPress={() => onPressItem(item)}
                 style={{ flexDirection: 'row', alignItems: 'flex-start', paddingVertical: AppSizes.paddingXSmall, paddingHorizontal: AppSizes.padding, margin: item?.is_company ? AppSizes.paddingSmall : 0, marginBottom: AppSizes.paddingSmall, borderColor: AppColors.success, borderRadius: 6, borderWidth: item?.is_company ? 1 : 0, }}>
                 {/* style={[styles.box]}> */}
-                <Text style={[AppStyles.baseTextGray, { marginRight: AppSizes.paddingSmall, }]}>{DateTimeUtil.dateTimeFormat(item.start_ts)}</Text>
+                <Text style={[AppStyles.baseTextGray, { width: 60, }]}>{DateTimeUtil.dateTimeFormat((item?.start_ts ?? 0) * 1000)}</Text>
                 <View style={{ flex: 1 }}>
                     <View style={{ justifyContent: 'space-between', flexDirection: 'row', alignItems: 'flex-start' }}>
                         <Text style={[AppStyles.boldTextGray, { textDecorationLine: (item?.status == 4) ? "line-through" : "none" }]} numberOfLines={2} ellipsizeMode="tail">
@@ -245,7 +245,7 @@ const ScheduleTabScreen = (props) => {
 
         return (
             <View style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: AppSizes.paddingSmall, backgroundColor: AppColors.grayLight, paddingHorizontal: AppSizes.padding }}>
-                <Text style={[AppStyles.boldTextGray, { marginRight: AppSizes.paddingSmall, fontSize: AppSizes.fontTitle }]}>{day}</Text>
+                <Text style={[AppStyles.boldTextGray, { fontSize: AppSizes.fontTitle, width: 60 }]}>{day}</Text>
                 <View style={{ flex: 1 }}>
                     <Text style={[AppStyles.baseTextGray, { marginRight: AppSizes.paddingSmall, }]}>{dayOfWeek}</Text>
                     <Text style={[AppStyles.baseTextGray, { marginRight: AppSizes.paddingSmall, }]}>{date}</Text>

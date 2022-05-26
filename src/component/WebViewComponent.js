@@ -3,7 +3,6 @@ import { StyleSheet, View, Text, ActivityIndicator, TouchableOpacity } from 'rea
 import { WebView } from 'react-native-webview'
 import { AppColors, AppFonts, AppStyles, AppSizes } from '@theme'
 import RenderHtml from 'react-native-render-html';
-
 export default class WebViewComponent extends Component {
   constructor(props) {
     super(props)
@@ -38,22 +37,24 @@ export default class WebViewComponent extends Component {
       key: this.state.key + 1
     })
   }
+  getSource = () => {
+    const { url, source, mode } = this.props
+    return mode !== "offline" ? { uri: url } : {
+      html: source
+    }
+  }
 
   render() {
-    const { url, source, mode } = this.props
-    return mode === "offline" ? <RenderHtml
-      contentWidth={AppSizes.screen.width}
-      source={{ html: source }}
-    /> : <WebView
+    return (<WebView
       key={this.state.key}
       ref={(ref) => this.webview = ref}
       startInLoadingState={true}
       renderLoading={() => this.renderIndicator()}
       renderError={(errorName) => this.renderError(errorName)}
-      source={{ uri: url }}
+      source={this.getSource()}
       style={styles.webview}
       javaScriptEnabled={true}
-    />
+    />)
 
   }
 }
@@ -61,6 +62,7 @@ export default class WebViewComponent extends Component {
 const styles = StyleSheet.create({
   webview: {
     backgroundColor: 'transparent',
+    flex: 1
   },
   leftIconStyle: {
     width: 20,
