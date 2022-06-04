@@ -36,7 +36,7 @@ const DetailNewScreen = ({ route, navigation }) => {
     <View style={[styles.container]}>
       <CloseButtonComponent containerStyle={[styles.closeButton, { top: insets.top + 10 }]} />
 
-      <ScrollView contentContainerStyle={[styles.contentContainerStyle, { marginTop: insets.top + 30 }]}>
+      <ScrollView contentContainerStyle={[styles.contentContainerStyle, { paddingTop: insets.top + 30 }]}>
         <Text style={[AppStyles.boldTextGray, { fontSize: AppSizes.fontMedium, marginVertical: 16, marginHorizontal: 8 }]}>{title}</Text>
         <WebViewComponent
           source={`<html><head><meta name="viewport" content="width=device-width, initial-scale=1.0"></head><body>
@@ -55,6 +55,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   contentContainerStyle: {
+    backgroundColor: '#fff',
     flex: 1,
     paddingBottom: 5,
     paddingHorizontal: AppSizes.padding,

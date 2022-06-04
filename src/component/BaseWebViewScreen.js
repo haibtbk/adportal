@@ -10,7 +10,7 @@ const BaseWebViewScreen = ({ route, navigation }) => {
   const { callback = null, url = "", title = "" } = route.params
 
   return (
-    <View style={{ flex: 1, backgroundColor: AppColors.white }}>
+    <View style={{ flex: 1, backgroundColor: AppColors.white, paddingVertical: AppSizes.padding }}>
       <NavigationBar
         leftView={() => (
           <TouchableOpacity
@@ -24,7 +24,9 @@ const BaseWebViewScreen = ({ route, navigation }) => {
         )}
         centerTitle={title}
       />
-      <WebViewComponent url={url} />
+      {
+        !!url ? <WebViewComponent url={url} /> : <Text style={[AppStyles.baseTextGray, { fontSize: AppSizes.fontMedium, flex: 1, textAlign: 'center' }]}>Không có nội dung</Text>
+      }
     </View>
   )
 }

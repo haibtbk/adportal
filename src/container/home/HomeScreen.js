@@ -6,6 +6,9 @@ import {
   TextInput,
   StyleSheet,
   TouchableOpacity,
+  Platform,
+  Alert,
+  Linking,
 } from 'react-native';
 import { AppSizes, AppColors, AppStyles } from '@theme';
 import messaging from '@react-native-firebase/messaging';
@@ -13,6 +16,7 @@ import { navigateNoti } from '../../firebaseNotification/NavigationNotificationM
 import { handleMessageBar } from '../../firebaseNotification/MessageBarManager'
 import { useNavigation } from '@react-navigation/native';
 import _ from 'lodash'
+import DeviceInfo from 'react-native-device-info';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import HomeScreenTabCompany from './HomeScreenTabCompany';
@@ -31,6 +35,8 @@ moment.updateLocale('vi', {
   ]
 });
 
+const APP_STORE_URL = "https://appstore.com"
+const PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=com.baoviet.ad.portal"
 const HomeScreen = ({ route }) => {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation()
@@ -38,6 +44,60 @@ const HomeScreen = ({ route }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [orgUnderControl, setOrgUnderControl] = useState([]);
   const [updated_at, setUpdatedAt] = useState(0);
+
+  const showAlertUpdate = (updateInfo) => {
+    Alert.alert(
+      'Cập nhật phiên bản',
+      `Phiên bản ${updateInfo.version} đã có, bạn cần cập nhật để tiếp tục sử dụng ứng dụng.`,
+      [
+        {
+          text: 'Cập nhật',
+          onPress: () => {
+            if (Platform.OS == "ios") {
+              Linking.openURL(APP_STORE_URL)
+            } else {
+              Linking.openURL(PLAY_STORE_URL)
+            }
+            if (updateInfo.type == 1) {
+              setTimeout(() => {
+                showAlertUpdate(updateInfo)
+              }, 1000)
+            }
+          }
+        },
+        ...Platform.OS == "ios" ? [{
+          text: 'Hướng dẫn cập nhật',
+          onPress: () => {
+            navigation.navigate('UpdateGuide', {
+              callback: () => {
+                showAlertUpdate(updateInfo)
+              }
+            })
+          }
+        }] : [],
+        ...updateInfo.type == 1 ? [{
+          text: 'Để sau',
+          onPress: () => {
+          }
+        }] : [],
+      ],
+      { cancelable: false }
+    )
+  }
+
+  useEffect(() => {
+    const currentAppVersion = DeviceInfo.getVersion()
+    API.getAppVersion().then(res => {
+      if (res?.data?.result) {
+        let remoteAppVersionInfo = Platform.OS == 'ios' ? res?.data?.result?.iOs : res?.data?.result?.android
+        if (currentAppVersion < remoteAppVersionInfo.version) {
+          showAlertUpdate(remoteAppVersionInfo)
+        }
+      }
+    }
+    )
+
+  }, [])
 
   useEffect(() => {
     const params = {
@@ -134,7 +194,7 @@ const HomeScreen = ({ route }) => {
             />
             <Tab.Screen
               name="personal"
-              children={() => <HomeScreenTabPersonal/>}
+              children={() => <HomeScreenTabPersonal />}
               options={{ tabBarLabel: 'Cá nhân', }}
             />
           </Tab.Navigator>

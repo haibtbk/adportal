@@ -15,6 +15,8 @@ import moment from 'moment';
 import DateTimeUtil from '../../utils/DateTimeUtil';
 import ChartComponent from './ChartComponent';
 import { Separator } from '../../component';
+import BNNNChartComponent from './BNNNChartComponent';
+import ChartFourComponent from './ChartFourComponent';
 
 const HomeScreenTabCorporation = (props) => {
   const { callbackUpdatedDateTime } = props
@@ -22,30 +24,11 @@ const HomeScreenTabCorporation = (props) => {
   const [isLoading, setIsLoading] = useState(false)
   const [revenueCorporation, setRevenueCorporation] = useState([])
   const [revenueCompanies, setRevenueCompanies] = useState([])
+  const [bNNNData, setBNNNData] = useState([])
+  const [bNNNRanking, setBNNNRanking] = useState([])
+
 
   const oneday = 60 * 60 * 24 * 1000
-
-
-  const fetchCorporationData = () => {
-    const revenueParam = {
-      submit: 1,
-      start_ts: Math.round(DateTimeUtil.getStartOfDay(moment().valueOf() - oneday) / 1000),
-      end_ts: Math.round(DateTimeUtil.getEndOfDay(moment().valueOf() - oneday) / 1000)
-    }
-    setIsLoading(true)
-    API.getRevenueCorporationVer2(revenueParam)
-      .then(res => {
-        setRevenueCorporation(res?.data?.result)
-        callbackUpdatedDateTime && callbackUpdatedDateTime(res?.data?.result?.[0]?.yearly?.[0]?.updated_at ?? 0)
-      })
-      .catch(err => {
-        console.log(err)
-      })
-      .finally(() => {
-        setIsLoading(false)
-      })
-  }
-
   const procressRevenueData = (revenues = []) => {
     const group1 = _.filter(revenues, item => {
       return item.group === 1
@@ -115,17 +98,64 @@ const HomeScreenTabCorporation = (props) => {
 
   }
 
+  const fetchCorporationData = () => {
+    const revenueParam = {
+      submit: 1,
+      start_ts: Math.round(DateTimeUtil.getStartOfDay(moment().valueOf() - oneday) / 1000),
+      end_ts: Math.round(DateTimeUtil.getEndOfDay(moment().valueOf() - oneday) / 1000)
+    }
+    return API.getRevenueCorporationVer2(revenueParam)
+  }
+
   const fetchRevenueCompanies = () => {
     const revenueParam = {
       submit: 1,
       start_ts: Math.round(DateTimeUtil.getStartOfDay(moment().valueOf() - oneday) / 1000),
       end_ts: Math.round(DateTimeUtil.getEndOfDay(moment().valueOf() - oneday) / 1000)
     }
+    return API.getRevenueCompanies(revenueParam)
+  }
+
+  const fetchTotalBNNNEvent = () => {
+    const params = {
+      submit: 1,
+    }
+    return API.getTotalBNNNEvent(params)
+  }
+
+  const fetchBNNNRanking = () => {
+    const params = {
+      submit: 1
+    }
+    return API.getBNNNRanking(params)
+  }
+
+  useEffect(() => {
     setIsLoading(true)
-    API.getRevenueCompanies(revenueParam)
+    Promise.all([fetchCorporationData(), fetchRevenueCompanies(), fetchTotalBNNNEvent(), fetchBNNNRanking()])
       .then(res => {
-        const data = procressRevenueData(res?.data?.result)
-        setRevenueCompanies(data)
+        console.log("resss", res)
+        const res0 = res[0]
+        const res1 = res[1]
+        const res2 = res[2]
+        const res3 = res[3]
+        if (res0?.data?.result?.length > 0) {
+          setRevenueCorporation(res0?.data?.result)
+          callbackUpdatedDateTime && callbackUpdatedDateTime(res0?.data?.result?.[0]?.yearly?.[0]?.updated_at ?? 0)
+        }
+        if (res1?.data?.result) {
+          const data = procressRevenueData(res1?.data?.result)
+          setRevenueCompanies(data)
+        }
+
+        if (res2?.data?.result) {
+          setBNNNData(res2?.data?.result)
+        }
+
+        if (res3?.data?.result) {
+          setBNNNRanking(res3?.data?.result)
+        }
+
       })
       .catch(err => {
         console.log(err)
@@ -133,11 +163,7 @@ const HomeScreenTabCorporation = (props) => {
       .finally(() => {
         setIsLoading(false)
       })
-  }
 
-  useEffect(() => {
-    fetchCorporationData()
-    fetchRevenueCompanies()
   }, [])
 
   const getDayRevenue = () => {
@@ -194,6 +220,88 @@ const HomeScreenTabCorporation = (props) => {
     return percent
   }
 
+  const getBNNNTaken = () => {
+    let real = 0
+    _.forEach(bNNNData, item => {
+      const success_bnnn = item?.success_bnnn ?? 0
+      real += success_bnnn
+    })
+    return `${real}`
+  }
+
+  const getBNNNPlaned = () => {
+    let total = 0
+    _.forEach(bNNNData, item => {
+      const total_bnnn = item?.total_bnnn ?? 0
+      total += total_bnnn
+    })
+    return `${total}`
+  }
+
+  const getBNNNAttendance = () => {
+    let total = 0
+    _.forEach(bNNNData, item => {
+      const total_result_bnnn = item?.total_result_bnnn ?? 0
+      total += total_result_bnnn
+    })
+    return `${total}`
+  }
+
+  const getBNNNRegister = () => {
+    let total = 0
+    _.forEach(bNNNData, item => {
+      const total_join_bvln = item?.total_join_bvln ?? 0
+      total += total_join_bvln
+    })
+    return `${total}`
+  }
+
+  const getDataChartADO = () => {
+    const ado = bNNNRanking?.ado ?? []
+    const adoSorted = _.orderBy(ado, ['bnnn_event.success_bnnn'], ['desc'])
+    return [
+      {
+        value: adoSorted?.[0]?.bnnn_event?.success_bnnn ?? 0,
+        label: adoSorted?.[0]?.profile?.name ?? '',
+      },
+      {
+        value: adoSorted?.[1]?.bnnn_event?.success_bnnn ?? 0,
+        label: adoSorted?.[1]?.profile?.name ?? '',
+      },
+      {
+        value: adoSorted?.[2]?.bnnn_event?.success_bnnn ?? 0,
+        label: adoSorted?.[2]?.profile?.name ?? '',
+      },
+      {
+        value: adoSorted?.[3]?.bnnn_event?.success_bnnn ?? 0,
+        label: adoSorted?.[3]?.profile?.name ?? '',
+      },
+    ]
+  }
+
+  const getDataChartADM = () => {
+    const adm = bNNNRanking?.adm ?? []
+    const adoSorted = _.orderBy(adm, ['bnnn_event.success_bnnn_adm'], ['desc'])
+    return [
+      {
+        value: adoSorted?.[0]?.bnnn_event?.success_bnnn_adm ?? 0,
+        label: adoSorted?.[0]?.profile?.name ?? '',
+      },
+      {
+        value: adoSorted?.[1]?.bnnn_event?.success_bnnn_adm ?? 0,
+        label: adoSorted?.[1]?.profile?.name ?? '',
+      },
+      {
+        value: adoSorted?.[2]?.bnnn_event?.success_bnnn_adm ?? 0,
+        label: adoSorted?.[2]?.profile?.name ?? '',
+      },
+      {
+        value: adoSorted?.[3]?.bnnn_event?.success_bnnn_adm ?? 0,
+        label: adoSorted?.[3]?.profile?.name ?? '',
+      },
+    ]
+  }
+
   return (
     <View style={[AppStyles.container, { paddingHorizontal: 0 }]}>
       <ScrollView
@@ -222,6 +330,41 @@ const HomeScreenTabCorporation = (props) => {
         </View>
 
         <Separator />
+        {
+          bNNNData?.length > 0 &&
+          <View>
+            <View style={{ padding: AppSizes.padding }}>
+              <Text style={[AppStyles.boldTextGray, { flex: 1, paddingBottom: AppSizes.padding }]}>Chiến dịch Bán nghề nhóm nhỏ</Text>
+              <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', marginBottom: AppSizes.paddingSmall }}>
+                <BaseDashboardItemComponent
+                  isHideCurrency={true}
+                  iconName="ios-logo-usd" title="Tổng số BNNN đã tổ chức" amount={getBNNNTaken()}
+                  containerStyle={{ flex: 1, marginRight: AppSizes.paddingSmall }} color={AppColors.primaryBackground} />
+                <BaseDashboardItemComponent
+                  isHideCurrency={true}
+                  iconName="ios-logo-usd" title="Tổng số BNNN đã lên kế hoạch" amount={getBNNNPlaned()}
+                  containerStyle={{ flex: 1 }} color={AppColors.primaryBackground} />
+              </View>
+              <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', marginBottom: AppSizes.paddingSmall }}>
+                <BaseDashboardItemComponent
+                  isHideCurrency={true}
+                  iconName="ios-logo-usd" title="Tổng số Ứng viên tham gia" amount={getBNNNAttendance()}
+                  containerStyle={{ flex: 1, marginRight: AppSizes.paddingSmall }} color={AppColors.primaryBackground} />
+                <BaseDashboardItemComponent
+                  isHideCurrency={true}
+                  iconName="ios-logo-usd" title="Tổng số Ứng viên đăng kí học BVLN" amount={getBNNNRegister()}
+                  containerStyle={{ flex: 1 }} color={AppColors.primaryBackground} />
+              </View>
+            </View>
+            <BNNNChartComponent data={bNNNData} />
+            <Separator />
+          </View>
+        }
+
+        <ChartFourComponent title="TOP ADO tổ chức BNNN nhiều nhất" data={getDataChartADO()} />
+        <ChartFourComponent title="TOP ADM tổ chức BNNN nhiều nhất" data={getDataChartADM()} />
+        <Separator />
+
         <View style={{ paddingHorizontal: AppSizes.padding }}>
           <Text style={[AppStyles.boldTextGray, { marginTop: AppSizes.padding }]}>Xếp hạng doanh thu ngày</Text>
           <ChartComponent title="Nhóm trên 96 tỉ" data={revenueCompanies?.topGroup1} />

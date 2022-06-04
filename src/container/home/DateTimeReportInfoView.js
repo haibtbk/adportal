@@ -5,10 +5,10 @@ import { DateTimeUtil } from "@utils"
 import moment from "moment";
 
 const DateTimeReportInfoView = (props) => {
-    const {dateTime} = props;
+    const {dateTime, containerStyle} = props;
     const yesterdayFromDate = DateTimeUtil.format("DD/MM/YYYY", moment(dateTime).subtract(1, 'day').valueOf());
     return (
-        <Text style={[AppStyles.baseTextGray, { flexWrap: 'wrap', paddingHorizontal: AppSizes.padding }]}>
+        <Text style={[AppStyles.baseTextGray, { flexWrap: 'wrap', paddingHorizontal: AppSizes.padding }, containerStyle && containerStyle]}>
             Dữ liệu cập nhật theo số tạm thu submit YCBH ngày
             <Text style={[AppStyles.boldTextGray, { color: AppColors.primaryBackground }]}> {yesterdayFromDate}</Text>
         </Text>

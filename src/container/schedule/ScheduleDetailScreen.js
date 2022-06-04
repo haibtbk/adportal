@@ -44,12 +44,12 @@ const ScheduleDetailScreen = ({ route, navigation }) => {
         return state?.user?.account ?? {}
     })
     const isEnable = account?.user_id == schedule?.user_id
-    const workType = Helper.getWorkHeader(scheduleData?.schedule_data?.work_type ?? "")
+    const workType = Helper.getWorkTypeName(scheduleData?.schedule_data?.work_type ?? "")
     const for_user = scheduleData?.schedule_data?.for_user ?? ""
     const from_user = scheduleData?.schedule_data?.from_user ?? (scheduleData?.schedule_data?.form_user ?? "")
     const content = scheduleData?.schedule_data?.name ?? ""
     const isToChucSuKien = scheduleData?.schedule_data?.work_type?.toString()?.charAt(0) == workTypeValues.HNKH
-    const isBNNN = scheduleData?.schedule_data?.work_type == workTypeValues.BNNN
+    const isBNNN = scheduleData?.schedule_data?.work_type?.toString()?.charAt(0) == workTypeValues.hoiNghiTuyenDung
 
     const updateStatus = (status) => {
 
@@ -302,13 +302,16 @@ const ScheduleDetailScreen = ({ route, navigation }) => {
                                     <View key={index} style={styles.attachmentItem}>
                                         <Text numberOfLines={1} ellipsizeMode='tail' style={[AppStyles.baseTextGray, { flex: 1 }]}>{item.name}</Text>
                                         <View style={{ flexDirection: 'row' }}>
-                                            <ButtonIconComponent
-                                                containerStyle={{ marginRight: AppSizes.padding }}
-                                                source="AntDesign"
-                                                name="close"
-                                                size={25}
-                                                color={AppColors.danger}
-                                                action={() => removeFile(item)} />
+                                            {
+                                                isEnable && <ButtonIconComponent
+                                                    containerStyle={{ marginRight: AppSizes.padding }}
+                                                    source="AntDesign"
+                                                    name="close"
+                                                    size={25}
+                                                    color={AppColors.danger}
+                                                    action={() => removeFile(item)} />
+                                            }
+
                                             <ButtonIconComponent
                                                 name="eye"
                                                 size={25}
@@ -435,12 +438,14 @@ const ScheduleDetailScreen = ({ route, navigation }) => {
                         <Text style={[AppStyles.baseTextGray,]} numberOfLines={2} ellipsizeMode="tail">
                             {afyp} trđ AFYP
                         </Text>
+                        {
+                            isEnable && <ButtonComponent
+                                textStyle={{ color: AppColors.primaryBackground }}
+                                containerStyle={{ ...AppStyles.roundButton, borderColor: 'gray', width: 180, alignSelf: 'center', backgroundColor: AppColors.white, marginVertical: AppSizes.padding, }}
+                                title="Báo cáo"
+                                action={editReportHNKH} />
+                        }
 
-                        <ButtonComponent
-                            textStyle={{ color: AppColors.primaryBackground }}
-                            containerStyle={{ ...AppStyles.roundButton, borderColor: 'gray', width: 180, alignSelf: 'center', backgroundColor: AppColors.white, marginVertical: AppSizes.padding, }}
-                            title="Báo cáo"
-                            action={editReportHNKH} />
                     </View>
                 }
                 {
@@ -457,12 +462,13 @@ const ScheduleDetailScreen = ({ route, navigation }) => {
                         <Text style={[AppStyles.baseTextGray,]} numberOfLines={2} ellipsizeMode="tail">
                             {scheduleData?.schedule_data?.candidate_number_join ?? 0} Ứng viên đồng ý học BVLN
                         </Text>
-
-                        <ButtonComponent
-                            textStyle={{ color: AppColors.primaryBackground }}
-                            containerStyle={{ ...AppStyles.roundButton, borderColor: 'gray', width: 180, alignSelf: 'center', backgroundColor: AppColors.white, marginVertical: AppSizes.padding, }}
-                            title="Báo cáo"
-                            action={editReportBNNN} />
+                        {
+                            isEnable && <ButtonComponent
+                                textStyle={{ color: AppColors.primaryBackground }}
+                                containerStyle={{ ...AppStyles.roundButton, borderColor: 'gray', width: 180, alignSelf: 'center', backgroundColor: AppColors.white, marginVertical: AppSizes.padding, }}
+                                title="Báo cáo"
+                                action={editReportBNNN} />
+                        }
                     </View>
                 }
 

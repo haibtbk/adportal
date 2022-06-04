@@ -25,7 +25,8 @@ const NavigationBar = (props) => {
     isBack,
     iconName,
     IconSource = AntDesign,
-    centerTextStyle
+    centerTextStyle,
+    iconLeftColor=AppColors.secondaryTextColor,
   } = props
 
   return (
@@ -41,7 +42,7 @@ const NavigationBar = (props) => {
             onPress={() => onLeftPress && onLeftPress()}
           >
             {/* {isBack && <Image style={styles.iconBack} source={iConBack} />} */}
-            {isBack && <Feather name="arrow-left" size={26} color={AppColors.secondaryTextColor} />}
+            {isBack && <Feather name="arrow-left" size={26} color={iconLeftColor} />}
             {leftImage && <Image style={styles.icon} source={leftImage} />}
             {!leftImage && leftTitle && (
               <Text

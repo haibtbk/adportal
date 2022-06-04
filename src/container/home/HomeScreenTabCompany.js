@@ -24,12 +24,12 @@ import ChartFourComponent from './ChartFourComponent';
 import activityType from './activityType';
 import { useSelector } from 'react-redux';
 
-
 const HomeScreenTabCompany = (props) => {
   const { orgUnderControl } = props
   const account = useSelector((state) => {
     return state?.user?.account ?? {}
   })
+  const [currentDate, setCurrentDate] = useState(Date.now());
 
   const isTongCongTy = (orgUnderControl?.length ?? 0) > 1
   const navigation = useNavigation()
@@ -46,7 +46,17 @@ const HomeScreenTabCompany = (props) => {
   })
   const [bNNNData, setBNNNData] = useState([])
 
-  const oneday = 60 * 60 * 24 * 1000
+  const getStartTimeEndTime = (time) => {
+    const startTime = moment(time, "MM/YYYY").startOf('month').valueOf()
+    const endTime = moment(time, "MM/YYYY").endOf('month').valueOf()
+    let start_ts = Math.round(startTime / 1000)
+    let end_ts = Math.round(endTime / 1000)
+
+    return {
+      start_ts,
+      end_ts
+    }
+  }
 
   const fetchUserUnderControl = () => {
     const paramUserUnderControl = {
@@ -69,6 +79,7 @@ const HomeScreenTabCompany = (props) => {
     }
     return API.personRanking(revenueParam)
   }
+
   const fetchBNNNEvent = () => {
     const { start_ts, end_ts } = getStartTimeEndTime(month.value)
     const params = {
@@ -81,25 +92,14 @@ const HomeScreenTabCompany = (props) => {
   }
 
   const fetchCompanyData = () => {
+    const { start_ts, end_ts } = getStartTimeEndTime(month.value)
     const revenueParam = {
       org_id: org?.value,
       submit: 1,
-      start_ts: Math.round((DateTimeUtil.getStartOfDay(moment().valueOf()) - oneday) / 1000),
-      end_ts: Math.round((DateTimeUtil.getEndOfDay(moment().valueOf()) - oneday) / 1000)
-    }
-    return API.getRevenueCompany(revenueParam)
-  }
-
-  const getStartTimeEndTime = (time) => {
-    const startTime = moment(time, "MM/YYYY").startOf('month').valueOf()
-    const endTime = moment(time, "MM/YYYY").endOf('month').valueOf()
-    let start_ts = Math.round(startTime / 1000)
-    let end_ts = Math.round(endTime / 1000)
-
-    return {
       start_ts,
       end_ts
     }
+    return API.getRevenueCompany(revenueParam)
   }
 
   useEffect(() => {
@@ -155,7 +155,7 @@ const HomeScreenTabCompany = (props) => {
       .finally(() => {
         setIsLoading(false)
       })
-  }, [org])
+  }, [org, month])
 
   useEffect(() => {
     if (dataUserUnderControl?.length > 0) {
@@ -165,12 +165,28 @@ const HomeScreenTabCompany = (props) => {
 
   const getDayRevenue = () => {
     let revenue = 0
-    _.forEach(revenueCompany?.timely, item => {
-      const temp = (item?.revenue_data?.revenue) ?? 0
-      const intTemp = parseInt(temp)
-      revenue += intTemp
+    _.forEachRight(revenueCompany?.timely, item => {
+      const revenueTemp = parseInt(item?.revenue_data?.revenue ?? "0")
+      if (revenueTemp > 0) {
+        revenue = revenueTemp
+        const start_ts = item?.start_ts ?? 0
+        return false
+      }
     })
     return revenue
+  }
+
+  const getCurrentDate = () => {
+    let currentDate = Date.now()
+    _.forEachRight(revenueCompany?.timely, item => {
+      const revenueTemp = parseInt(item?.revenue_data?.revenue ?? "0")
+      if (revenueTemp > 0) {
+        const start_ts = item?.start_ts ?? 0
+        currentDate = start_ts * 1000
+        return false
+      }
+    })
+    return currentDate
   }
 
   const getYearRevenue = () => {
@@ -329,16 +345,16 @@ const HomeScreenTabCompany = (props) => {
     const temp = _.orderBy(personRanking, ['performance_afyp'], ['desc']) ?? []
     return [
       {
-        value: `${temp[0]?.performance_afyp ?? 0} trđ`,
-        label: temp[0]?.name ?? '',
+        value: `${temp?.[0]?.performance_afyp ?? 0} trđ`,
+        label: temp?.[0]?.name ?? '',
       },
       {
-        value: `${temp[1]?.performance_afyp ?? 0} trđ`,
-        label: temp[1]?.name ?? '',
+        value: `${temp?.[1]?.performance_afyp ?? 0} trđ`,
+        label: temp?.[1]?.name ?? '',
       },
       {
-        value: `${temp[2]?.performance_afyp ?? 0} trđ`,
-        label: temp[2]?.name ?? '',
+        value: `${temp?.[2]?.performance_afyp ?? 0} trđ`,
+        label: temp?.[2]?.name ?? '',
       },
     ]
   }
@@ -347,16 +363,16 @@ const HomeScreenTabCompany = (props) => {
     const temp = _.orderBy(personRanking, ['performance_trainning'], ['desc']) ?? []
     return [
       {
-        value: temp[0]?.performance_trainning ?? 0,
-        label: temp[0]?.name ?? '',
+        value: temp?.[0]?.performance_trainning ?? 0,
+        label: temp?.[0]?.name ?? '',
       },
       {
-        value: temp[1]?.performance_trainning ?? 0,
-        label: temp[1]?.name ?? '',
+        value: temp?.[1]?.performance_trainning ?? 0,
+        label: temp?.[1]?.name ?? '',
       },
       {
-        value: temp[2]?.performance_trainning ?? 0,
-        label: temp[2]?.name ?? '',
+        value: temp?.[2]?.performance_trainning ?? 0,
+        label: temp?.[2]?.name ?? '',
       },
     ]
   }
@@ -367,20 +383,20 @@ const HomeScreenTabCompany = (props) => {
     const temp = _.orderBy(adoTemp, ['performance_trainning'], ['desc']) ?? []
     return [
       {
-        value: temp[0]?.performance_trainning ?? 0,
-        label: temp[0]?.name ?? '',
+        value: temp?.[0]?.performance_trainning ?? 0,
+        label: temp?.[0]?.name ?? '',
       },
       {
-        value: temp[1]?.performance_trainning ?? 0,
-        label: temp[1]?.name ?? '',
+        value: temp?.[1]?.performance_trainning ?? 0,
+        label: temp?.[1]?.name ?? '',
       },
       {
-        value: temp[2]?.performance_trainning ?? 0,
-        label: temp[2]?.name ?? '',
+        value: temp?.[2]?.performance_trainning ?? 0,
+        label: temp?.[2]?.name ?? '',
       },
       {
-        value: temp[3]?.performance_trainning ?? 0,
-        label: temp[3]?.name ?? '',
+        value: temp?.[3]?.performance_trainning ?? 0,
+        label: temp?.[3]?.name ?? '',
       },
     ]
   }
@@ -406,20 +422,20 @@ const HomeScreenTabCompany = (props) => {
     const temp = _.orderBy(admTempMaped, ['performance_trainning_adm'], ['desc']) ?? []
     return [
       {
-        value: temp[0]?.performance_trainning_adm ?? 0,
-        label: temp[0]?.name ?? '',
+        value: temp?.[0]?.performance_trainning_adm ?? 0,
+        label: temp?.[0]?.name ?? '',
       },
       {
-        value: temp[1]?.performance_trainning_adm ?? 0,
-        label: temp[1]?.name ?? '',
+        value: temp?.[1]?.performance_trainning_adm ?? 0,
+        label: temp?.[1]?.name ?? '',
       },
       {
-        value: temp[2]?.performance_trainning_adm ?? 0,
-        label: temp[2]?.name ?? '',
+        value: temp?.[2]?.performance_trainning_adm ?? 0,
+        label: temp?.[2]?.name ?? '',
       },
       {
-        value: temp[3]?.performance_trainning_adm ?? 0,
-        label: temp[3]?.name ?? '',
+        value: temp?.[3]?.performance_trainning_adm ?? 0,
+        label: temp?.[3]?.name ?? '',
       },
     ]
   }
@@ -502,16 +518,28 @@ const HomeScreenTabCompany = (props) => {
 
   return (
     <View style={[AppStyles.container, { paddingHorizontal: 0 }]}>
-      {isTongCongTy ? <View style={{ flexDirection: 'row', alignItems: 'center', alignSelf: 'flex-end', marginBottom: AppSizes.paddingXSmall }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
         <DropdownComponent
           arrowColor={AppColors.primaryBackground}
           textStyle={{ ...AppStyles.baseText, color: AppColors.primaryBackground, fontSize: AppSizes.fontMedium }}
-          containerStyle={{ width: 200, borderColor: 'transparent' }}
-          data={orgUnderControl}
-          onSelect={(item) => onChangeOrg(item)}
-          defaultValue={org}
+          containerStyle={{ width: 120, borderColor: 'transparent' }}
+          data={getMonthData()}
+          onSelect={(item) => onChangeMonth(item)}
+          defaultValue={month}
         />
-      </View> : <Text style={[AppStyles.baseTextGray, { color: AppColors.primaryBackground, textAlign: 'right', paddingHorizontal: AppSizes.padding, paddingBottom: AppSizes.paddingSmall }]}>{account?.root_organization ?? ""}</Text>}
+
+        {isTongCongTy ? <View style={{ flexDirection: 'row', alignItems: 'center', alignSelf: 'flex-end', marginBottom: AppSizes.paddingXSmall }}>
+          <DropdownComponent
+            arrowColor={AppColors.primaryBackground}
+            textStyle={{ ...AppStyles.baseText, color: AppColors.primaryBackground, fontSize: AppSizes.fontMedium }}
+            containerStyle={{ width: 200, borderColor: 'transparent', paddingHorizontal: AppSizes.padding }}
+            data={orgUnderControl}
+            onSelect={(item) => onChangeOrg(item)}
+            defaultValue={org}
+          />
+        </View> : <Text style={[AppStyles.baseTextGray, { color: AppColors.primaryBackground, textAlign: 'right', paddingHorizontal: AppSizes.padding }]}>{account?.root_organization ?? ""}</Text>}
+      </View>
+
       <ScrollView
         nestedScrollEnabled={true}
         showsVerticalScrollIndicator={false}
@@ -522,7 +550,7 @@ const HomeScreenTabCompany = (props) => {
           <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', marginBottom: AppSizes.paddingSmall }}>
             <BaseDashboardItemComponent
               onPress={onPressDaily}
-              iconName="ios-logo-usd" title="Doanh thu ngày" content="Doanh thu ngày" amount={getDayRevenue()} containerStyle={{ flex: 1, marginRight: AppSizes.paddingSmall }} color={AppColors.primaryBackground} />
+              iconName="ios-logo-usd" title={`Doanh thu ngày ${DateTimeUtil.defaultFormat(getCurrentDate())}`} content="Doanh thu ngày" amount={getDayRevenue()} containerStyle={{ flex: 1, marginRight: AppSizes.paddingSmall }} color={AppColors.primaryBackground} />
             <BaseDashboardItemComponent
               onPress={onPressMonthly}
               iconName="ios-logo-usd" title="Doanh thu tháng" content="Doanh thu tháng" amount={getMonthRevenue()} percent={getPercentMonth()} containerStyle={{ flex: 1, }} color={AppColors.niceBlue} />
@@ -537,21 +565,11 @@ const HomeScreenTabCompany = (props) => {
           </View>
         </View>
         <Separator />
-        <View style={{ paddingHorizontal: AppSizes.padding }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginVertical: AppSizes.padding }}>
-            <Text style={[AppStyles.boldTextGray, { flex: 1 }]}>Xếp hạng hoạt động trong tháng</Text>
-            <DropdownComponent
-              arrowColor={AppColors.primaryBackground}
-              textStyle={{ ...AppStyles.baseText, color: AppColors.primaryBackground, fontSize: AppSizes.fontMedium }}
-              containerStyle={{ width: 120, borderColor: 'transparent' }}
-              data={getMonthData()}
-              onSelect={(item) => onChangeMonth(item)}
-              defaultValue={month}
-            />
-          </View>
-          {
-            bNNNData?.length > 0 &&
-            <View style={{}}>
+        {
+          bNNNData?.length > 0 &&
+          <View>
+            <View style={{ padding: AppSizes.padding }}>
+            <Text style={[AppStyles.boldTextGray, { flex: 1, paddingBottom: AppSizes.padding }]}>Chiến dịch Bán nghề nhóm nhỏ</Text>
               <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', marginBottom: AppSizes.paddingSmall }}>
                 <BaseDashboardItemComponent
                   isHideCurrency={true}
@@ -568,15 +586,19 @@ const HomeScreenTabCompany = (props) => {
                   iconName="ios-logo-usd" title="Số lượng Ứng viên đăng kí học BVLN" content="Số lượng Ứng viên đăng kí học BVLN" amount={getBNNNRegister()}
                   containerStyle={{ flex: 1 }} color={AppColors.primaryBackground} />
               </View>
-              <Text style={[AppStyles.boldTextGray, { textAlign: 'center', flex: 1, color: AppColors.primaryBackground }]}>Chiến dịch Bán nghề nhóm nhỏ</Text>
-
             </View>
-          }
+            <Separator />
+          </View>
+        }
+        <View style={{ paddingHorizontal: AppSizes.padding }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: AppSizes.padding }}>
+            <Text style={[AppStyles.boldTextGray, { flex: 1 }]}>Xếp hạng hoạt động trong tháng</Text>
 
+          </View>
 
           {/* <ChartComponent title="TOP AD tổ chức hoạt động HNKH hiệu quả
-(Tỉ lệ Hội nghị có doanh thu/tổng số Hội nghị cao nhất)" data={getDataChart1()} /> */}
-          {/* <ChartComponent title="TOP AD có doanh thu đăng ký tại Hội nghị cao nhất" data={getDataChart2()} /> */}
+(Tỉ lệ Hội nghị có doanh thu/tổng số Hội nghị cao nhất)" data={getDataChart1()} />
+          <ChartComponent title="TOP AD có doanh thu đăng ký tại Hội nghị cao nhất" data={getDataChart2()} /> */}
           {/* <ChartComponent title="TOP AD tổ chức BNNN nhiều nhất" data={getDataChart3()} /> */}
           <ChartFourComponent title="TOP ADO tổ chức BNNN nhiều nhất" data={getDataChart4()} />
           <ChartFourComponent title="TOP ADM tổ chức BNNN nhiều nhất" data={getDataChart5()} />

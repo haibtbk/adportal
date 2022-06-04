@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { View, Text, Button, StyleSheet, ImageBackground, TouchableOpacity, SafeAreaView, ScrollView } from 'react-native';
+import { View, Text, RefreshControl, StyleSheet, ImageBackground, TouchableOpacity, SafeAreaView, ScrollView } from 'react-native';
 import FabManager from '@fab/FabManager';
 import { useFocusEffect } from '@react-navigation/native';
 import { ButtonIconComponent, BaseNewsComponent } from '@container';
@@ -19,7 +19,8 @@ import { useNavigation } from '@react-navigation/native';
 const DEFAULT_IMAGE = "https://www.baoviet.com.vn/Uploads/Library/Images/logo.png"
 
 const EventNewsScreen = (props) => {
-  const { eventNews } = props
+  const { eventNews, refresh, refreshing } = props
+  const navigation = useNavigation()
 
   const getStatus = (start_ts, end_ts) => {
     const now = moment()
@@ -54,16 +55,34 @@ const EventNewsScreen = (props) => {
     const endTimeString = `${moment(endTime).format("HH:mm DD/MM/YYYY")}`
 
     return (
-      <View key={item.id} style={[AppStyles.boxShadow, { minHeight: 110, padding: AppSizes.padding, margin: AppSizes.margin, marginBottom: 0, justifyContent: 'center', }]}>
+      <TouchableOpacity
+        onPress={() => {
+          const url = item?.event_data?.thumbnail ?? ""
+          const name = item?.event_title ?? ""
+          navigation.navigate(
+            RouterName.baseWebViewScreen,
+            {
+              url,
+              title: name,
+            })
+        }}
+        key={item.id}
+        style={[AppStyles.boxShadow, { minHeight: 110, padding: AppSizes.padding, margin: AppSizes.margin, marginBottom: 0, justifyContent: 'center', }]}>
         <Text style={AppStyles.boldTextGray}>{item?.event_title ?? ""}</Text>
         <Text style={AppStyles.baseTextGray}>Thời gian bắt đầu: {startTimeString}</Text>
         <Text style={AppStyles.baseTextGray}>Thời gian kết thúc: {endTimeString}</Text>
         <Text style={[AppStyles.baseTextGray, { color: getStatusColor(item?.start_ts, item?.end_ts) }]}>Trạng thái: {getStatus(item?.start_ts, item?.end_ts)}</Text>
-      </View>
+      </TouchableOpacity>
     )
   }
   return (
     <ScrollView
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={refresh}
+        />
+      }
       contentContainerStyle={{ paddingBottom: 100 }}
       style={{ flex: 1 }}>
       {eventNews?.length > 0 ?
@@ -81,7 +100,7 @@ const EventNewsScreen = (props) => {
 
 const NewsScreenComponent = (props) => {
   const navigation = useNavigation()
-  const { news = [] } = props
+  const { news = [], refresh, refreshing } = props
   const readMore = (item) => {
     navigation.navigate(RouterName.newsDetail, {
       item
@@ -99,6 +118,12 @@ const NewsScreenComponent = (props) => {
 
   return (
     <ScrollView
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={refresh}
+        />
+      }
       contentContainerStyle={{ paddingBottom: 100 }}
       style={{ flex: 1 }}>
       {news?.length > 0 ?
@@ -118,7 +143,7 @@ const NewsScreenComponent = (props) => {
 }
 
 const MyTabs = (props) => {
-  const { news, eventNews } = props
+  const { news, eventNews, refresh, refreshing } = props
   const Tab = createMaterialTopTabNavigator();
   return (
     <Tab.Navigator
@@ -135,7 +160,7 @@ const MyTabs = (props) => {
     >
       <Tab.Screen
         name="Event"
-        children={() => <EventNewsScreen eventNews={eventNews} />}
+        children={() => <EventNewsScreen refreshing={refreshing} refresh={refresh} eventNews={eventNews} />}
         options={{ tabBarLabel: 'Sự kiện', }}
       />
       {
@@ -145,7 +170,7 @@ const MyTabs = (props) => {
           return (
             <Tab.Screen
               name={name}
-              children={() => <NewsScreenComponent news={item?.listNews ?? []} />}
+              children={() => <NewsScreenComponent refreshing={refreshing} news={item?.listNews ?? []} refresh={refresh} />}
               options={{ tabBarLabel: name }}
             />
           )
@@ -161,6 +186,7 @@ const NewsScreen = (props) => {
   const [news, setNews] = useState([])
   const [eventNews, setEventNews] = useState([])
   const [isLoading, setLoading] = useState(false)
+  const [refreshing, setRefreshing] = useState(false)
 
   useEffect(() => {
     const p1 = API.getEventNews({ submit: 1 })
@@ -178,14 +204,13 @@ const NewsScreen = (props) => {
         setLoading(false)
       })
 
-  }, [])
+  }, [refreshing])
 
   const insets = useSafeAreaInsets();
 
   return (
     <View style={{ paddingTop: insets.top > 0 ? insets.top : 0, flex: 1, backgroundColor: 'white' }}>
-      <MyTabs eventNews={eventNews} news={news} />
-      {isLoading && <LoadingComponent />}
+      <MyTabs eventNews={eventNews} news={news} refresh={() => setRefreshing(!refreshing)} refreshing={isLoading}/>
     </View>
   )
 }

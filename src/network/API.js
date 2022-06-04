@@ -185,6 +185,16 @@ API.getScheduleFromTCT = (params) => {
 API.getBNNNEvent = (params) => {
     return API.instance.get(Endpoint.getBNNNEvent, { params })
 }
+API.getTotalBNNNEvent = (params) => {
+    return API.instance.get(Endpoint.getTotalBNNNEvent, { params })
+}
+API.getBNNNRanking = (params) => {
+    return API.instance.post(Endpoint.getBNNNRanking, params)
+}
+
+API.getAppVersion = () => {
+    return API.instance.get(Endpoint.getAppVersion)
+    }
 
 /* Export Component ==================================================================== */
 export default API;

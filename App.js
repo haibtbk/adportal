@@ -50,7 +50,9 @@ import Localization from '@localization'
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import ScheduleReportScreen from './src/container/schedule/ScheduleReportScreen';
 import ScheduleBNNNReportScreen from './src/container/schedule/ScheduleBNNNReportScreen';
-import WorkTypesScreen  from './src/container/schedule/WorkTypesScreen';
+import WorkTypesScreen from './src/container/schedule/WorkTypesScreen';
+import UpdateGuideScreen from './src/container/home/UpdateGuideScreen';
+import AppInfoScreen from './src/container/account/AppInfoScreen';
 const Tab = createBottomTabNavigator();
 const HomeStack = createStackNavigator();
 const NewsStack = createStackNavigator();
@@ -149,6 +151,8 @@ function RootTabs() {
             <Stack.Screen name={RouterName.account} component={AccountScreen} />
             <Stack.Screen name={RouterName.changePassword} component={ChangePasswordScreen} />
             <Stack.Screen name={RouterName.adward} component={AdwardScreen} />
+            <Stack.Screen name={RouterName.appInfo} component={AppInfoScreen} />
+
           </Stack.Navigator>
         )}
       </Tab.Screen>
@@ -234,6 +238,8 @@ export default App = (props) => {
             <Stack.Screen name={RouterName.baseWebViewScreen} component={BaseWebViewScreen} />
             <Stack.Screen name={RouterName.createSchedule} component={CreateScheduleScreen} />
             <Stack.Screen name={RouterName.workTypes} component={WorkTypesScreen} />
+            <Stack.Screen options={{ gestureEnabled: false }} name="UpdateGuide" component={UpdateGuideScreen} />
+
           </RootStack.Navigator>
           <FabButton ref={fabRef} navigationRef={navigationRef} />
           <MessageBarSimple ref={ref => {

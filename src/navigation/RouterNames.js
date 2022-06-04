@@ -21,7 +21,9 @@ const routes = {
     ScheduleDetail: "ScheduleDetail",
     changePassword: "ChangePassword",
     adward: "Adward",
-    workTypes: "WorkTypes"
+    workTypes: "WorkTypes",
+    updateGuide: "UpdateGuide",
+    appInfo: "AppInfo",
 }
 
 export default routes

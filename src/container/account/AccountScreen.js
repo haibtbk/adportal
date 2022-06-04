@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, Platform, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { AppSizes, AppStyles, AppColors } from '@theme';
 import NavigationBar from '@navigation/NavigationBar';
 import { useNavigation } from '@react-navigation/native';
@@ -15,12 +15,14 @@ import GroupManagerComponent from './GroupManagerComponent';
 import { API } from '@network';
 import { saveUser } from '@redux/user/action';
 import { AppConfig } from '@constant';
+import DeviceInfo from 'react-native-device-info';
 
 const DEMO_AVATAR = "http://hinhnendepnhat.net/wp-content/uploads/2014/10/hinh-nen-girl-xinh-tien-nu-mong-ao.jpg"
 
 
 
 const AccountScreen = (props) => {
+
   const navigation = useNavigation();
   const dispatch = useDispatch()
   const account = useSelector((state) => {
@@ -29,15 +31,7 @@ const AccountScreen = (props) => {
 
   const [isLoading, setLoading] = useState(false)
   const [avatar, setAvatar] = useState(account?.avatar ?? DEMO_AVATAR)
-
   const manager_group = account?.manager_group ?? {}
-
-  const doEditProfile = () => {
-    navigation.navigate(RouterName.editProfile, {
-      account,
-    });
-  }
-
 
   const uploadAvatar = (photo) => {
     var photo = {
@@ -188,13 +182,21 @@ const AccountScreen = (props) => {
 
         <RowButton action={() => { navigation.navigate(RouterName.adward) }} label="Danh hiệu cá nhân" />
 
+        <RowButton containerStyle={{marginTop: AppSizes.marginMedium}} action={() => {
+          navigation.navigate(RouterName.appInfo, {
+          })
+        }} label="Thông tin phiên bản ứng dụng" />
+
         <TouchableOpacity
           onPress={logout}
           style={[AppStyles.roundButton, styles.logoutButton]}>
           <Text style={AppStyles.baseText}>Đăng xuất</Text>
         </TouchableOpacity>
+
+
       </VirtualizedList>
       {isLoading && <LoadingComponent />}
+
 
     </View>
   );
@@ -203,6 +205,7 @@ const AccountScreen = (props) => {
 const styles = StyleSheet.create({
   logoutButton: {
     padding: AppSizes.padding,
+    marginBottom: AppSizes.padding,
     backgroundColor: AppColors.danger,
     width: 150, alignItems: 'center', justifyContent: 'center', alignSelf: 'center', marginTop: AppSizes.paddingMedium
   },
