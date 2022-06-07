@@ -46,6 +46,7 @@ import {
 } from '@container';
 import * as RNLocalize from 'react-native-localize';
 import Localization from '@localization'
+import DetailPersonScreen from './src/container/home/personalBoard/DetailPersonScreen';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import ScheduleReportScreen from './src/container/schedule/ScheduleReportScreen';
@@ -53,6 +54,8 @@ import ScheduleBNNNReportScreen from './src/container/schedule/ScheduleBNNNRepor
 import WorkTypesScreen from './src/container/schedule/WorkTypesScreen';
 import UpdateGuideScreen from './src/container/home/UpdateGuideScreen';
 import AppInfoScreen from './src/container/account/AppInfoScreen';
+import PersonalMonthlyTargetScreen from './src/container/home/personalBoard/PersonalMonthlyTargetScreen';
+import KPIScreen from './src/container/home/personalBoard/KPIScreen';
 const Tab = createBottomTabNavigator();
 const HomeStack = createStackNavigator();
 const NewsStack = createStackNavigator();
@@ -86,6 +89,10 @@ function RootTabs() {
             <HomeStack.Screen name={RouterName.account} component={AccountScreen} />
             <HomeStack.Screen name={RouterName.revenue} component={RevenueScreen} />
             <HomeStack.Screen name="RevenueArea" component={RevenueAreaScreen} />
+            <HomeStack.Screen name={RouterName.personalMonthlyTarget} component={PersonalMonthlyTargetScreen} />
+            <HomeStack.Screen name={RouterName.detailPerson} component={DetailPersonScreen} />
+            <HomeStack.Screen name="ScheduleDetail" component={ScheduleDetailScreen} />
+            <HomeStack.Screen name="kpi" component={KPIScreen} />
           </HomeStack.Navigator>
         )}
       </Tab.Screen>

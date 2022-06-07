@@ -36,7 +36,8 @@ const Endpoint = {
     getBNNNEvent: "/api/schedule/get-bnnn-event-result",
     getTotalBNNNEvent: "/api/schedule/get-bnnn-event-total-result",
     getBNNNRanking: "/api/ranking/get-ranking-bnnn-result",
-    getAppVersion: "/get-version"
+    getAppVersion: "/get-version",
+    getPersonalData: "/api/sale-info/get-result-by-month"
 }
 
 export default Endpoint

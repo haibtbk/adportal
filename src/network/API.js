@@ -195,6 +195,9 @@ API.getBNNNRanking = (params) => {
 API.getAppVersion = () => {
     return API.instance.get(Endpoint.getAppVersion)
     }
+API.getPersonalData = () => {
+    return API.instance.get(Endpoint.getPersonalData)
+}
 
 /* Export Component ==================================================================== */
 export default API;

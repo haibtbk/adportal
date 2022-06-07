@@ -24,6 +24,8 @@ const routes = {
     workTypes: "WorkTypes",
     updateGuide: "UpdateGuide",
     appInfo: "AppInfo",
+    personalMonthlyTarget: "PersonalMonthlyTarget",
+    detailPerson: "DetailPerson",
 }
 
 export default routes

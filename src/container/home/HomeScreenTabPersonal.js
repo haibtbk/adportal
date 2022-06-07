@@ -4,13 +4,17 @@ import {
   View,
   Text,
   StyleSheet,
+  TouchableOpacity,
 } from 'react-native';
 import { LoadingComponent, BaseDashboardItemComponent, ButtonComponent, DropdownComponent } from '@component';
 import { AppSizes, AppColors, AppStyles } from '@theme';
 import { useNavigation } from '@react-navigation/native';
 import _ from 'lodash'
 import DateTimeUtil from '../../utils/DateTimeUtil';
-
+import Ico from 'react-native-vector-icons/Foundation';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import { utils, RouterName } from '@navigation';
 
 const HomeScreenTabPersonal = () => {
 
@@ -70,39 +74,74 @@ const HomeScreenTabPersonal = () => {
     return 0
   }
 
+  const BoxComponent = (props) => {
+    const { title, onPress, iconName = "calendar", Source = Ico, size=50 } = props
+
+    return (<TouchableOpacity
+      onPress={onPress}
+      activeOpacity={0.8}
+      style={styles.box}>
+      <Source name={iconName} size={size} color={AppColors.secondaryTextColor} />
+      <Text style={styles.boxTitle}>{title}</Text>
+    </TouchableOpacity>)
+  }
+
+  const onPressMonthTarget = () => {
+    navigation.navigate(RouterName.personalMonthlyTarget)
+  }
+
+  const onPressQuarterTarget = () => {
+  }
+
+  const onPressKPI = () => {
+    navigation.navigate("kpi")
+  }
+
   return (
     <View style={[AppStyles.container, { paddingHorizontal: 0 }]}>
-      <ScrollView
+      <Text style={[AppStyles.baseTextGray, {fontSize: AppSizes.fontLarge, textAlign: 'center' }]}>Tính năng đang phát triển...</Text>
+      {/* <ScrollView
         nestedScrollEnabled={true}
         showsVerticalScrollIndicator={false}
         style={{ flex: 1, }}
         contentContainerStyle={{ paddingHorizontal: AppSizes.padding, paddingBottom: AppSizes.padding }}>
-
-        {/* <View>
-          <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', marginBottom: AppSizes.paddingSmall }}>
-            <BaseDashboardItemComponent
-              onPress={onPressDaily}
-              iconName="ios-logo-usd" title="Doanh thu ngày" content="Doanh thu ngày" amount={getDayRevenue()} containerStyle={{ flex: 1, marginRight: AppSizes.paddingSmall }} color={AppColors.primaryBackground} />
-            <BaseDashboardItemComponent
-              onPress={onPressMonthly}
-              iconName="ios-logo-usd" title="Doanh thu tháng" content="Doanh thu tháng" amount={getMonthRevenue()} percent={getPercentMonth()} containerStyle={{ flex: 1, }} color={AppColors.niceBlue} />
-          </View>
-          <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', marginBottom: AppSizes.paddingSmall }}>
-            <BaseDashboardItemComponent
-              onPress={onPressQuaterly}
-              iconName="ios-logo-usd" title="Doanh thu quý" content="Doanh thu quý" amount={getQuaterRevenue()} percent={getPercentQuater()} containerStyle={{ flex: 1, marginRight: AppSizes.paddingSmall }} color={AppColors.warning} />
-            <BaseDashboardItemComponent
-              onPress={onPressYearly}
-              iconName="ios-logo-usd" title="Doanh thu năm" content="Doanh thu năm" amount={getYearRevenue()} percent={getPercentYear()} containerStyle={{ flex: 1, }} color={AppColors.success} />
-          </View>
-        </View> */}
-        <Text style={[AppStyles.baseTextGray, { margin: AppSizes.padding, textAlign: 'center' }]}>Hiện tại chưa có dữ liệu cá nhân</Text>
-
-
-      </ScrollView>
+        <View style={styles.row}>
+          <BoxComponent title="Dữ liệu thiết lập mục tiêu tháng" onPress={onPressMonthTarget} iconName="calendar" Source={FontAwesome} size= {45}/>
+          <BoxComponent title="Dữ liệu thiết lập mục tiêu quý" onPress={onPressQuarterTarget} Source={MaterialCommunityIcons} iconName="calendar-range-outline" />
+        </View>
+        <View style={styles.row}>
+          <BoxComponent title="KPI cá nhân" onPress={onPressKPI} Source={MaterialCommunityIcons} iconName="calendar-account" />
+          <BoxComponent title="Cảnh báo thu nhập CQL" onPress={onPressQuarterTarget} Source={MaterialCommunityIcons} iconName="calendar-month-outline"/>
+        </View>
+      </ScrollView> */}
       {isLoading && <LoadingComponent size='large' />}
     </View >
   );
 };
+
+const styles = StyleSheet.create({
+  row: {
+    flexDirection: 'row',
+    flex: 1
+  },
+  box: {
+    ...AppStyles.boxShadow,
+    flex: 1,
+    borderColor: 'transparent',
+    backgroundColor: AppColors.secondaryBackground,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    margin: AppSizes.paddingSmall,
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 170
+  },
+  boxTitle: {
+    ...AppStyles.boldTextGray,
+    padding: AppSizes.paddingXSmall,
+  }
+})
 
 export default HomeScreenTabPersonal
