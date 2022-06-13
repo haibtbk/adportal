@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, Alert, StyleSheet, FlatList, TouchableOpacity, Platform } from 'react-native';
+import { View, Text, Alert, StyleSheet, FlatList, TouchableOpacity, Platform, PermissionsAndroid } from 'react-native';
 import { AppSizes, AppStyles, AppColors } from '@theme';
 import NavigationBar from '@navigation/NavigationBar';
 import { API } from '@network';
@@ -8,11 +8,11 @@ import { useSelector, useDispatch } from 'react-redux';
 import PublishedFileItem from './PublishedFileItem'
 import { LoadingComponent } from '@component';
 import { utils, RouterName } from '@navigation';
-import RNFS from 'react-native-fs'
 import Icon from 'react-native-vector-icons/AntDesign';
 import moment from 'moment';
 import _ from 'lodash';
 import FileViewer from 'react-native-file-viewer';
+import downloadAndWriteFile from './DownloadHelper'
 
 let categoriesFixed = []
 const ROOT_ITEM_PATH = {
@@ -38,6 +38,28 @@ const PublishedFileScreen = (props) => {
 
         }) ?? []
     }
+
+    const requestWritePermission = async () => {
+        try {
+            const granted = await PermissionsAndroid.request(
+                PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+            );
+            if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+                console.log('You can use the write');
+                return true;
+            } else {
+                console.log('write denied');
+                return false;
+            }
+        } catch (err) {
+            Alert.alert(err.message);
+            return false;
+        }
+    };
+
+    useEffect(() => {
+        requestWritePermission()
+    }, [])
 
     useEffect(() => {
         setSelectedIndex(null)
@@ -77,83 +99,37 @@ const PublishedFileScreen = (props) => {
     }
 
     const viewFile = (item) => {
-        const params = {
-            library_record_id: item.id,
-            submit: 1
-        }
         setLoading(true)
-        API.downloadFile(params)
-            .then(res => {
-                const item = res?.data?.result ?? {}
-                const file_content = item?.file_content ?? ""
-                const fileName = item?.file_name ?? ""
-                const ext = "." + item.file_type ?? ''
-                const path = Platform.OS == "android" ? RNFS.DownloadDirectoryPath : RNFS.DocumentDirectoryPath
-                const localFile = `${path}/${fileName}${ext}`;
-
-                RNFS.writeFile(localFile, file_content, 'base64')
-                    .then(() => {
-                        let url = localFile
-                        // RNFS.openDocument(url)
-                        // if (Platform.OS === 'android') {
-                        //     const extension  = item.file_type
-                        //     if (!_.includes(['png', 'jpg', 'jpeg', 'bmp', 'svg', 'gif'], extension)) {
-                        //         url = 'http://docs.google.com/gview?embedded=true&url=' + url
-                        //     }
-                        // }
-                        FileViewer.open(url)
-                        // navigation.navigate(
-                        //     RouterName.baseWebViewScreen,
-                        //     {
-                        //         url,
-                        //         title: fileName,
-                        //     })
-                    })
-                    .catch(error => console.log(error.message));
-            })
-            .catch(err => {
-                utils.showBeautyAlert(navigation, "fail", "Có lỗi trong quá trình tải file.")
-            })
-            .finally(() => {
-                setLoading(false)
-            })
-
-
+        downloadAndWriteFile(item.id)
+        .then(url => {
+            FileViewer.open(url)
+        })
+        .catch(err => {
+            utils.showBeautyAlert( "fail", "Có lỗi trong quá trình tải file.")
+        })
+        .finally(() => {
+            setLoading(false)
+        })
     }
 
     const downloadFile = (item) => {
-        const params = {
-            library_record_id: item.id,
-            submit: 1
-        }
         setLoading(true)
-        API.downloadFile(params)
-            .then(res => {
-                const item = res?.data?.result ?? {}
-                const file_content = item?.file_content ?? ""
-                const fileName = item?.file_name ?? ""
-                const ext = "." + item.file_type ?? ''
-                const path = Platform.OS == "android" ? RNFS.DownloadDirectoryPath : RNFS.DocumentDirectoryPath
-                const localFile = `${path}/${fileName}${ext}`;
-
-                RNFS.writeFile(localFile, file_content, 'base64')
-                    .then(() => {
-                        utils.showBeautyAlert(navigation, "success", "Tải file thành công. Vui lòng xem file trong mục tải về của điện thoại.")
-                    })
-                    .catch(error => console.log(error.message));
-            })
-            .catch(err => {
-                utils.showBeautyAlert(navigation, "fail", "Có lỗi trong quá trình tải file.")
-            })
-            .finally(() => {
-                setLoading(false)
-            })
+        downloadAndWriteFile(item.id)
+        .then(url => {
+            utils.showBeautyAlert( "success", "Tải file thành công. Vui lòng xem file trong mục tải về của điện thoại.")
+        })
+        .catch(err => {
+            utils.showBeautyAlert( "fail", "Có lỗi trong quá trình tải file.")
+        })
+        .finally(() => {
+            setLoading(false)
+        })
     }
 
     const renderItem = ({ item }) => {
         const fileName = item?.name ?? ""
         const fileSize = formatBytes(item?.extra?.size, 2)
-        const title = `${fileName} (${fileSize} )`
+        const title = `${fileName} (${fileSize} )(${item?.extra?.extension??""})`
         const createDate = DateTimeUtil.format("DD/MM/YYYY", moment(item.created_at).valueOf())
         const content = `Ngày tạo: ${createDate}`
         return (

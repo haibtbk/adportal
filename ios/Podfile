@@ -13,6 +13,8 @@ target 'ADPortal' do
   pod 'lottie-ios', :path => '../node_modules/lottie-ios'
 
 
+  pod 'RNCAsyncStorage', :path => '../node_modules/@react-native-community/async-storage'
+
   target 'ADPortalTests' do
     inherit! :complete
     # Pods for testing

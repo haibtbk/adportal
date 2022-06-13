@@ -4,14 +4,12 @@ import FabManager from '@fab/FabManager';
 import { useFocusEffect } from '@react-navigation/native';
 import { ButtonIconComponent, BaseNewsComponent } from '@container';
 import { AppSizes, AppStyles, AppColors } from '@theme';
-import { RouterName } from '@navigation';
+import { RouterName, utils } from '@navigation';
 import { API } from '@network';
 import { LoadingComponent } from '@component';
 import PagerView from 'react-native-pager-view';
 import _ from 'lodash'
 import moment from 'moment';
-import Dots from 'react-native-dots-pagination';
-
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -59,12 +57,16 @@ const EventNewsScreen = (props) => {
         onPress={() => {
           const url = item?.event_data?.thumbnail ?? ""
           const name = item?.event_title ?? ""
-          navigation.navigate(
-            RouterName.baseWebViewScreen,
-            {
-              url,
-              title: name,
-            })
+          utils.viewFile( url, name)
+          // navigation.navigate(
+          //   RouterName.baseWebViewScreen,
+          //   {
+          //     url,
+          //     title: name,
+          //   })
+          // navigation.navigate(RouterName.zoomImage, {
+          //   url
+          // })
         }}
         key={item.id}
         style={[AppStyles.boxShadow, { minHeight: 110, padding: AppSizes.padding, margin: AppSizes.margin, marginBottom: 0, justifyContent: 'center', }]}>
@@ -210,7 +212,7 @@ const NewsScreen = (props) => {
 
   return (
     <View style={{ paddingTop: insets.top > 0 ? insets.top : 0, flex: 1, backgroundColor: 'white' }}>
-      <MyTabs eventNews={eventNews} news={news} refresh={() => setRefreshing(!refreshing)} refreshing={isLoading}/>
+      <MyTabs eventNews={eventNews} news={news} refresh={() => setRefreshing(!refreshing)} refreshing={isLoading} />
     </View>
   )
 }

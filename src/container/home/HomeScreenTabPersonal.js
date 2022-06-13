@@ -99,8 +99,7 @@ const HomeScreenTabPersonal = () => {
 
   return (
     <View style={[AppStyles.container, { paddingHorizontal: 0 }]}>
-      <Text style={[AppStyles.baseTextGray, {fontSize: AppSizes.fontLarge, textAlign: 'center' }]}>Tính năng đang phát triển...</Text>
-      {/* <ScrollView
+      <ScrollView
         nestedScrollEnabled={true}
         showsVerticalScrollIndicator={false}
         style={{ flex: 1, }}
@@ -113,7 +112,7 @@ const HomeScreenTabPersonal = () => {
           <BoxComponent title="KPI cá nhân" onPress={onPressKPI} Source={MaterialCommunityIcons} iconName="calendar-account" />
           <BoxComponent title="Cảnh báo thu nhập CQL" onPress={onPressQuarterTarget} Source={MaterialCommunityIcons} iconName="calendar-month-outline"/>
         </View>
-      </ScrollView> */}
+      </ScrollView>
       {isLoading && <LoadingComponent size='large' />}
     </View >
   );

@@ -39,6 +39,7 @@
     "react-native-actions-sheet": "^0.6.1",
     "react-native-animatable": "^1.3.3",
     "react-native-awesome-list": "https://github.com/boythan/react-native-awesome-list.git",
+    "react-native-border-zoom-view": "^1.0.4",
     "react-native-calendars": "^1.1276.0",
     "react-native-chart-kit": "^6.11.0",
     "react-native-device-info": "^6.2.0",

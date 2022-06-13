@@ -6799,6 +6799,15 @@ prop-types@^15.5.7:
     object-assign "^4.1.1"
     react-is "^16.13.1"
 
+prop-types@^15.6.0:
+  version "15.8.1"
+  resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.8.1.tgz#67d87bf1a694f48435cf332c24af10214a3140b5"
+  integrity sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg==
+  dependencies:
+    loose-envify "^1.4.0"
+    object-assign "^4.1.1"
+    react-is "^16.13.1"
+
 psl@^1.1.28:
   version "1.8.0"
   resolved "https://registry.yarnpkg.com/psl/-/psl-1.8.0.tgz"
@@ -6854,6 +6863,11 @@ raf@^3.1.0:
   dependencies:
     performance-now "^2.1.0"
 
+ramda@^0.26.0:
+  version "0.26.1"
+  resolved "https://registry.yarnpkg.com/ramda/-/ramda-0.26.1.tgz#8d41351eb8111c55353617fc3bbffad8e4d35d06"
+  integrity sha512-hLWjpy7EnsDBb0p+Z3B7rPi3GDeRG5ZtiI33kJhTt+ORCd38AbAIjB/9zRIUoeTbE/AVX5ZkU7m6bznsvrf8eQ==
+
 ramda@^0.27.1:
   version "0.27.1"
   resolved "https://registry.yarnpkg.com/ramda/-/ramda-0.27.1.tgz#66fc2df3ef873874ffc2da6aa8984658abacf5c9"
@@ -6897,6 +6911,13 @@ react-native-animatable@^1.3.3:
 "react-native-awesome-list@https://github.com/boythan/react-native-awesome-list.git":
   version "1.0.0"
   resolved "https://github.com/boythan/react-native-awesome-list.git#8e1217a219192e037e5b0e3cf72a1e7b4d4dd0c9"
+
+react-native-border-zoom-view@^1.0.4:
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/react-native-border-zoom-view/-/react-native-border-zoom-view-1.0.4.tgz#da0761f88e23adb1d485f706388d8360f9f48add"
+  integrity sha512-y/j4pbjaCV8hUuBI3ZkkQdARwfiWChyJ06+BCRtzmgE6aq57RL9yZkG9P/5KnZYsxqh/LCcsCkT0zrD/9t5iiQ==
+  dependencies:
+    react-native-easy-gestures "^2.1.2"
 
 react-native-calendars@^1.1276.0:
   version "1.1276.0"
@@ -6952,6 +6973,14 @@ react-native-drawer@2.5.1:
   dependencies:
     prop-types "^15.5.8"
     tween-functions "^1.0.1"
+
+react-native-easy-gestures@^2.1.2:
+  version "2.2.4"
+  resolved "https://registry.yarnpkg.com/react-native-easy-gestures/-/react-native-easy-gestures-2.2.4.tgz#669d345fba26342e180dcf3a0b6dc0032bed3167"
+  integrity sha512-a8rIqkAiE9pySVXEbZS3qQpzpVI4036LHkQDdByDlXIBplQhq9KMYVz0z+UxHlSF4He34FDGfuE/52n0wpDe6Q==
+  dependencies:
+    prop-types "^15.6.0"
+    ramda "^0.26.0"
 
 react-native-easy-grid@0.2.2:
   version "0.2.2"

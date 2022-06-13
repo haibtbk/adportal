@@ -56,6 +56,7 @@ import UpdateGuideScreen from './src/container/home/UpdateGuideScreen';
 import AppInfoScreen from './src/container/account/AppInfoScreen';
 import PersonalMonthlyTargetScreen from './src/container/home/personalBoard/PersonalMonthlyTargetScreen';
 import KPIScreen from './src/container/home/personalBoard/KPIScreen';
+import ZoomImageScreen from './src/container/component/ZoomImageScreen';
 const Tab = createBottomTabNavigator();
 const HomeStack = createStackNavigator();
 const NewsStack = createStackNavigator();
@@ -246,6 +247,7 @@ export default App = (props) => {
             <Stack.Screen name={RouterName.createSchedule} component={CreateScheduleScreen} />
             <Stack.Screen name={RouterName.workTypes} component={WorkTypesScreen} />
             <Stack.Screen options={{ gestureEnabled: false }} name="UpdateGuide" component={UpdateGuideScreen} />
+            <Stack.Screen name={RouterName.zoomImage} component={ZoomImageScreen} />
 
           </RootStack.Navigator>
           <FabButton ref={fabRef} navigationRef={navigationRef} />

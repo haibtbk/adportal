@@ -13,18 +13,8 @@ import KPIComponent from "./KPIComponent";
 import ResultComponent from "./ResultComponent";
 import { SchedulePersonalScreen } from "@schedule";
 import { API } from "@network";
+import { getUniqueBigGroupAndGroup } from '../Helper'
 
-
-const BoxComponent = (props) => {
-    const { title, value, percent } = props
-
-    return (<View
-        style={styles.box}>
-        <Text style={AppStyles.boldTextGray}>{title}</Text>
-        <Text style={[AppStyles.boldTextGray, { fontSize: AppSizes.fontLarge }]}>{value}</Text>
-        <Text style={[AppStyles.boldTextGray, { color: 'red' }]}>{percent}</Text>
-    </View>)
-}
 
 const PersonalMonthlyTargetScreen = (props) => {
 
@@ -32,14 +22,30 @@ const PersonalMonthlyTargetScreen = (props) => {
     const [isLoading, setLoading] = useState(false)
     const currentMonth = moment().format("MM/YYYY")
     const [month, setMonth] = useState({
-      label: currentMonth,
-      value: currentMonth
+        label: currentMonth,
+        value: currentMonth
     })
-    
+
+    const account = useSelector((state) => {
+        return state?.user?.account ?? {}
+    })
+
     useEffect(() => {
         setLoading(true)
-        API.getPersonalData()
+        const params = {
+            month_value: 1651338000,
+            submit: 1,
+            ad_code: "L1811104968",
+            month_value_2: 1648746000,
+            month_value_3: 1646067600,
+            month_value_4: 1643648400
+        }
+        API.getPersonalData(params)
             .then(res => {
+                if (res?.data?.result?.success) {
+                    const banNhom = getUniqueBigGroupAndGroup(res?.data?.result?.sale_info)
+                    console.log("ban nhom", banNhom)
+                }
             })
             .catch(err => {
                 console.log(err)
@@ -48,15 +54,13 @@ const PersonalMonthlyTargetScreen = (props) => {
                 setLoading(false)
             })
 
-    }, [])
+    }, [month])
 
     const defaultNhom = {
         label: "Chọn nhóm",
         value: -1,
     }
-    const account = useSelector((state) => {
-        return state?.user?.account ?? {}
-    })
+
 
     const manager_group = account?.manager_group ?? {}
     const getNhom = () => {
@@ -80,18 +84,18 @@ const PersonalMonthlyTargetScreen = (props) => {
         const endMonthStr = moment().format('YYYY-MM-DD')
         const data = DateTimeUtil.getMonthBetween(startMonthStr, endMonthStr, "DD/MM/YYYY")
         const dataMap = _.map(data, item => {
-          return {
-            label: item,
-            value: item
-          }
+            return {
+                label: item,
+                value: item
+            }
         })
         return dataMap
-      }
-    
-      const onChangeMonth = (item) => {
+    }
+
+    const onChangeMonth = (item) => {
         setMonth(item)
-      }
-    
+    }
+
 
     return (
         <View style={styles.container}>
@@ -104,13 +108,13 @@ const PersonalMonthlyTargetScreen = (props) => {
                     </Text>
 
                     <DropdownComponent
-          arrowColor={AppColors.primaryBackground}
-          textStyle={{ ...AppStyles.baseText, color: AppColors.primaryBackground, fontSize: AppSizes.fontMedium }}
-          containerStyle={{ width: 120 }}
-          data={getMonthData()}
-          onSelect={(item) => onChangeMonth(item)}
-          defaultValue={month}
-        />
+                        arrowColor={AppColors.primaryBackground}
+                        textStyle={{ ...AppStyles.baseText, color: AppColors.primaryBackground, fontSize: AppSizes.fontMedium }}
+                        containerStyle={{ width: 120 }}
+                        data={getMonthData()}
+                        onSelect={(item) => onChangeMonth(item)}
+                        defaultValue={month}
+                    />
 
                     <Text style={[AppStyles.boldTextGray, { marginVertical: AppSizes.paddingSmall }]}>Ban: <Text style={AppStyles.baseTextGray}>Ngọc trai</Text></Text>
                     <DropdownComponent
@@ -191,6 +195,17 @@ const PersonalMonthlyTargetScreen = (props) => {
 
         </View >
     )
+}
+
+const BoxComponent = (props) => {
+    const { title, value, percent } = props
+
+    return (<View
+        style={styles.box}>
+        <Text style={AppStyles.boldTextGray}>{title}</Text>
+        <Text style={[AppStyles.boldTextGray, { fontSize: AppSizes.fontLarge }]}>{value}</Text>
+        <Text style={[AppStyles.boldTextGray, { color: 'red' }]}>{percent}</Text>
+    </View>)
 }
 
 const styles = StyleSheet.create({

@@ -9,6 +9,7 @@ import { getUniqueId } from 'react-native-device-info';
 import { Dialog, LottieComponent } from '@component';
 import { AppStyles, AppColors, AppSizes } from '@theme'
 import { RootNavigation } from '@navigation';
+import _ from 'lodash'
 
 const logout = async () => {
     const device_id = getUniqueId()
@@ -43,9 +44,9 @@ const logoutWithoutCallAPI = async () => {
     })
 }
 
-const showBeautyAlert = (navigation, type, message, callback) => {
+const showBeautyAlert = (type, message, callback) => {
     const dialogOption = {
-        navigation,
+        navigation: RootNavigation.navigationRef,
         positiveText: "ok",
         positiveAction: () => callback && callback(),
         customContent: <View style={{ alignItems: 'center', padding: AppSizes.padding, paddingTop: AppSizes.paddingSmall }}>
@@ -56,8 +57,27 @@ const showBeautyAlert = (navigation, type, message, callback) => {
     Dialog.show(dialogOption)
 }
 
+const viewFile = (url, name) => {
+    const extentions = ['.png', '.jpg', '.jpeg', '.gif']
+    const isImage = _.some(extentions, (ext) => url.includes(ext))
+    if (isImage && Platform.OS == 'android') {
+        RootNavigation.navigationRef.navigate(RouterName.zoomImage, {
+            url
+        })
+        return
+    }
+
+    RootNavigation.navigationRef.navigate(
+        RouterName.baseWebViewScreen,
+        {
+            url,
+            title: name,
+        })
+
+}
 
 export default {
+    viewFile,
     logoutWithoutCallAPI,
     logout,
     showBeautyAlert,

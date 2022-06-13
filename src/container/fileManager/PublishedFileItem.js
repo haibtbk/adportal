@@ -4,7 +4,7 @@ import { AppStyles, AppColors, AppSizes } from '@theme'
 import { ButtonIconComponent } from "@component"
 
 const PublishedFileItem = (props) => {
-    const { title = "", content = "", containerStyle, numberOfLines = 0, onPress, downloadFile, viewFile } = props
+    const { title = "", content = "", containerStyle, numberOfLines = 0, onPress, downloadFile, viewFile, extension } = props
     return (
         <TouchableOpacity
             onPress={onPress}
@@ -18,12 +18,13 @@ const PublishedFileItem = (props) => {
                 </Text>
                 <View style={{ flexDirection: 'row' }}>
                     <ButtonIconComponent
-                        containerStyle={{marginRight: AppSizes.padding}}
+                        containerStyle={{paddingHorizontal: AppSizes.padding}}
                         name="eye"
                         size={25}
                         color="#6d6dab"
                         action={viewFile} />
                     <ButtonIconComponent
+                        containerStyle={{paddingHorizontal: AppSizes.padding}}
                         name="download"
                         size={25}
                         color={AppColors.primaryBackground}

@@ -18,7 +18,9 @@ import VirtualizedList from './VirtualizedList';
 import RowButton from './RowButton';
 import SelectBoxComponent from './SelectBoxComponent';
 import Separator from './Separator';
+import ImageAutoSize from './ImageAutoSize';
 export {
+    ImageAutoSize,
     Separator,
     SelectBoxComponent,
     RowButton,

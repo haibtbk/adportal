@@ -26,6 +26,7 @@ const routes = {
     appInfo: "AppInfo",
     personalMonthlyTarget: "PersonalMonthlyTarget",
     detailPerson: "DetailPerson",
+    zoomImage: "ZoomImage",
 }
 
 export default routes

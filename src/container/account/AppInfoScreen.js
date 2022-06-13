@@ -30,7 +30,7 @@ const AppInfoScreen = (props) => {
     const versionNumber = DeviceInfo.getVersion()
 
     return (
-        <View style={[AppStyles.container, {alignItems: 'center'}]}>
+        <View style={[AppStyles.container, { alignItems: 'center' }]}>
             <BaseNavigationBar title="Thông tin ứng dụng" />
             <Text style={[AppStyles.baseTextGray, { marginTop: AppSizes.padding }]}>Phiên bản đang chạy: version {versionNumber}</Text>
             {
@@ -45,9 +45,12 @@ const AppInfoScreen = (props) => {
                     }
                 }} />
             }
-            <ButtonComponent containerStyle={{ alignSelf: 'center', marginTop: AppSizes.padding }} title="Hướng dẫn cập nhật bản mới" action={() => {
-                props.navigation.navigate('UpdateGuide', {})
-             }} />
+            {
+                Platform.OS == "ios" && <ButtonComponent containerStyle={{ alignSelf: 'center', marginTop: AppSizes.padding }} title="Hướng dẫn cập nhật bản mới" action={() => {
+                    props.navigation.navigate('UpdateGuide', {})
+                }} />
+            }
+
 
         </View>
     )
