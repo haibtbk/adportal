@@ -134,10 +134,10 @@ const CreateScheduleScreen = (props) => {
         API.createSchedule(isEdit, params).then(res => {
             navigation.goBack()
             callback && callback()
-            utils.showBeautyAlert(navigation, "success", `${isEdit ? "Cập nhật" : "Tạo"} kế hoạch thành công`)
+            utils.showBeautyAlert( "success", `${isEdit ? "Cập nhật" : "Tạo"} kế hoạch thành công`)
             dispatch(refresh([ScreenName.schedule], moment().valueOf()))
         }).catch(err => {
-            utils.showBeautyAlert(navigation, "fail", `${isEdit ? "Cập nhật" : "Tạo"} kế hoạch thất bại`)
+            utils.showBeautyAlert( "fail", `${isEdit ? "Cập nhật" : "Tạo"} kế hoạch thất bại`)
         }).finally(() => {
             setLoading(false)
         })

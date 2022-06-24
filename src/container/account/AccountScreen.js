@@ -183,10 +183,15 @@ const AccountScreen = (props) => {
         <RowButton action={() => { navigation.navigate(RouterName.adward) }} label="Danh hiệu cá nhân" />
 
         <RowButton containerStyle={{marginTop: AppSizes.marginMedium}} action={() => {
+          navigation.navigate(RouterName.contact, {
+          })
+        }} label="Liên hệ admin" />
+
+        <RowButton containerStyle={{marginTop: AppSizes.marginMedium}} action={() => {
           navigation.navigate(RouterName.appInfo, {
           })
         }} label="Thông tin phiên bản ứng dụng" />
-
+        
         <TouchableOpacity
           onPress={logout}
           style={[AppStyles.roundButton, styles.logoutButton]}>

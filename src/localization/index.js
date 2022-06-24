@@ -2,6 +2,7 @@ import * as RNLocalize from 'react-native-localize';
 import i18n from 'i18n-js';
 import memoize from 'lodash.memoize';
 import { I18nManager } from 'react-native';
+import { t, t1, t2, t3, t4 } from './localizeHelper';
 
 const Localization = {}
 
@@ -34,3 +35,4 @@ Localization.setI18nConfig = () => {
     i18n.locale = languageTag;
 };
 export default Localization
+export { t, t1, t2, t3, t4 }

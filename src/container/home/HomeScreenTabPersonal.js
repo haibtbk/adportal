@@ -91,6 +91,11 @@ const HomeScreenTabPersonal = () => {
   }
 
   const onPressQuarterTarget = () => {
+    navigation.navigate(RouterName.personalQuarterTarget)
+  }
+
+  const onPressWarningRevenue = () => {
+    navigation.navigate(RouterName.personalRevenueWarning)
   }
 
   const onPressKPI = () => {
@@ -110,7 +115,7 @@ const HomeScreenTabPersonal = () => {
         </View>
         <View style={styles.row}>
           <BoxComponent title="KPI cá nhân" onPress={onPressKPI} Source={MaterialCommunityIcons} iconName="calendar-account" />
-          <BoxComponent title="Cảnh báo thu nhập CQL" onPress={onPressQuarterTarget} Source={MaterialCommunityIcons} iconName="calendar-month-outline"/>
+          <BoxComponent title="Cảnh báo thu nhập CQL" onPress={onPressWarningRevenue} Source={MaterialCommunityIcons} iconName="calendar-month-outline"/>
         </View>
       </ScrollView>
       {isLoading && <LoadingComponent size='large' />}

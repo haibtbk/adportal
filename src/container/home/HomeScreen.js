@@ -17,7 +17,8 @@ import { handleMessageBar } from '../../firebaseNotification/MessageBarManager'
 import { useNavigation } from '@react-navigation/native';
 import _ from 'lodash'
 import DeviceInfo from 'react-native-device-info';
-
+import axios from 'axios'
+import { useDispatch } from 'react-redux';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import HomeScreenTabCompany from './HomeScreenTabCompany';
 import HomeScreenTabCorporation from './HomeScreenTabCorporation';
@@ -27,6 +28,8 @@ import DateTimeReportInfoView from './DateTimeReportInfoView';
 import { LoadingComponent } from '@component'
 import { API } from "@network"
 import moment from 'moment';
+import setLocalize from '@redux/localize/actions';
+
 import 'moment/locale/vi'  // without this line it didn't work
 moment.locale('vi')
 moment.updateLocale('vi', {
@@ -40,6 +43,7 @@ const PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=com.baovie
 const HomeScreen = ({ route }) => {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation()
+  const dispatch = useDispatch()
   const Tab = createMaterialTopTabNavigator();
   const [isLoading, setIsLoading] = useState(false);
   const [orgUnderControl, setOrgUnderControl] = useState([]);
@@ -159,6 +163,21 @@ const HomeScreen = ({ route }) => {
   const callbackUpdatedDateTime = (updated_at) => {
     setUpdatedAt(moment(updated_at).valueOf())
   }
+
+  useEffect(() => {
+    axios.get('https://staging.combatdigito.com/translate.js')
+      .then(response => {
+        if (response?.status == 200 && response?.data) {
+          const data = response.data
+          const dataString = data.replace(/var TRANSLATE_DATA =/g, '').replace(/'/g, '"')?.trim()
+          const dataJSon = JSON.parse(dataString)
+          dispatch(setLocalize(dataJSon))
+        }
+      })
+      .catch(error => {
+        console.log("error", error)
+      })
+  }, [])
 
   return (
     <View style={[AppStyles.container, { paddingHorizontal: 0, paddingTop: AppSizes.padding + insets.top }]}>

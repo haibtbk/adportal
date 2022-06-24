@@ -57,7 +57,7 @@ const ScheduleReportScreen = ({ route, navigation }) => {
             .then(res => {
                 if (res?.data?.success) {
                     callback && callback(schedule_data)
-                    utils.showBeautyAlert(navigation, "success", res?.data?.message ?? "Cập nhật thành công")
+                    utils.showBeautyAlert( "success", res?.data?.message ?? "Cập nhật thành công")
                     navigation.goBack()
                 }
             })

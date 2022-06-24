@@ -19,7 +19,11 @@ import RowButton from './RowButton';
 import SelectBoxComponent from './SelectBoxComponent';
 import Separator from './Separator';
 import ImageAutoSize from './ImageAutoSize';
+import PrimaryTextInputComponent from './PrimaryTextInputComponent';
+import PrimaryTextInputMultilineComponent from './PrimaryTextInputMultilineComponent';
 export {
+    PrimaryTextInputMultilineComponent,
+    PrimaryTextInputComponent,
     ImageAutoSize,
     Separator,
     SelectBoxComponent,

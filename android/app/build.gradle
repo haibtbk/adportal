@@ -133,8 +133,8 @@ android {
         applicationId "com.baoviet.ad.portal"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 41
-        versionName "1.8.7"
+        versionCode 44
+        versionName "1.8.9"
         vectorDrawables.useSupportLibrary = true
     }
     splits {

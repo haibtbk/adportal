@@ -4,12 +4,15 @@ export default userReducer = (state = initialState, action) => {
         case "SAVE_USER":
             return {
                 ...state,
-                account: Object.assign({},state.account,action.account)
+                account: Object.assign({}, state.account, action.account)
             }
-            case "SAVE_USER":
+        case "SAVE_USER":
             return {
                 ...state,
                 account: action.account
+            }
+        case "USER_LOGOUT":
+            return {
             }
         default:
             return state;

@@ -77,7 +77,7 @@ const RevenueScreen = (props) => {
 
     const onChangeDateTimeStart = (date) => {
         if (date > end_ts) {
-            utils.showBeautyAlert(navigation, "fail", "Ngày bắt đầu phải nhỏ hơn ngày kết thúc")
+            utils.showBeautyAlert("fail", "Ngày bắt đầu phải nhỏ hơn ngày kết thúc")
             return
         }
         setStartTime(date)
@@ -86,7 +86,7 @@ const RevenueScreen = (props) => {
 
     const onChangeDateTimeEnd = (date) => {
         if (date < start_ts) {
-            utils.showBeautyAlert(navigation, "fail", "Ngày kết thúc phải lớn hơn ngày bắt đầu")
+            utils.showBeautyAlert("fail", "Ngày kết thúc phải lớn hơn ngày bắt đầu")
             return
         }
         setEndTime(date)

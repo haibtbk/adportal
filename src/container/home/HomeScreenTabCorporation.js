@@ -134,7 +134,6 @@ const HomeScreenTabCorporation = (props) => {
     setIsLoading(true)
     Promise.all([fetchCorporationData(), fetchRevenueCompanies(), fetchTotalBNNNEvent(), fetchBNNNRanking()])
       .then(res => {
-        console.log("resss", res)
         const res0 = res[0]
         const res1 = res[1]
         const res2 = res[2]

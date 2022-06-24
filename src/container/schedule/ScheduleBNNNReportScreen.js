@@ -26,7 +26,7 @@ const ScheduleBNNNReportScreen = ({ route, navigation }) => {
     const { schedule, callback } = route.params
 
     const [isLoading, setLoading] = useState(false)
-    const [name, setName] = useState(schedule?.schedule_data?.recruiter??"")
+    const [name, setName] = useState(schedule?.schedule_data?.recruiter ?? "")
     const [codeName, setCodeName] = useState(schedule?.schedule_data?.recruiter_code?.toString() ?? "")
     const [attendance, setAttendance] = useState(schedule?.schedule_data?.candidate_number?.toString() ?? "")
     const [join, setJoin] = useState(schedule?.schedule_data?.candidate_number_join?.toString() ?? "")
@@ -63,7 +63,7 @@ const ScheduleBNNNReportScreen = ({ route, navigation }) => {
             .then(res => {
                 if (res?.data?.success) {
                     callback && callback(schedule_data)
-                    utils.showBeautyAlert(navigation, "success", res?.data?.message ?? "Cập nhật thành công")
+                    utils.showBeautyAlert("success", res?.data?.message ?? "Cập nhật thành công")
                     navigation.goBack()
                 }
             })

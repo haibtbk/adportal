@@ -99,7 +99,9 @@ const LoginScreen = (props) => {
             API.getProfile()
               .then(res => {
                 if (res?.data?.success) {
-                  dispatch(saveUser(res?.data?.result))
+                  const user = res?.data?.result
+                  user.is_admin = user.is_admin ?? false
+                  dispatch(saveUser(user))
                   const updateDeviceInfoParam = {
                     action: 'add',
                     device_type,

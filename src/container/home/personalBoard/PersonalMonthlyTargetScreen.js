@@ -1,11 +1,11 @@
 
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput } from "react-native";
 import { AppColors, AppSizes, AppStyles } from "@theme";
 import { DateTimeUtil } from "@utils";
 import moment from "moment";
 import { BaseNavigationBar } from '@navigation';
-import { DropdownComponent, Separator, ButtonIconComponent, VirtualizedList, LoadingComponent } from '@component';
+import { DropdownComponent, Separator, ButtonIconComponent, VirtualizedList, LoadingComponent, PrimaryTextInputComponent } from '@component';
 import { useSelector } from "react-redux";
 import _ from "lodash";
 import { Divider } from "react-native-paper";
@@ -13,11 +13,33 @@ import KPIComponent from "./KPIComponent";
 import ResultComponent from "./ResultComponent";
 import { SchedulePersonalScreen } from "@schedule";
 import { API } from "@network";
-import { getUniqueBigGroupAndGroup } from '../Helper'
+import { getUniqueBigGroupAndGroup, getMonthParams, generateDataReportMonthlySummary, filterByGroupAndBigGroup, generateDataReportKpi, getMonths } from '../Helper'
+import ScreenName from "@redux/refresh/ScreenName"
 
+const defaultNhom = {
+    label: "Tất cả nhóm",
+    value: "all",
+}
+
+const defaultBan = {
+    label: "Tất cả ban",
+    value: "all",
+}
+
+const defaultAD = {
+    label: "Chọn AD",
+    value: -1
+}
 
 const PersonalMonthlyTargetScreen = (props) => {
 
+    const refreshEvent = useSelector((state) => {
+        return state?.refresh?.event ?? {}
+    })
+    const account = useSelector((state) => {
+        return state?.user?.account ?? {}
+    })
+    const isAdmin = account?.is_admin
     const [showKPI, setShowKPI] = useState(false)
     const [isLoading, setLoading] = useState(false)
     const currentMonth = moment().format("MM/YYYY")
@@ -25,58 +47,51 @@ const PersonalMonthlyTargetScreen = (props) => {
         label: currentMonth,
         value: currentMonth
     })
+    const [banNhom, setBanNhom] = useState([])
 
-    const account = useSelector((state) => {
-        return state?.user?.account ?? {}
-    })
+    const [ad, setAd] = useState(isAdmin ? defaultAD : { label: account?.name, value: account?.code })
+    const [nhomSelected, setNhomSelected] = useState(defaultNhom);
+    const [banSelected, setBanSelected] = useState(defaultBan);
+    const [personnalInfo, setPersonalInfo] = useState({})
+    const [dataReportMonthlySummary, setDataReportMonthlySummary] = useState(null)
+    const [dataReportKpi, setDataReportKpi] = useState(null)
+    const [userUnderControl, setUserUnderControl] = useState([account])
+    const [adText, setAdText] = useState("")
 
-    useEffect(() => {
-        setLoading(true)
-        const params = {
-            month_value: 1651338000,
-            submit: 1,
-            ad_code: "L1811104968",
-            month_value_2: 1648746000,
-            month_value_3: 1646067600,
-            month_value_4: 1643648400
-        }
-        API.getPersonalData(params)
-            .then(res => {
-                if (res?.data?.result?.success) {
-                    const banNhom = getUniqueBigGroupAndGroup(res?.data?.result?.sale_info)
-                    console.log("ban nhom", banNhom)
+
+
+    const getBan = () => {
+        const banData = banNhom?.big_group ?? []
+        const data = _.map(banData, (item) => {
+            return {
+                label: item,
+                value: item
+            }
+        })
+        return [defaultBan, ...data]
+    }
+    const getNhom = () => {
+        if (banSelected.value === -1) {
+            return [defaultNhom]
+        } else {
+            const nhom = banNhom?.group?.[banSelected.value] ?? []
+            const nhomMaped = _.map(nhom, (item) => {
+                return {
+                    label: item || "Nhóm trực tiếp",
+                    value: item
                 }
             })
-            .catch(err => {
-                console.log(err)
-            })
-            .finally(() => {
-                setLoading(false)
-            })
-
-    }, [month])
-
-    const defaultNhom = {
-        label: "Chọn nhóm",
-        value: -1,
+            return [defaultNhom, ...nhomMaped]
+        }
     }
-
-
-    const manager_group = account?.manager_group ?? {}
-    const getNhom = () => {
-        let data = [defaultNhom];
-        _.forEach(manager_group, (value, key) => {
-            _.forEach(value, (v, index) => {
-                data = [...data, { label: v, value: index }]
-            })
-        })
-        return data
-    }
-    const [nhom, setNhom] = useState(getNhom());
-    const [nhomSelected, setNhomSelected] = useState(nhom?.[0] ?? defaultNhom);
 
     const onChangeNhom = (item) => {
-        console.log(item)
+        setNhomSelected(item)
+    }
+
+    const onChangeBan = (item) => {
+        setBanSelected(item)
+        setNhomSelected(defaultNhom)
     }
 
     const getMonthData = () => {
@@ -96,6 +111,102 @@ const PersonalMonthlyTargetScreen = (props) => {
         setMonth(item)
     }
 
+    const getAds = () => {
+        return [defaultAD]
+    }
+
+    const fetchData = () => {
+        setLoading(true)
+        const monthParams = getMonthParams(month.value)
+        const params = {
+            submit: 1,
+            ad_code: ad.value,
+            ...monthParams
+        }
+        API.getPersonalData(params)
+            .then(res => {
+                if (res?.data?.success) {
+                    const personnalInfo = res.data.result
+                    const banNhom = getUniqueBigGroupAndGroup(personnalInfo?.sale_info)
+                    setBanNhom(banNhom)
+                    setPersonalInfo(personnalInfo)
+                }
+            })
+            .catch(err => {
+                console.log(err)
+            })
+            .finally(() => {
+                setLoading(false)
+            })
+    }
+
+    const fetchUserUnderControl = () => {
+        const paramUserUnderControl = {
+            submit: 1,
+            start_ts: Math.round(DateTimeUtil.getStartOfMonth() / 1000),
+            end_ts: Math.round(DateTimeUtil.getEndOfMonth() / 1000),
+        }
+        return API.getUserUnderControl(paramUserUnderControl)
+    }
+
+    const getDataUserUnderControl = () => {
+        return _.map(userUnderControl, item => {
+            return {
+                label: item.name,
+                value: item.code
+            }
+        })
+    }
+
+    const onChangeAd = (item) => {
+        setAd(item)
+    }
+
+    const onchangeADText = _.debounce((text) => {
+        setAdText(text)
+    }, 500)
+
+    const doSearch = () => {
+        setAd({
+            label: adText,
+            value: adText
+        })
+    }
+
+    useEffect(() => {
+        setLoading(true)
+        fetchUserUnderControl()
+            .then(res => {
+                if (res?.data?.result) {
+                    setUserUnderControl([account, ...res.data.result])
+                }
+            })
+            .catch(err => {
+                console.log(err)
+            })
+            .finally(() => {
+                setLoading(false)
+            })
+    }, [])
+
+    useEffect(() => {
+        if (refreshEvent?.timeUnix && refreshEvent?.types?.includes(ScreenName.personalMonthlyTarget)) {
+            fetchData()
+        }
+    }, [refreshEvent?.timeUnix])
+
+    useEffect(() => {
+        fetchData()
+    }, [month, ad])
+
+    useEffect(() => {
+        const contractFiltered = filterByGroupAndBigGroup(personnalInfo?.contract ?? [], banSelected.value, nhomSelected.value)
+        const saleInfoFiltered = filterByGroupAndBigGroup(personnalInfo?.sale_info ?? [], banSelected.value, nhomSelected.value)
+        const dataReportMonthlySummary = generateDataReportMonthlySummary(contractFiltered, saleInfoFiltered, moment(month.value, "MM/YYYY").subtract(1, 'month').unix().valueOf())
+        const dataReportKpi = generateDataReportKpi(contractFiltered, saleInfoFiltered, moment(month.value, "MM/YYYY").subtract(1, 'month').unix().valueOf())
+        setDataReportKpi(dataReportKpi)
+        setDataReportMonthlySummary(dataReportMonthlySummary)
+    }, [month, personnalInfo, banSelected, nhomSelected])
 
     return (
         <View style={styles.container}>
@@ -106,34 +217,70 @@ const PersonalMonthlyTargetScreen = (props) => {
                     <Text style={[AppStyles.boldTextGray, { fontSize: AppSizes.fontLarge, flexWrap: 'wrap', marginBottom: AppSizes.paddingSmall }]}>
                         Báo cáo Thiết lập mục tiêu tháng
                     </Text>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginVertical: AppSizes.paddingSmall }}>
 
-                    <DropdownComponent
-                        arrowColor={AppColors.primaryBackground}
-                        textStyle={{ ...AppStyles.baseText, color: AppColors.primaryBackground, fontSize: AppSizes.fontMedium }}
-                        containerStyle={{ width: 120 }}
-                        data={getMonthData()}
-                        onSelect={(item) => onChangeMonth(item)}
-                        defaultValue={month}
-                    />
+                        <DropdownComponent
+                            arrowColor={AppColors.primaryBackground}
+                            textStyle={{ ...AppStyles.baseText, color: AppColors.primaryBackground, fontSize: AppSizes.fontMedium }}
+                            containerStyle={{ width: isAdmin? '35%': '45%' }}
+                            data={getMonthData()}
+                            onSelect={(item) => onChangeMonth(item)}
+                            defaultValue={month}
+                        />
+                        {
+                            isAdmin ? <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+                                <PrimaryTextInputComponent
+                                    textStyle={{ paddingRight: AppSizes.paddingLarge }}
+                                    containerStyle={{ flex: 1, paddingLeft: AppSizes.padding, justifyContent: 'center', }} keyboardType="numeric" placeholder="Nhập ad code" onChangeText={onchangeADText} />
+                                <ButtonIconComponent
+                                    containerStyle={{ paddingHorizontal: AppSizes.padding, position: 'absolute', right: 0, top: 0 }}
+                                    source="AntDesign"
+                                    name="search1"
+                                    color={AppColors.secondaryTextColor}
+                                    size={25}
+                                    action={() =>
+                                        doSearch()
+                                    } />
+                            </View> :
+                                <DropdownComponent
+                                    containerStyle={{ width: '45%' }}
+                                    textStyle={{ ...AppStyles.baseTextGray, }}
+                                    data={getDataUserUnderControl()}
+                                    defaultButtonText="Chọn AD"
+                                    onSelect={(item) => onChangeAd(item)}
+                                    defaultValue={ad}
+                                />
+                        }
 
-                    <Text style={[AppStyles.boldTextGray, { marginVertical: AppSizes.paddingSmall }]}>Ban: <Text style={AppStyles.baseTextGray}>Ngọc trai</Text></Text>
-                    <DropdownComponent
-                        containerStyle={{ width: '100%' }}
-                        data={nhom}
-                        onSelect={(item) => onChangeNhom(item)}
-                        defaultValue={nhomSelected}
-                    />
+                    </View>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: AppSizes.paddingSmall }}>
+                        <DropdownComponent
+                            containerStyle={{ width: '45%' }}
+                            data={getBan()}
+                            onSelect={(item) => onChangeBan(item)}
+                            defaultValue={banSelected}
+                            defaultButtonText="Chọn ban"
+                        />
+                        <DropdownComponent
+                            containerStyle={{ width: '45%' }}
+                            data={getNhom()}
+                            onSelect={(item) => onChangeNhom(item)}
+                            defaultValue={nhomSelected}
+                            defaultButtonText="Chọn nhóm"
+                        />
+                    </View>
+
                 </View>
 
                 <Separator />
                 <View style={styles.block}>
                     <Text style={styles.textBold}>Kết quả tháng trước</Text>
                     <ScrollView showsHorizontalScrollIndicator={false} horizontal={true} contentContainerStyle={styles.horizoltal}>
-                        <BoxComponent title="AFYP" value="100" percent="+10%" />
-                        <BoxComponent title="IP" value="100" percent="-10%" />
-                        <BoxComponent title="Lượt TVVc hoạt động" value="100" percent="+10%" />
-                        <BoxComponent title="Lượt TVVm hoạt động" value="100" percent="+10%" />
-                        <BoxComponent title="Tuyển dụng" value="100" percent="+10%" />
+                        <BoxComponent title="AFYP" value={dataReportMonthlySummary?.[0]?.result ?? 0} percent={`${dataReportMonthlySummary?.[0]?.result_increased ?? 0}%`} color={dataReportMonthlySummary?.[0]?.result_increased > 0 ? AppColors.success : AppColors.danger} />
+                        <BoxComponent title="IP" value={dataReportMonthlySummary?.[3]?.result ?? 0} percent={`${dataReportMonthlySummary?.[3]?.result_increased ?? 0}%`} color={dataReportMonthlySummary?.[3]?.result_increased > 0 ? AppColors.success : AppColors.danger} />
+                        <BoxComponent title="Lượt TVVc hoạt động" value={dataReportMonthlySummary?.[1]?.result ?? 0} percent={`${dataReportMonthlySummary?.[1]?.result_increased ?? 0}%`} color={dataReportMonthlySummary?.[1]?.result_increased > 0 ? AppColors.success : AppColors.danger} />
+                        <BoxComponent title="Lượt TVVm hoạt động" value={dataReportMonthlySummary?.[4]?.result ?? 0} percent={`${dataReportMonthlySummary?.[4]?.result_increased ?? 0}%`} color={dataReportMonthlySummary?.[4]?.result_increased > 0 ? AppColors.success : AppColors.danger} />
+                        <BoxComponent title="Tuyển dụng" value={dataReportMonthlySummary?.[2]?.result ?? 0} percent={`${dataReportMonthlySummary?.[2]?.result_increased ?? 0}%`} color={dataReportMonthlySummary?.[2]?.result_increased > 0 ? AppColors.success : AppColors.danger} />
                     </ScrollView>
                 </View>
                 <Separator />
@@ -143,23 +290,23 @@ const PersonalMonthlyTargetScreen = (props) => {
                         !showKPI && <View>
                             <View style={{ flexDirection: 'row', flex: 1 }}>
                                 <Text style={{ flex: 1 }}></Text>
-                                <Text style={[AppStyles.baseTextGray, { flex: 1 }]}>Tháng 5</Text>
-                                <Text style={[AppStyles.baseTextGray, { flex: 1 }]}>Tháng 4</Text>
-                                <Text style={[AppStyles.baseTextGray, { flex: 1 }]}>Tháng 3</Text>
+                                <Text style={[AppStyles.baseTextGray, { flex: 1 }]}>Tháng {moment(month.value, "MM/YYYY").subtract(1, 'month').format("M")}</Text>
+                                <Text style={[AppStyles.baseTextGray, { flex: 1 }]}>Tháng {moment(month.value, "MM/YYYY").subtract(2, 'month').format("M")}</Text>
+                                <Text style={[AppStyles.baseTextGray, { flex: 1 }]}>Tháng {moment(month.value, "MM/YYYY").subtract(3, 'month').format("M")}</Text>
                             </View>
                             <Divider style={{ marginVertical: AppSizes.paddingSmall }} />
                             <View style={{ flexDirection: 'row', flex: 1 }}>
                                 <Text style={[AppStyles.baseTextGray, { flex: 1 }]}>Năng xuất</Text>
-                                <Text style={[AppStyles.baseTextGray, { flex: 1 }]}>1.5</Text>
-                                <Text style={[AppStyles.baseTextGray, { flex: 1 }]}>1.2</Text>
-                                <Text style={[AppStyles.baseTextGray, { flex: 1 }]}>1.6</Text>
+                                <Text style={[AppStyles.baseTextGray, { flex: 1 }]}>{dataReportKpi?.[0]?.[getMonths(month)[0]]}</Text>
+                                <Text style={[AppStyles.baseTextGray, { flex: 1 }]}>{dataReportKpi?.[0]?.[getMonths(month)[1]]}</Text>
+                                <Text style={[AppStyles.baseTextGray, { flex: 1 }]}>{dataReportKpi?.[0]?.[getMonths(month)[2]]}</Text>
                             </View>
                             <Divider style={{ marginVertical: AppSizes.paddingSmall }} />
                             <View style={{ flexDirection: 'row', flex: 1 }}>
                                 <Text style={[AppStyles.baseTextGray, { flex: 1 }]}>Tăng trưởng</Text>
-                                <Text style={[AppStyles.baseTextGray, { flex: 1 }]}>25%</Text>
-                                <Text style={[AppStyles.baseTextGray, { flex: 1 }]}>-10%</Text>
-                                <Text style={[AppStyles.baseTextGray, { flex: 1 }]}>60%</Text>
+                                <Text style={[AppStyles.baseTextGray, { flex: 1 }]}>{dataReportKpi?.[1]?.[getMonths(month)[0]]}</Text>
+                                <Text style={[AppStyles.baseTextGray, { flex: 1 }]}>{dataReportKpi?.[1]?.[getMonths(month)[1]]}</Text>
+                                <Text style={[AppStyles.baseTextGray, { flex: 1 }]}>{dataReportKpi?.[1]?.[getMonths(month)[2]]}</Text>
                             </View>
                             <Divider style={{ marginVertical: AppSizes.paddingSmall }} />
                         </View>
@@ -175,18 +322,19 @@ const PersonalMonthlyTargetScreen = (props) => {
                     color={AppColors.secondaryTextColor} />
 
                 {
-                    showKPI && <KPIComponent />
+                    showKPI && <KPIComponent dataReportKpi={dataReportKpi} month={month} />
                 }
                 <Separator />
                 <View style={styles.block}>
                     <Text style={styles.textBold}>Kết quả thực hiện và mục tiêu</Text>
-                    <ResultComponent />
+                    <ResultComponent month={month} contract={personnalInfo?.contract} sale_info={personnalInfo?.sale_info}/>
                 </View>
-                <Separator />
-                <View style={styles.block}>
+                {/* <Separator /> */}
+
+                {/* <View style={styles.block}>
                     <Text style={styles.textBold}>Kế hoạch hoạt động</Text>
                     <SchedulePersonalScreen />
-                </View>
+                </View> */}
 
             </VirtualizedList>
             {
@@ -198,13 +346,13 @@ const PersonalMonthlyTargetScreen = (props) => {
 }
 
 const BoxComponent = (props) => {
-    const { title, value, percent } = props
+    const { title, value, percent, color } = props
 
     return (<View
         style={styles.box}>
         <Text style={AppStyles.boldTextGray}>{title}</Text>
         <Text style={[AppStyles.boldTextGray, { fontSize: AppSizes.fontLarge }]}>{value}</Text>
-        <Text style={[AppStyles.boldTextGray, { color: 'red' }]}>{percent}</Text>
+        <Text style={[AppStyles.boldTextGray, { color }]}>{percent}</Text>
     </View>)
 }
 
@@ -228,7 +376,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         height: 130,
-        width: AppSizes.screen.width / 3 - 45,
+        width: AppSizes.screen.width / 3,
     },
     block: {
         padding: AppSizes.padding

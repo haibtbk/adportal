@@ -47,13 +47,13 @@ const ConfirmRequestScreen = ({ navigation, route }) => {
         }
         API.confirmRequest(params)
             .then(res => {
-                utils.showBeautyAlert(navigation, "success", "Gửi yêu cầu thành công")
+                utils.showBeautyAlert("success", "Gửi yêu cầu thành công")
                 countWaitingApprove(dispatch)
                 callback && callback()
                 onCloseDialog()
             })
             .catch(error => {
-                utils.showBeautyAlert(navigation, "fail", "Gửi yêu cầu không thành công")
+                utils.showBeautyAlert("fail", "Gửi yêu cầu không thành công")
             })
             .finally(() => {
                 setLoading(false)

@@ -27,6 +27,11 @@ const routes = {
     personalMonthlyTarget: "PersonalMonthlyTarget",
     detailPerson: "DetailPerson",
     zoomImage: "ZoomImage",
+    contact: "Contact", 
+    personalPlan: "PersonalPlan",
+    personalStrongAndWeakPoint: "PersonalStrongAndWeakPoint",
+    personalQuarterTarget: "PersonalQuarterTarget",
+    personalRevenueWarning: "PersonalRevenueWarning",
 }
 
 export default routes

@@ -57,6 +57,12 @@ import AppInfoScreen from './src/container/account/AppInfoScreen';
 import PersonalMonthlyTargetScreen from './src/container/home/personalBoard/PersonalMonthlyTargetScreen';
 import KPIScreen from './src/container/home/personalBoard/KPIScreen';
 import ZoomImageScreen from './src/container/component/ZoomImageScreen';
+import ContactScreen from './src/container/account/ContactScreen';
+import PersonalPlan from './src/container/home/personalBoard/PersonalPlan';
+import PersonalStrongAndWeakPointScreen from './src/container/home/personalBoard/PersonalStrongAndWeakPointScreen';
+import ScheduleReportCommentScreen from './src/container/schedule/ScheduleReportCommentScreen';
+import PersonalQuarterTargetScreen from './src/container/home/personalBoard/PersonalQuarterTargetScreen';
+import PersonalRevenueWarningScreen from './src/container/home/personalBoard/PersonalRevenueWarningScreen';
 const Tab = createBottomTabNavigator();
 const HomeStack = createStackNavigator();
 const NewsStack = createStackNavigator();
@@ -94,6 +100,10 @@ function RootTabs() {
             <HomeStack.Screen name={RouterName.detailPerson} component={DetailPersonScreen} />
             <HomeStack.Screen name="ScheduleDetail" component={ScheduleDetailScreen} />
             <HomeStack.Screen name="kpi" component={KPIScreen} />
+            <HomeStack.Screen name={RouterName.personalPlan} component={PersonalPlan} />
+            <HomeStack.Screen name={RouterName.personalStrongAndWeakPoint} component={PersonalStrongAndWeakPointScreen} />
+            <HomeStack.Screen name={RouterName.personalQuarterTarget} component={PersonalQuarterTargetScreen} />
+            <HomeStack.Screen name={RouterName.personalRevenueWarning} component={PersonalRevenueWarningScreen} />
           </HomeStack.Navigator>
         )}
       </Tab.Screen>
@@ -127,6 +137,7 @@ function RootTabs() {
             <HomeStack.Screen name="ScheduleDetail" component={ScheduleDetailScreen} />
             <HomeStack.Screen name="ScheduleReport" component={ScheduleReportScreen} />
             <HomeStack.Screen name="ScheduleBNNNReport" component={ScheduleBNNNReportScreen} />
+            <HomeStack.Screen name="ScheduleCommentReport" component={ScheduleReportCommentScreen} />
           </HomeStack.Navigator>
         )}
       </Tab.Screen>
@@ -160,6 +171,7 @@ function RootTabs() {
             <Stack.Screen name={RouterName.changePassword} component={ChangePasswordScreen} />
             <Stack.Screen name={RouterName.adward} component={AdwardScreen} />
             <Stack.Screen name={RouterName.appInfo} component={AppInfoScreen} />
+            <Stack.Screen name={RouterName.contact} component={ContactScreen} />
 
           </Stack.Navigator>
         )}

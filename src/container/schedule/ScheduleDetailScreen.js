@@ -28,7 +28,7 @@ const ScheduleDetailScreen = ({ route, navigation }) => {
     const { schedule, callback } = route.params
     const isFirstRender = useRef(true);
     const insets = useSafeAreaInsets();
-
+    const [comment, setComment] = useState(schedule?.schedule_data?.comment ?? "")
     const [isLoading, setLoading] = useState(false)
     const [scheduleData, setScheduleData] = useState(schedule)
     const [attachments, setAttachments] = useState(schedule?.schedule_data?.attachment ?? [])
@@ -64,7 +64,7 @@ const ScheduleDetailScreen = ({ route, navigation }) => {
             .then(res => {
                 if (res?.data?.success) {
                     callback && callback()
-                    utils.showBeautyAlert(navigation, "success", "Cập nhật thành công")
+                    utils.showBeautyAlert("success", "Cập nhật thành công")
                     setScheduleData(Object.assign({}, scheduleData, { status }))
                 }
             })
@@ -98,7 +98,7 @@ const ScheduleDetailScreen = ({ route, navigation }) => {
                     API.deleteSchedule(params)
                         .then(res => {
                             if (res?.data?.success) {
-                                utils.showBeautyAlert(navigation, "success", "Xóa thành công")
+                                utils.showBeautyAlert("success", "Xóa thành công")
                                 navigation.goBack()
                                 callback && callback()
                             }
@@ -145,12 +145,12 @@ const ScheduleDetailScreen = ({ route, navigation }) => {
 
                 RNFS.writeFile(localFile, file_content, 'base64')
                     .then(() => {
-                        utils.showBeautyAlert(navigation, "success", "Tải file thành công. Vui lòng xem file trong mục tải về của điện thoại.")
+                        utils.showBeautyAlert("success", "Tải file thành công. Vui lòng xem file trong mục tải về của điện thoại.")
                     })
                     .catch(error => console.log(error.message));
             })
             .catch(err => {
-                utils.showBeautyAlert(navigation, "fail", "Có lỗi trong quá trình tải file.")
+                utils.showBeautyAlert("fail", "Có lỗi trong quá trình tải file.")
             })
             .finally(() => {
                 setLoading(false)
@@ -174,7 +174,7 @@ const ScheduleDetailScreen = ({ route, navigation }) => {
             .then(res => {
                 if (res?.data?.success) {
                     callback && callback()
-                    utils.showBeautyAlert(navigation, "success", "Cập nhật thành công")
+                    utils.showBeautyAlert("success", "Cập nhật thành công")
                 }
             })
             .catch(err => console.error(err))
@@ -356,6 +356,19 @@ const ScheduleDetailScreen = ({ route, navigation }) => {
             schedule,
         })
     }
+
+    const editReport = () => {
+        navigation.navigate("ScheduleCommentReport", {
+            callback: (data) => {
+                if (data) {
+                    callback && callback()
+                    setComment(data?.comment)
+                }
+            },
+            schedule,
+        })
+    }
+
     const editReportBNNN = () => {
         navigation.navigate("ScheduleBNNNReport", {
             callback: (data) => {
@@ -424,6 +437,25 @@ const ScheduleDetailScreen = ({ route, navigation }) => {
 
 
                 </View>
+                {
+                    (!isToChucSuKien && !isBNNN) && <View style={{ ...AppStyles.baseBox, marginTop: AppSizes.padding }}>
+                        <Text style={[AppStyles.boldTextGray, { marginVertical: AppSizes.paddingXSmall, fontSize: AppSizes.fontLarge }]} numberOfLines={2} ellipsizeMode="tail">
+                            Báo cáo kết quả
+                        </Text>
+                        <Text style={[AppStyles.baseTextGray,]}>
+                            {comment || "Chưa có báo cáo"}
+                        </Text>
+
+                        {
+                            isEnable && <ButtonComponent
+                                textStyle={{ color: AppColors.primaryBackground }}
+                                containerStyle={{ ...AppStyles.roundButton, borderColor: 'gray', width: 180, alignSelf: 'center', backgroundColor: AppColors.white, marginVertical: AppSizes.padding, }}
+                                title="Báo cáo"
+                                action={editReport} />
+                        }
+
+                    </View>
+                }
                 {
                     isToChucSuKien && <View style={{ ...AppStyles.baseBox, marginTop: AppSizes.padding }}>
                         <Text style={[AppStyles.boldTextGray, { marginVertical: AppSizes.paddingXSmall, fontSize: AppSizes.fontLarge }]} numberOfLines={2} ellipsizeMode="tail">

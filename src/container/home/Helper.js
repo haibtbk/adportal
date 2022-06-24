@@ -1,3 +1,45 @@
+import _ from "lodash";
+import moment from "moment";
+import { t1 } from "@localization"
+
+
+export const getMonths = (month) => {
+    return [
+        `month_${moment(month.value, "MM/YYYY").subtract(1, 'month').format("MM")}`,
+        `month_${moment(month.value, "MM/YYYY").subtract(2, 'month').format("MM")}`,
+        `month_${moment(month.value, "MM/YYYY").subtract(3, 'month').format("MM")}`,
+    ]
+
+}
+
+export const getMonthOnDigit = (month) => {
+    return [
+        moment(month.label, "MM/YYYY").format("M"),
+        moment(month.label, "MM/YYYY").subtract(1, 'month').format("M"),
+        moment(month.label, "MM/YYYY").subtract(2, 'month').format("M"),
+        moment(month.label, "MM/YYYY").subtract(3, 'month').format("M"),
+    ]
+}
+
+export const convertValueToString = (value = '', type) => {
+    switch (type) {
+        case 'money':
+            return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        default:
+            return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+}
+
+export const getMonthParams = (month) => {
+    const params = {
+        month_value: moment(month, "MM/YYYY").subtract(1, 'month').unix().valueOf(),
+        month_value_2: moment(month, "MM/YYYY").subtract(2, 'month').unix().valueOf(),
+        month_value_3: moment(month, "MM/YYYY").subtract(3, 'month').unix().valueOf(),
+        month_value_4: moment(month, "MM/YYYY").subtract(4, 'month').unix().valueOf()
+    }
+    return params
+}
+
 export const getUniqueBigGroupAndGroup = (contractList = []) => {
     let bigGroupList = [];
     let output = {};
@@ -12,7 +54,6 @@ export const getUniqueBigGroupAndGroup = (contractList = []) => {
         var listGroup = [];
         contractList.map(contract => {
             if (contract.group == null) {
-                console.log(contract);
             }
             if (contract.big_group == bigGroup) {
                 if (!listGroup.includes(contract.group)) {
@@ -23,7 +64,6 @@ export const getUniqueBigGroupAndGroup = (contractList = []) => {
 
         output[bigGroup] = listGroup;
     })
-
     return {
         big_group: bigGroupList,
         group: output
@@ -117,7 +157,7 @@ export const generateDataReportMonthlySummary = (contractList = [], saleInfoList
     var resultAfypLastMonth = Math.round(getTotal(contractList, 'afyp', moment.unix(monthSelected).subtract(1, "months").unix()) / defaultSplit)
 
     output.push({
-        title: t1('afyp_report'),
+        title: 'afyp_report',
         result: convertValueToString(resultAfyp),
         result_last_month: convertValueToString(resultAfypLastMonth),
         result_increased: Math.round(resultAfyp * 100 / resultAfypLastMonth) - 100,
@@ -127,7 +167,7 @@ export const generateDataReportMonthlySummary = (contractList = [], saleInfoList
     var resultOldTvvLastMonth = getTvvAction(contractList, saleInfoList, moment.unix(monthSelected).subtract(1, "months").unix(), 'old');
 
     output.push({
-        title: t1("old_tvv_action_report"),
+        title: "old_tvv_action_report",
         result: convertValueToString(resultOldTvv),
         result_last_month: convertValueToString(resultOldTvvLastMonth),
         result_increased: Math.round(resultOldTvv * 100 / resultOldTvvLastMonth) - 100,
@@ -137,17 +177,17 @@ export const generateDataReportMonthlySummary = (contractList = [], saleInfoList
     var recruitLastMonth = getRecruit(saleInfoList, 'sale_code_issued_time', moment.unix(monthSelected).subtract(1, "months").unix());
 
     output.push({
-        title: t1("recruit_report"),
+        title: "recruit_report",
         result: convertValueToString(recruit),
         result_last_month: convertValueToString(recruitLastMonth),
         result_increased: Math.round(recruit * 100 / recruitLastMonth) - 100,
     })
 
     var ipResult = getTotal(contractList, 'initial_fee', monthSelected);
-    var ipResultLastMonth = getTotal(contractList, 'initial_fee', moment.unix(monthSelected).subtract(1, "months").unix());
+    var ipResultLastMonth = getTotal(contractList, 'initial_fee', moment.unix(monthSelected).subtract(1, "months").unix())
 
     output.push({
-        title: t1("ip_report"),
+        title: "ip_report",
         result: convertValueToString(Math.round(ipResult / defaultSplit)),
         result_last_month: convertValueToString(Math.round(ipResultLastMonth / defaultSplit)),
         result_increased: Math.round(ipResult * 100 / ipResultLastMonth) - 100,
@@ -157,7 +197,7 @@ export const generateDataReportMonthlySummary = (contractList = [], saleInfoList
     var resultNewTvvLastMonth = getTvvAction(contractList, saleInfoList, moment.unix(monthSelected).subtract(1, "months").unix(), 'new');
 
     output.push({
-        title: t1("new_tvv_action_report"),
+        title: "new_tvv_action_report",
         result: convertValueToString(resultNewTvv),
         result_last_month: convertValueToString(resultNewTvvLastMonth),
         result_increased: Math.round(resultNewTvv * 100 / resultNewTvvLastMonth) - 100,
@@ -195,7 +235,7 @@ export const generateDataReportKpi = (contractList, saleInfoList, monthSelected 
     var productivity3monthAgo = Math.round(getCount(contractList, moment.unix(monthSelected).subtract(3, "months").unix(), false) * 10 / tvvIp2MonthAgo) / 10;
 
     let productivityCriteria = {
-        criteria_name: t1('productivity')
+        criteria_name: 'productivity'
     }
 
     productivityCriteria[`month_${moment.unix(monthSelected).format("MM")}`] = productivity;
@@ -203,7 +243,7 @@ export const generateDataReportKpi = (contractList, saleInfoList, monthSelected 
     productivityCriteria[`month_${moment.unix(monthSelected).subtract(2, "months").format("MM")}`] = productivity2monthAgo;
 
     let productivityPercentage = {
-        criteria_name: t1('productivity_increase'),
+        criteria_name: 'productivity_increase'
     }
 
     productivityPercentage[`month_${moment.unix(monthSelected).format("MM")}`] = Math.round(productivity * 100 / productivityLastMonth) - 100 + "%";
@@ -211,7 +251,7 @@ export const generateDataReportKpi = (contractList, saleInfoList, monthSelected 
     productivityPercentage[`month_${moment.unix(monthSelected).subtract(2, "months").format("MM")}`] = Math.round(productivity2monthAgo * 100 / productivity3monthAgo) - 100 + "%";
 
     let amountAverage = {
-        criteria_name: t1('amount_average'),
+        criteria_name: 'amount_average'
     }
 
     amountAverage[`month_${moment.unix(monthSelected).format("MM")}`] = Math.round((afyp / totalContract) * 10) / 10;
@@ -220,7 +260,7 @@ export const generateDataReportKpi = (contractList, saleInfoList, monthSelected 
     amountAverage[`month_${moment.unix(monthSelected).subtract(3, "months").format("MM")}`] = Math.round((afyp3MonthAgo / totalContract3MonthAgo) * 10) / 10;
 
     let amountAveragePercentage = {
-        criteria_name: t1('amount_average_percentage')
+        criteria_name: 'amount_average_percentage'
     }
 
     amountAveragePercentage[`month_${moment.unix(monthSelected).format("MM")}`] = Math.round((afyp / tvvIp) * 100 / (afypLastMonth / tvvIpLastMonth)) - 100 + "%";
@@ -228,7 +268,7 @@ export const generateDataReportKpi = (contractList, saleInfoList, monthSelected 
     amountAveragePercentage[`month_${moment.unix(monthSelected).subtract(2, "months").format("MM")}`] = Math.round((afyp2MonthAgo / tvvIp2MonthAgo) * 100 / (afyp3MonthAgo / tvvIp3MonthAgo)) - 100 + "%";
 
     let actionCount = {
-        criteria_name: t1('action_tvv_count')
+        criteria_name: 'action_tvv_count'
     }
 
     actionCount[`month_${moment.unix(monthSelected).format("MM")}`] = tvvIp;
@@ -237,7 +277,7 @@ export const generateDataReportKpi = (contractList, saleInfoList, monthSelected 
     actionCount[`month_${moment.unix(monthSelected).subtract(3, "months").format("MM")}`] = tvvIp3MonthAgo;
 
     let actionCountPercentage = {
-        criteria_name: t1('action_tvv_percentage')
+        criteria_name: 'action_tvv_percentage'
     }
 
     actionCountPercentage[`month_${moment.unix(monthSelected).format("MM")}`] = Math.round(tvvIp * 100 / tvvIpLastMonth) - 100 + "%";
@@ -245,7 +285,7 @@ export const generateDataReportKpi = (contractList, saleInfoList, monthSelected 
     actionCountPercentage[`month_${moment.unix(monthSelected).subtract(2, "months").format("MM")}`] = Math.round(tvvIp2MonthAgo * 100 / tvvIp3MonthAgo) - 100 + "%";
 
     let afypNumber = {
-        criteria_name: t1('afyp_number_report')
+        criteria_name: 'afyp_number_report'
     }
 
     afypNumber[`month_${moment.unix(monthSelected).format("MM")}`] = afyp;
@@ -254,7 +294,7 @@ export const generateDataReportKpi = (contractList, saleInfoList, monthSelected 
     afypNumber[`month_${moment.unix(monthSelected).subtract(3, "months").format("MM")}`] = afyp3MonthAgo;
 
     let afypPercentage = {
-        criteria_name: t1('afyp_number_percentage')
+        criteria_name: 'afyp_number_percentage'
     }
 
     afypPercentage[`month_${moment.unix(monthSelected).format("MM")}`] = Math.round(afyp * 100 / afypLastMonth) - 100 + "%";
@@ -262,7 +302,7 @@ export const generateDataReportKpi = (contractList, saleInfoList, monthSelected 
     afypPercentage[`month_${moment.unix(monthSelected).subtract(2, "months").format("MM")}`] = Math.round(afyp2MonthAgo * 100 / afyp3MonthAgo) - 100 + "%";
 
     let ipNumber = {
-        criteria_name: t1('ip_number')
+        criteria_name: 'ip_number'
     }
 
     ipNumber[`month_${moment.unix(monthSelected).format("MM")}`] = ipData;
@@ -271,7 +311,7 @@ export const generateDataReportKpi = (contractList, saleInfoList, monthSelected 
     ipNumber[`month_${moment.unix(monthSelected).subtract(3, "months").format("MM")}`] = ipData3MonthAgo;
 
     let ipNumberPercentage = {
-        criteria_name: t1('ip_number_percentage')
+        criteria_name: 'ip_number_percentage'
     }
 
     ipNumberPercentage[`month_${moment.unix(monthSelected).format("MM")}`] = Math.round(ipData * 100 / ipDataLastMonth) - 100 + "%";
@@ -290,4 +330,51 @@ export const generateDataReportKpi = (contractList, saleInfoList, monthSelected 
     output.push(ipNumberPercentage);
 
     return output;
+}
+
+export const filterByGroupAndBigGroup = (list = [], big_group = 'all', group = 'all') => {
+    let output = [];
+
+    if (big_group == 'all') {
+        output = list;
+    } else {
+        if (group == 'all') {
+            list.map(item => {
+                if (item.big_group == big_group) {
+                    output.push(item);
+                }
+            })
+        } else {
+            list.map(item => {
+                if (item.big_group == big_group && item.group == group) {
+                    output.push(item);
+                }
+            })
+        }
+    }
+
+    return output;
+}
+
+export const getquarter = (data, monthSelected) => {
+    if (moment.unix(data).format('YYYY') == moment.unix(monthSelected).format('YYYY')) {
+        for (var i = 0; i < 4; i++) {
+            for (var j = 0; j < 3; j++) {
+                if (moment.unix(data).format("M") == (i * 3 + j + 1)) {
+                    switch (j) {
+                        case 0:
+                            return t1('tvvm_start_of_season_%s', [i + 1])
+                        case 1:
+                            return t1('tvvm_middle_of_season_%s', [i + 1])
+                        case 2:
+                            return t1('tvvm_end_of_season_%s', [i + 1])
+                    }
+
+                }
+            }
+        }
+        return '';
+    } else {
+        return '';
+    }
 }

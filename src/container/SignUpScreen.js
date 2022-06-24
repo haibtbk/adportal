@@ -23,13 +23,13 @@ const SignUpScreen = (props) => {
   }
   const signup = () => {
     if (checkEmpty()) {
-      utils.showBeautyAlert(navigation, "fail", "Vui lòng điền đầy đủ thông tin")
+      utils.showBeautyAlert("fail", "Vui lòng điền đầy đủ thông tin")
       return;
     } else if (!checkPassword()) {
-      utils.showBeautyAlert(navigation, "fail", "Mật khẩu không khớp")
+      utils.showBeautyAlert("fail", "Mật khẩu không khớp")
       return;
     } else if (!isEmailString(email)) {
-      utils.showBeautyAlert(navigation, "fail", "Email không hợp lệ")
+      utils.showBeautyAlert("fail", "Email không hợp lệ")
       return;
     }
     API.signup({
@@ -39,14 +39,13 @@ const SignUpScreen = (props) => {
     }).then(res => {
       if (res?.status == 201) {
         navigation.navigate('Login');
-        utils.showBeautyAlert(navigation, "success", "Đăng ký thành công")
+        utils.showBeautyAlert("success", "Đăng ký thành công")
       } else {
-        utils.showBeautyAlert(navigation, "fail", "Đăng ký cầu không thành công")
-
+        utils.showBeautyAlert("fail", "Đăng ký cầu không thành công")
       }
     })
       .catch(err => {
-        utils.showBeautyAlert(navigation, "fail", "Đăng ký không thành công")
+        utils.showBeautyAlert("fail", "Đăng ký không thành công")
       })
 
   }
