@@ -13,7 +13,7 @@ const PrimaryTextInputComponent = (props) => {
                 placeholder={placeholder}
                 defaultValue={defaultValue}
                 onChangeText={onChangeText}
-                style={[{ padding: AppSizes.paddingSmall }, textStyle && textStyle]} />
+                style={[AppStyles.baseTextGray, { padding: AppSizes.paddingSmall }, textStyle && textStyle]} />
             <Divider style={{ marginBottom: AppSizes.padding, backgroundColor: AppColors.secondaryTextColor }} />
         </View>
     )

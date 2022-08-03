@@ -9,15 +9,23 @@ import { DateTimeUtil } from '@utils';
 import moment from "moment";
 import _ from 'lodash'
 import { Divider } from "react-native-paper";
+import { ButtonComponent } from "@component";
+import { useSelector } from "react-redux";
+import ScreenName from "@redux/refresh/ScreenName"
+
 
 var originData = []
 const UNIT = 1000000
 
 const ResultComponent = (props) => {
-    const { contract, sale_info, month } = props
-    const [saleInfo, setSaleInfo] = React.useState(sale_info)
+
+    const refreshEvent = useSelector((state) => {
+        return state?.refresh?.event ?? {}
+    })
+
+    const { contract, sale_info, month, mode, search = "", containerStyle = {}, ad } = props
     const [data, setData] = React.useState([])
-    const [keySearch, setKeySearch] = React.useState("")
+    const [keySearch, setKeySearch] = React.useState(search)
     const [m, setM] = React.useState({
         label: moment(month.value, "MM/YYYY").format('M'),
         value: moment(month.value, "MM/YYYY").unix()
@@ -39,13 +47,29 @@ const ResultComponent = (props) => {
         setKeySearch(value)
     }
 
+    const dataFiltered = (data, key) => {
+        const temp = _.filter(data, (item) => {
+            return item?.name?.toLowerCase()?.indexOf(key.toLowerCase()) !== -1
+        })
+        return temp || []
+    }
+
+    useEffect(() => {
+        if (refreshEvent?.timeUnix && refreshEvent?.types?.includes(ScreenName.ResultComponent)) {
+            if (keySearch == "") {
+                setData(originData)
+            } else {
+                const temp = dataFiltered(originData, keySearch)
+                setData(temp)
+            }
+        }
+    }, [refreshEvent?.timeUnix])
+
     useEffect(() => {
         if (keySearch == "") {
             setData(originData)
         } else {
-            const temp = _.filter(originData, (item) => {
-                return item?.name?.toLowerCase()?.indexOf(keySearch.toLowerCase()) !== -1
-            })
+            const temp = dataFiltered(originData, keySearch)
             setData(temp)
         }
     }, [keySearch])
@@ -74,7 +98,7 @@ const ResultComponent = (props) => {
                 item
             }
         })
-        setData(temp)
+        setData(dataFiltered(temp, keySearch))
         originData = temp
 
     }, [contract, sale_info, month])
@@ -99,40 +123,48 @@ const ResultComponent = (props) => {
     }, [month])
 
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, containerStyle && containerStyle]}>
             <TextInput
                 underlineColorAndroid='transparent'
                 placeholder='Tìm kiếm theo tên'
+                value={keySearch}
                 onChangeText={(text) => { onSearch(text) }}
                 style={[{ padding: AppSizes.paddingSmall }]} />
             <Divider style={{ marginBottom: AppSizes.padding, backgroundColor: AppColors.secondaryTextColor }} />
 
             <FlatList
                 listKey={Math.random(1) * 1000}
-                contentContainerStyle={{ paddingVertical: AppSizes.padding }}
-                data={data}
-                renderItem={({ item }) => <RenderItem item={item} m={m}/>}
+                contentContainerStyle={{ paddingVertical: AppSizes.padding, paddingBottom: 100}}
+                data={mode == "limited" ? _.slice(data, 0, 10) : data}
+                renderItem={({ item }) => <RenderItem item={item} m={m} ad={ad} />}
                 keyExtractor={(item, index) => index.toString()}
                 ItemSeparatorComponent={() => <View style={{ height: StyleSheet.hairlineWidth, backgroundColor: AppColors.lightGray }} />}
                 ListHeaderComponent={() => <RenderHeader m1={m1} m2={m2} m3={m3} m={m} />}
-                ListFooterComponent={() => <RenderFooter contract={contract} m1={m1} m2={m2} m3={m3} />}
+                ListFooterComponent={() => <RenderFooter sale_info={sale_info} contract={contract} m1={m1} m2={m2} m3={m3} data={data} mode={mode} search={keySearch} month={month} ad={ad} />}
             />
         </View>
 
     )
 }
 
-const RenderItem = ({ item, m }) => {
+const RenderItem = ({ item, m, ad }) => {
     const navigation = useNavigation()
     const { name, start_ts, t3, t2, t1, plan } = item
     return (
         <TouchableOpacity
             activeOpacity={0.8}
             onPress={() => {
+                console.log('aaa', {
+                    title: name,
+                    data: item,
+                    month: m,
+                    ad
+                })
                 navigation.navigate(RouterName.detailPerson, {
                     title: name,
                     data: item,
-                    month: m
+                    month: m,
+                    ad
                 })
             }}
             style={styles.item}>
@@ -162,7 +194,8 @@ const RenderHeader = (props) => {
 }
 
 const RenderFooter = (props) => {
-    const { contract, m1, m2, m3 } = props
+    const navigation = useNavigation()
+    const { contract, m1, m2, m3, data, sale_info, month, mode, search = "", ad } = props
     const t1 = Math.round(getTotal(contract, "initial_fee", m1.value) / UNIT * 10) / 10
     const t2 = Math.round(getTotal(contract, "initial_fee", m2.value) / UNIT * 10) / 10
     const t3 = Math.round(getTotal(contract, "initial_fee", m3.value) / UNIT * 10) / 10
@@ -171,15 +204,29 @@ const RenderFooter = (props) => {
     const count2 = getCount(contract, m2.value)
     const count3 = getCount(contract, m3.value)
 
+    const openResult = () => {
+        navigation.navigate(RouterName.resultView, { contract, sale_info, month, search, containerStyle: { paddingBottom: 150 }, ad })
+    }
+
     return (
-        <View style={[styles.item, { backgroundColor: AppColors.grayLight, paddingVertical: 0 }]}>
-            <Text style={[styles.itemStyle, { fontSize: AppSizes.fontMedium, fontWeight: 'bold', flex: 2.5, textAlign: 'left', flexWrap: 'wrap' }]}>Tổng cộng</Text>
-            <Text style={[styles.itemStyle, { fontWeight: 'bold', flex: 2, textAlign: 'left' }]}></Text>
-            <Text style={[styles.itemStyle, { fontWeight: 'bold' }]}>{t1}/{count1}</Text>
-            <Text style={[styles.itemStyle, { fontWeight: 'bold' }]}>{t2}/{count2}</Text>
-            <Text style={[styles.itemStyle, { fontWeight: 'bold' }]}>{t3}/{count3}</Text>
-            <Text style={[styles.itemStyle, { fontWeight: 'bold' }]}></Text>
+        <View>
+            {
+                (data?.length > 10 && mode == "limited") && <ButtonComponent
+                    action={() => { openResult() }}
+                    textStyle={styles.textViewMore}
+                    containerStyle={styles.buttonViewMore}
+                    title={'... Xem thêm'} />
+            }
+            <View style={[styles.item, { backgroundColor: AppColors.grayLight, paddingVertical: 0 }]}>
+                <Text style={[styles.itemStyle, { fontSize: AppSizes.fontMedium, fontWeight: 'bold', flex: 2.5, textAlign: 'left', flexWrap: 'wrap' }]}>Tổng cộng</Text>
+                <Text style={[styles.itemStyle, { fontWeight: 'bold', flex: 2, textAlign: 'left' }]}></Text>
+                <Text style={[styles.itemStyle, { fontWeight: 'bold' }]}>{t3}/{count3}</Text>
+                <Text style={[styles.itemStyle, { fontWeight: 'bold' }]}>{t2}/{count2}</Text>
+                <Text style={[styles.itemStyle, { fontWeight: 'bold' }]}>{t1}/{count1}</Text>
+                <Text style={[styles.itemStyle, { fontWeight: 'bold' }]}></Text>
+            </View>
         </View>
+
     )
 }
 
@@ -199,6 +246,15 @@ const styles = StyleSheet.create({
         fontSize: AppSizes.fontSmall,
         padding: AppSizes.paddingSmall,
 
+    },
+    buttonViewMore: {
+        alignSelf: "center",
+        backgroundColor: 'transparent',
+        paddingBottom: AppSizes.padding,
+    },
+    textViewMore: {
+        ...AppStyles.baseTextGray,
+        color: AppColors.primaryBackground,
     }
 })
 export default ResultComponent;

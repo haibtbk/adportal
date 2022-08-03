@@ -11,6 +11,8 @@ import { useDispatch } from 'react-redux'
 import { API } from '@network'
 import { saveUser } from '@redux/user/action'
 import SplashScreenLib from 'react-native-splash-screen'
+import axios from 'axios'
+import setLocalize from '@redux/localize/actions';
 
 const SplashScreen = (props) => {
   const { navigation } = props;
@@ -19,6 +21,22 @@ const SplashScreen = (props) => {
   useEffect(() => {
     SplashScreenLib.hide();
   }, [])
+
+  useEffect(() => {
+    axios.get('https://staging.combatdigito.com/translate.js')
+      .then(response => {
+        if (response?.status == 200 && response?.data) {
+          const data = response.data
+          const dataString = data.replace(/var TRANSLATE_DATA =/g, '')?.replace(/'/g, '"')?.trim()
+          const dataJSon = JSON.parse(dataString)
+          dispatch(setLocalize(dataJSon))
+        }
+      })
+      .catch(error => {
+        console.log("error", error)
+      })
+  }, [])
+
   useEffect(() => {
     setTimeout(() => {
       AccessTokenManager.initializeAndValidate()

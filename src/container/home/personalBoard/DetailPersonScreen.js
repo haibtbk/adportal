@@ -4,14 +4,15 @@ import { AppStyles, AppColors, AppSizes } from "@theme";
 import { BaseNavigationBar } from '@navigation';
 import { Divider } from "react-native-paper";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import { Separator } from "@component";
+import { Separator, VirtualizedList } from "@component";
 import { RouterName } from "@navigation";
 import { useDispatch } from "react-redux";
 import moment from "moment";
 import ScreenName from "@redux/refresh/ScreenName"
 import { refresh } from '@redux/refresh/actions';
 import { getMonthOnDigit, getquarter } from '../Helper'
-
+import ScheduleSaleComponent from './ScheduleSaleComponent'
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const ButtonGreen = (props) => {
     const { title, action } = props
@@ -26,8 +27,14 @@ const ButtonGreen = (props) => {
 }
 
 const DetailPersonScreen = ({ navigation, route }) => {
+    const insets = useSafeAreaInsets();
     const dispatch = useDispatch();
-    const { month, data = {}, title = "" } = route.params
+    const { month, data = {}, title = "", ad } = route.params
+    const sale = {
+        id: data?.item?.user_id,
+        sale_code: data?.item?.sale_code,
+        sale_name: data?.item?.sale_name,
+    }
     const { item } = data
     const [ip, setIp] = useState(data?.ipPlan ?? 0)
     const [slhd, setSlhd] = useState(data?.slhdPlan ?? 0)
@@ -44,7 +51,6 @@ const DetailPersonScreen = ({ navigation, route }) => {
         data.slhdPlan = slhd_
         setIp(ip_)
         setSlhd(slhd_)
-        dispatch(refresh([ScreenName.personalMonthlyTarget], moment().valueOf()))
     }
 
     const callbackComment = (extra_info) => {
@@ -53,13 +59,12 @@ const DetailPersonScreen = ({ navigation, route }) => {
         data.item.extra_info = extra_info
         setAttendance(advantages_)
         setDisadvantages(disadvantages_)
-        dispatch(refresh([ScreenName.personalMonthlyTarget], moment().valueOf()))
     }
 
     return (
         <View style={styles.container}>
             <BaseNavigationBar title={title} />
-            <ScrollView>
+            <VirtualizedList contentContainerStyle={{ flex: 1 }}>
                 <Text style={[AppStyles.boldTextGray, { fontSize: AppSizes.fontLarge, flexWrap: 'wrap', marginBottom: AppSizes.paddingSmall }]}>
                     Kết quả thực hiện và kế hoạch
                 </Text>
@@ -71,7 +76,7 @@ const DetailPersonScreen = ({ navigation, route }) => {
                 <Text style={styles.text}>IP/SLHĐ tháng {getMonthOnDigit(month)[1]}: {data?.t1}</Text>
                 <Text style={styles.textBold}>Mục tiêu</Text>
                 <Text style={styles.text}>{ip} IP</Text>
-                <Text style={styles.text}>{slhd} Số lượt hợp đồng</Text>
+                <Text style={styles.text}>{slhd} Số lượng hợp đồng</Text>
                 <Divider style={{ marginTop: AppSizes.paddingLarge }} />
                 <ButtonGreen title="Thiết lập" action={() => {
                     navigation.navigate(RouterName.personalPlan, {
@@ -83,13 +88,6 @@ const DetailPersonScreen = ({ navigation, route }) => {
                 }} />
 
                 <Separator />
-                {/* <Text style={[styles.textBold, { marginTop: AppSizes.padding }]}>Kế hoạch hành động</Text>
-                <Text style={styles.text}>- Ngày….tổ chức….mời… khách, dự kiến…trđ AFYP</Text>
-                <Text style={styles.text}>- Ngày….tổ chức….mời… khách, dự kiến…trđ AFYP</Text>
-                <Text style={styles.text}>- Ngày….tổ chức….mời… khách, dự kiến…trđ AFYP</Text>
-                <Divider style={{ marginTop: AppSizes.paddingLarge }} />
-                <ButtonGreen title="Thiết lập" action={() => { }} />
-                <Separator /> */}
 
                 <Text style={[styles.textBold, { marginTop: AppSizes.padding }]}>Đánh giá</Text>
                 <Text style={styles.text}>- Điểm mạnh: {advantages}</Text>
@@ -106,10 +104,19 @@ const DetailPersonScreen = ({ navigation, route }) => {
                         })
                     }} />
                 <Separator />
-
-
-
-            </ScrollView>
+                <Text style={[AppStyles.boldTextGray, { flexWrap: 'wrap', marginVertical: AppSizes.paddingSmall, marginTop: AppSizes.padding }]}>
+                    Kế hoạch hành động
+                </Text>
+                <ScheduleSaleComponent hideForUser month={month} ad={ad} sale={sale} />
+                <ButtonGreen
+                    title="Lập kế hoạch"
+                    action={() => {
+                        navigation.navigate(RouterName.createScheduleSale, {
+                            forUser: sale
+                        })
+                    }} />
+            </VirtualizedList>
+           
         </View>
 
     )

@@ -169,7 +169,7 @@ const HomeScreen = ({ route }) => {
       .then(response => {
         if (response?.status == 200 && response?.data) {
           const data = response.data
-          const dataString = data.replace(/var TRANSLATE_DATA =/g, '').replace(/'/g, '"')?.trim()
+          const dataString = data.replace(/var TRANSLATE_DATA =/g, '')?.replace(/'/g, '"')?.trim()
           const dataJSon = JSON.parse(dataString)
           dispatch(setLocalize(dataJSon))
         }

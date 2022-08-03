@@ -1,12 +1,13 @@
 import React from 'react';
-import {TouchableOpacity, Text, StyleSheet} from 'react-native';
-import {AppStyles, AppSizes, AppColors} from '@theme';
+import { TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { AppStyles, AppSizes, AppColors } from '@theme';
 import PropTypes from 'prop-types';
 const ButtonComponent = (props) => {
-  let {containerStyle, action, title, textStyle} = props;
+  let { containerStyle, action, title, textStyle, disabled = false } = props;
 
   return (
     <TouchableOpacity
+      disabled={disabled}
       onPress={() => action && action()}
       style={[styles.button, containerStyle && containerStyle]}>
       <Text style={[styles.text, textStyle && textStyle]}>{title}</Text>

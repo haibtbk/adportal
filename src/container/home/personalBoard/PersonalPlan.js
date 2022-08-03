@@ -6,8 +6,13 @@ import { RouterName, utils } from "@navigation";
 import { BaseNavigationBar } from '@navigation';
 import { PrimaryTextInputComponent, ButtonComponent, LoadingComponent } from '@component'
 import { API } from "@network"
+import { useDispatch } from "react-redux";
+import { refresh } from '@redux/refresh/actions';
+import ScreenName from "@redux/refresh/ScreenName"
+import moment from "moment";
 
 const PersonalPlan = ({ navigation, route }) => {
+    const dispatch = useDispatch();
     const [isLoading, setIsLoading] = React.useState(false);
     const { title, data, callback, month } = route.params
     const [extra_info, setExtraInfo] = useState(data?.item?.extra_info ?? {})
@@ -24,7 +29,9 @@ const PersonalPlan = ({ navigation, route }) => {
             .then((res) => {
                 utils.showBeautyAlert("success", "Cập nhật thành công")
                 callback && callback(extra_info)
+                dispatch(refresh([ScreenName.ResultComponent, ScreenName.personalMonthlyTarget, ScreenName.ResultViewScreen], moment().valueOf()))
                 navigation.goBack()
+
             })
             .catch((err) => {
                 console.log(err)

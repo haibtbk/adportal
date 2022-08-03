@@ -38,6 +38,7 @@ const ContactScreen = (props) => {
     return (
         <View style={[AppStyles.container]}>
             <BaseNavigationBar title="Thông tin liên hệ" />
+            <Text style={[AppStyles.baseTextGray, { marginBottom: AppSizes.padding }]}>Phan Bá Tùng (P.PTKD TCT)</Text>
             <View style={styles.row}>
                 <Text style={[AppStyles.baseTextGray]}>Điện thoại: <Text style={styles.content} onPress={phoneCall}>{PHONE}</Text></Text>
             </View>

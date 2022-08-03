@@ -10,15 +10,15 @@ const PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=com.baovie
 const AppInfoScreen = (props) => {
 
     const [isShowUpdateApp, setShowUpdateApp] = useState(false)
-    const [appStoreInfo, setAppStoreInfo] = useState({})
+    const [lastestVersion, setLastestVersion] = useState("")
 
     useEffect(() => {
         const currentAppVersion = DeviceInfo.getVersion()
         API.getAppVersion().then(res => {
             if (res?.data?.result) {
                 let remoteAppVersionInfo = Platform.OS == 'ios' ? res?.data?.result?.iOs : res?.data?.result?.android
-                setAppStoreInfo(remoteAppVersionInfo)
-                if (currentAppVersion < remoteAppVersionInfo.version) {
+                setLastestVersion(remoteAppVersionInfo?.lastest_version ?? "")
+                if (currentAppVersion < remoteAppVersionInfo.lastest_version) {
                     setShowUpdateApp(true)
                 }
             }
@@ -33,9 +33,8 @@ const AppInfoScreen = (props) => {
         <View style={[AppStyles.container, { alignItems: 'center' }]}>
             <BaseNavigationBar title="Thông tin ứng dụng" />
             <Text style={[AppStyles.baseTextGray, { marginTop: AppSizes.padding }]}>Phiên bản đang chạy: version {versionNumber}</Text>
-            {
-                isShowUpdateApp && <Text style={[AppStyles.baseTextGray, { marginTop: AppSizes.padding }]}>Phiên bản cập nhật: version {appStoreInfo.version}</Text>
-            }
+            <Text style={[AppStyles.baseTextGray, { marginTop: AppSizes.padding }]}>Phiên bản mới nhất: version {lastestVersion < versionNumber ? "Đang cập nhật" : lastestVersion}</Text>
+           
             {
                 isShowUpdateApp && <ButtonComponent containerStyle={{ alignSelf: 'center', marginTop: AppSizes.padding }} title="Cập nhật bản mới" action={() => {
                     if (Platform.OS == "ios") {

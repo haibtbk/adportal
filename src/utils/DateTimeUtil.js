@@ -96,11 +96,11 @@ const getEndOfDay = (ts) => {
 const getStartOfWeek = (ts) => {
     return moment(ts).startOf('isoWeek').valueOf()
 }
-const getStartOfMonth = () => {
-    return moment().startOf('month').valueOf()
+const getStartOfMonth = (month = moment().valueOf()) => {
+    return moment(month).startOf('month').valueOf()
 }
-const getEndOfMonth = () => {
-    return moment().endOf('month').valueOf()
+const getEndOfMonth = (month = moment().valueOf()) => {
+    return moment(month).endOf('month').valueOf()
 }
 const getStartOfQuarter = () => {
     return moment().startOf('quarter').valueOf()

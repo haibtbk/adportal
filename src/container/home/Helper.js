@@ -378,3 +378,62 @@ export const getquarter = (data, monthSelected) => {
         return '';
     }
 }
+
+export const targetList = {
+    "An Giang": 150,
+    "Bạc Liêu": 150,
+    "Bến Tre": 150,
+    "Cà Mau": 200,
+    "Cần Thơ": 100,
+    "Đồng Tháp": 150,
+    "Hậu Giang": 200,
+    "Kiên Giang": 150,
+    "Long An": 150,
+    "Phú Quốc": 50,
+    "Sóc Trăng": 150,
+    "Tiền Giang": 100,
+    "Trà Vinh": 200,
+    "Vĩnh Long": 150,
+    "Ninh Thuận": 100,
+    "Bình Thuận": 150,
+    "Khánh Hòa": 100,
+    "Bắc Kạn": 80,
+    "Cao Bằng": 80,
+    "Điện Biên": 100,
+    "Hà Giang": 150,
+    "Hòa Bình": 100,
+    "Lai Châu": 80,
+    "Lào Cai": 150,
+    "Móng Cái": 100,
+    "Phú Thọ": 150,
+    "Sơn La": 150,
+    "Tuyên Quang": 100,
+    "Thái Nguyên": 150,
+    "Yên Bái": 100,
+    "Thanh Hóa": 400,
+    "Bắc Thanh Hóa": 300,
+    "Nghệ An": 300,
+    "Tây Nghệ An": 300,
+    "Bắc Nghệ An": 400,
+    "Hà Tĩnh": 300
+}
+
+export const mapCategory = [
+    {
+        id: 1,
+        label: 'west_area',
+        value: ["An Giang", "Bạc Liêu", "Bến Tre", "Cà Mau", "Cần Thơ", "Đồng Tháp", "Hậu Giang", "Kiên Giang", "Long An", "Phú Quốc", "Sóc Trăng", "Tiền Giang", "Trà Vinh", "Vĩnh Long"]
+    },{
+        id: 2,
+        label: 'nt_bt_kh_area',
+        value: ["Ninh Thuận", "Bình Thuận", "Khánh Hòa"]
+    },{
+        id: 3,
+        label: 'north_east_north_west_area',
+        value: ["Bắc Kạn", "Cao Bằng", "Điện Biên", "Hà Giang", "Hòa Bình", "Lai Châu", "Lào Cai", "Móng Cái", "Phú Thọ", "Sơn La", "Tuyên Quang", "Thái Nguyên", "Yên Bái"]
+    },{
+        id: 4,
+        label: 'north_middle_area',
+        value: ["Thanh Hóa","Bắc Thanh Hóa", "Nghệ An", "Tây Nghệ An", "Bắc Nghệ An", "Hà Tĩnh"]
+    }
+]

@@ -5,7 +5,7 @@ import { AppColors, AppSizes, AppStyles } from "@theme";
 import { DateTimeUtil } from "@utils";
 import moment from "moment";
 import { BaseNavigationBar } from '@navigation';
-import { DropdownComponent, Separator, ButtonIconComponent, VirtualizedList, LoadingComponent, PrimaryTextInputComponent } from '@component';
+import { DropdownComponent, Separator, ButtonIconComponent, ButtonComponent, VirtualizedList, LoadingComponent, PrimaryTextInputComponent } from '@component';
 import { useSelector } from "react-redux";
 import _ from "lodash";
 import { Divider } from "react-native-paper";
@@ -15,6 +15,8 @@ import { SchedulePersonalScreen } from "@schedule";
 import { API } from "@network";
 import { getUniqueBigGroupAndGroup, getMonthParams, generateDataReportMonthlySummary, filterByGroupAndBigGroup, generateDataReportKpi, getMonths } from '../Helper'
 import ScreenName from "@redux/refresh/ScreenName"
+import ScheduleSaleComponent from "./ScheduleSaleComponent";
+import { RouterName } from '@navigation';
 
 const defaultNhom = {
     label: "Tất cả nhóm",
@@ -32,7 +34,7 @@ const defaultAD = {
 }
 
 const PersonalMonthlyTargetScreen = (props) => {
-
+    const { navigation } = props
     const refreshEvent = useSelector((state) => {
         return state?.refresh?.event ?? {}
     })
@@ -57,7 +59,8 @@ const PersonalMonthlyTargetScreen = (props) => {
     const [dataReportKpi, setDataReportKpi] = useState(null)
     const [userUnderControl, setUserUnderControl] = useState([account])
     const [adText, setAdText] = useState("")
-
+    const [contract, setContract] = useState([])
+    const [sale_info, setSaleInfo] = useState([])
 
 
     const getBan = () => {
@@ -109,10 +112,6 @@ const PersonalMonthlyTargetScreen = (props) => {
 
     const onChangeMonth = (item) => {
         setMonth(item)
-    }
-
-    const getAds = () => {
-        return [defaultAD]
     }
 
     const fetchData = () => {
@@ -174,7 +173,6 @@ const PersonalMonthlyTargetScreen = (props) => {
     }
 
     useEffect(() => {
-        setLoading(true)
         fetchUserUnderControl()
             .then(res => {
                 if (res?.data?.result) {
@@ -185,7 +183,6 @@ const PersonalMonthlyTargetScreen = (props) => {
                 console.log(err)
             })
             .finally(() => {
-                setLoading(false)
             })
     }, [])
 
@@ -204,6 +201,8 @@ const PersonalMonthlyTargetScreen = (props) => {
         const saleInfoFiltered = filterByGroupAndBigGroup(personnalInfo?.sale_info ?? [], banSelected.value, nhomSelected.value)
         const dataReportMonthlySummary = generateDataReportMonthlySummary(contractFiltered, saleInfoFiltered, moment(month.value, "MM/YYYY").subtract(1, 'month').unix().valueOf())
         const dataReportKpi = generateDataReportKpi(contractFiltered, saleInfoFiltered, moment(month.value, "MM/YYYY").subtract(1, 'month').unix().valueOf())
+        setContract(contractFiltered)
+        setSaleInfo(saleInfoFiltered)
         setDataReportKpi(dataReportKpi)
         setDataReportMonthlySummary(dataReportMonthlySummary)
     }, [month, personnalInfo, banSelected, nhomSelected])
@@ -222,7 +221,7 @@ const PersonalMonthlyTargetScreen = (props) => {
                         <DropdownComponent
                             arrowColor={AppColors.primaryBackground}
                             textStyle={{ ...AppStyles.baseText, color: AppColors.primaryBackground, fontSize: AppSizes.fontMedium }}
-                            containerStyle={{ width: isAdmin? '35%': '45%' }}
+                            containerStyle={{ width: isAdmin ? '35%' : '45%' }}
                             data={getMonthData()}
                             onSelect={(item) => onChangeMonth(item)}
                             defaultValue={month}
@@ -296,7 +295,7 @@ const PersonalMonthlyTargetScreen = (props) => {
                             </View>
                             <Divider style={{ marginVertical: AppSizes.paddingSmall }} />
                             <View style={{ flexDirection: 'row', flex: 1 }}>
-                                <Text style={[AppStyles.baseTextGray, { flex: 1 }]}>Năng xuất</Text>
+                                <Text style={[AppStyles.baseTextGray, { flex: 1 }]}>Năng suất</Text>
                                 <Text style={[AppStyles.baseTextGray, { flex: 1 }]}>{dataReportKpi?.[0]?.[getMonths(month)[0]]}</Text>
                                 <Text style={[AppStyles.baseTextGray, { flex: 1 }]}>{dataReportKpi?.[0]?.[getMonths(month)[1]]}</Text>
                                 <Text style={[AppStyles.baseTextGray, { flex: 1 }]}>{dataReportKpi?.[0]?.[getMonths(month)[2]]}</Text>
@@ -327,14 +326,22 @@ const PersonalMonthlyTargetScreen = (props) => {
                 <Separator />
                 <View style={styles.block}>
                     <Text style={styles.textBold}>Kết quả thực hiện và mục tiêu</Text>
-                    <ResultComponent month={month} contract={personnalInfo?.contract} sale_info={personnalInfo?.sale_info}/>
+                    <ResultComponent ad={ad} month={month} contract={contract} sale_info={sale_info} mode="limited" />
                 </View>
-                {/* <Separator /> */}
-
-                {/* <View style={styles.block}>
-                    <Text style={styles.textBold}>Kế hoạch hoạt động</Text>
-                    <SchedulePersonalScreen />
-                </View> */}
+                <Separator />
+                <View style={styles.block}>
+                    <View style={{ flexDirection: 'row', flex: 1, alignItems: 'flex-end', justifyContent: 'space-between', paddingBottom: AppSizes.paddingXMedium }}>
+                        <Text style={styles.textBold}>Lịch kế hoạch tháng {month.label}</Text>
+                        <ButtonComponent
+                            containerStyle={{ width: 110, paddingVertical: AppSizes.paddingSmall, alignSelf: 'flex-end', backgroundColor: AppColors.primaryBackground }}
+                            action={() => {
+                                navigation.navigate(RouterName.createScheduleSale, {
+                                })
+                            }}
+                            title="Tạo lịch" />
+                    </View>
+                    <ScheduleSaleComponent month={month} ad={ad} isShowSearch={true} sale_info={sale_info}/>
+                </View>
 
             </VirtualizedList>
             {

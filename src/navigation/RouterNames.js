@@ -32,6 +32,10 @@ const routes = {
     personalStrongAndWeakPoint: "PersonalStrongAndWeakPoint",
     personalQuarterTarget: "PersonalQuarterTarget",
     personalRevenueWarning: "PersonalRevenueWarning",
+    resultView: "ResultView",
+    createScheduleSale: "createScheduleSale",
+    detailScheduleSale: "detailScheduleSale",
+    select: "Select"
 }
 
 export default routes

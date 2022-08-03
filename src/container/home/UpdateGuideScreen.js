@@ -24,6 +24,8 @@ const UpdateGuideScreen = ({ navigation, route }) => {
                 contentContainerStyle={{ }}
                 style={{ flex: 1 }}>
                 <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+                    <Image style={[styles.image,{height: 300}]} resizeMode='contain' source={require("@images/ic_guide0.jpg")} />
+                    <Icon name="arrow-down" size={80} color="white" style={{ alignSelf: 'center' }} />
                     <Image style={styles.image} resizeMode='contain' source={require("@images/ic_guide1.png")} />
                     <Icon name="arrow-down" size={80} color="white" style={{ alignSelf: 'center' }} />
                     <Image style={styles.image} resizeMode='contain' source={require("@images/ic_guide2.png")} />

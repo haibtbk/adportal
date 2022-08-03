@@ -39,7 +39,12 @@ const Endpoint = {
     getAppVersion: "/get-version",
     getPersonalData: "/api/sale-info/get-result-by-month",
     updateExtraInfo: "/api/sale-info/update",
-    getKPI: "/api/kpi-info/get-result-by-month"
+    getKPI: "/api/kpi-info/get-result-by-month",
+    getScheduleSale: "/api/sale-schedule/get-schedule-by-sale-code-and-time",
+    createSaleSchedule:"/api/sale-schedule/create",
+    deleteSaleSchedule: "/api/sale-schedule/delete",
+    updateSaleSchedule: "/api/sale-schedule/update",
+    getSaleInfo: "/api/sale-info/get-sale-info"
 }
 
 export default Endpoint

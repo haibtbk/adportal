@@ -61,7 +61,7 @@ const BNNNChartComponent = (props) => {
                     }) : bNNNData.map((item, index) => {
                         const successBNNN = item?.success_bnnn ?? 0
                         const totalBNNN = item?.total_bnnn ?? 0
-                        const percent = Math.round((successBNNN / totalBNNN) * 100)
+                        const percent = totalBNNN > 0 ? Math.round((successBNNN / totalBNNN) * 100) : 0
                         const remainPercent = 100 - percent
                         return (
                             <View key={index} style={{ flex: 1, flexDirection: 'row', alignItems: 'center', paddingBottom: AppSizes.paddingSmall }}>

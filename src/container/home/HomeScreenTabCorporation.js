@@ -17,7 +17,10 @@ import ChartComponent from './ChartComponent';
 import { Separator } from '../../component';
 import BNNNChartComponent from './BNNNChartComponent';
 import ChartFourComponent from './ChartFourComponent';
+import { mapCategory } from './Helper';
+import { t1 } from "@localization"
 
+let BNNNOriginData = []
 const HomeScreenTabCorporation = (props) => {
   const { callbackUpdatedDateTime } = props
   const navigation = useNavigation()
@@ -26,6 +29,15 @@ const HomeScreenTabCorporation = (props) => {
   const [revenueCompanies, setRevenueCompanies] = useState([])
   const [bNNNData, setBNNNData] = useState([])
   const [bNNNRanking, setBNNNRanking] = useState([])
+  const areaDataTotal = _.map(mapCategory,
+    (item) => {
+      return {
+        ...item,
+        label: t1(item.label),
+      }
+    }
+  )
+  const [areaSelected, setAreaSelected] = useState(areaDataTotal[0])
 
 
   const oneday = 60 * 60 * 24 * 1000
@@ -130,6 +142,16 @@ const HomeScreenTabCorporation = (props) => {
     return API.getBNNNRanking(params)
   }
 
+  const getBnnnData = (areaSelected) => {
+    const dataFiltered = _.filter(BNNNOriginData, item => {
+      const name = item?.name?.toLowerCase()?.trim() ?? ""
+      return _.some(areaSelected, item => {
+        return item.toLowerCase().trim() === name
+      })
+    })
+    return dataFiltered??[]
+  }
+
   useEffect(() => {
     setIsLoading(true)
     Promise.all([fetchCorporationData(), fetchRevenueCompanies(), fetchTotalBNNNEvent(), fetchBNNNRanking()])
@@ -148,7 +170,11 @@ const HomeScreenTabCorporation = (props) => {
         }
 
         if (res2?.data?.result) {
-          setBNNNData(res2?.data?.result)
+
+          const data = res2?.data?.result
+          BNNNOriginData = data
+          const dataFiltered = getBnnnData(areaSelected.value)
+          setBNNNData(dataFiltered)
         }
 
         if (res3?.data?.result) {
@@ -301,6 +327,15 @@ const HomeScreenTabCorporation = (props) => {
     ]
   }
 
+  const onChangeArea = (area) => {
+    setAreaSelected(area)
+    setBNNNData(getBnnnData(area.value))
+  }
+
+  // useEffect(() => {
+
+  // }, [areaData])
+
   return (
     <View style={[AppStyles.container, { paddingHorizontal: 0 }]}>
       <ScrollView
@@ -333,7 +368,15 @@ const HomeScreenTabCorporation = (props) => {
           bNNNData?.length > 0 &&
           <View>
             <View style={{ padding: AppSizes.padding }}>
-              <Text style={[AppStyles.boldTextGray, { flex: 1, paddingBottom: AppSizes.padding }]}>Chiến dịch Bán nghề nhóm nhỏ</Text>
+              <Text style={[AppStyles.boldTextGray, { flex: 1, paddingBottom: AppSizes.paddingSmall }]}>Chiến dịch Bán nghề nhóm nhỏ</Text>
+              <DropdownComponent
+                arrowColor={AppColors.primaryBackground}
+                textStyle={{ ...AppStyles.baseText, color: AppColors.primaryBackground, fontSize: AppSizes.fontMedium }}
+                containerStyle={{ width: "100%", borderColor: 'transparent', alignSelf: 'flex-end' }}
+                data={areaDataTotal}
+                onSelect={(item) => onChangeArea(item)}
+                defaultValue={areaSelected}
+              />
               <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', marginBottom: AppSizes.paddingSmall }}>
                 <BaseDashboardItemComponent
                   isHideCurrency={true}

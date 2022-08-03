@@ -12,6 +12,7 @@ import BaseBoxComponent from './component/BaseBoxComponent';
 import AvatarBoxComponent from './component/AvatarBoxComponent';
 import DetailNewScreen from './news/DetailNewsScreen';
 import CloseButtonComponent from './component/CloseButtonComponent';
+import SelectScreen from './component/SelectScreen';
 import ConfirmRequestScreen from './notification/ConfirmRequestScreen'
 import MoreScreen from './more/MoreScreen'
 import PublishedFileScreen from './fileManager/PublishedFileScreen';
@@ -33,6 +34,7 @@ import SimpleListComponent from './component/SimpleListComponent';
 import SimpleSessionListComponent from './component/SimpleSessionListComponent';
 import AdwardScreen from './account/AdwardScreen';
 export {
+  SelectScreen,
   AdwardScreen,
   ChangePasswordScreen,
   SimpleSessionListComponent,

@@ -7,8 +7,14 @@ import { BaseNavigationBar } from '@navigation';
 import { PrimaryTextInputMultilineComponent, ButtonComponent, LoadingComponent } from '@component'
 import { API } from "@network"
 import _ from "lodash";
+import { useDispatch } from "react-redux";
+import { refresh } from '@redux/refresh/actions';
+import ScreenName from "@redux/refresh/ScreenName"
+import moment from "moment";
 
 const PersonalStrongAndWeakPointScreen = ({ navigation, route }) => {
+
+    const dispatch = useDispatch();
     const [isLoading, setIsLoading] = React.useState(false);
     const { title, data, callback, month } = route.params
     const [extra_info, setExtraInfo] = useState(data?.item?.extra_info ?? {})
@@ -26,6 +32,7 @@ const PersonalStrongAndWeakPointScreen = ({ navigation, route }) => {
                 utils.showBeautyAlert("success", "Cập nhật thành công")
                 callback && callback(extra_info)
                 navigation.goBack()
+                dispatch(refresh([ScreenName.ResultComponent, ScreenName.personalMonthlyTarget, ScreenName.ResultViewScreen], moment().valueOf()))
             })
             .catch((err) => {
                 console.log(err)
@@ -43,7 +50,7 @@ const PersonalStrongAndWeakPointScreen = ({ navigation, route }) => {
             comment: {
                 ...extra_info.comment,
                 [month.value]: {
-                    ...extra_info.comment[month.value],
+                    ...extra_info?.comment?.[month.value],
                     advantages: text,
                 }
             }
@@ -57,7 +64,7 @@ const PersonalStrongAndWeakPointScreen = ({ navigation, route }) => {
             comment: {
                 ...extra_info.comment,
                 [month.value]: {
-                    ...extra_info.comment[month.value],
+                    ...extra_info?.comment?.[month.value],
                     disadvantages: text,
                 }
             }

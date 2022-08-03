@@ -3,23 +3,21 @@ import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, Button, StyleSheet, Alert, TextInput } from 'react-native';
 import { AppSizes, AppStyles, AppColors } from '@theme';
 import { API } from '@network';
-import { DateTimePickerComponent, DropdownComponent, LoadingComponent, ButtonComponent, RowButton } from '@component'
+import { DateTimePickerComponent, DropdownComponent, LoadingComponent, ButtonComponent, SelectBoxComponent } from '@component'
 import { useSelector, useDispatch } from 'react-redux';
 import NavigationBar from '@navigation/NavigationBar';
 import { utils, RouterName } from '@navigation';
 import moment from 'moment';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { DateTimeUtil } from "@utils"
-import { SelectBoxComponent } from '../../component';
 import { refresh } from '@redux/refresh/actions';
 import ScreenName from "@redux/refresh/ScreenName"
-import { ScheduleStatus } from "@schedule"
 import { Helper } from '@schedule';
 
 
-const CreateScheduleScreen = (props) => {
+const CreateScheduleSaleScreen = (props) => {
     const { navigation, route } = props;
-    const { isEdit = false, scheduleData = {}, callback } = route.params ?? {};
+    const { isEdit = false, scheduleData = {}, callback, forUser=null } = route.params ?? {};
 
     const getDefaultName = () => {
         if (isEdit) {
@@ -29,13 +27,15 @@ const CreateScheduleScreen = (props) => {
     }
 
     const getDefaultForUser = () => {
+        let for_user = forUser
         if (isEdit) {
-            return {
-                label: scheduleData?.schedule_data?.for_user,
-                value: scheduleData?.schedule_data?.user_id
+            for_user = {
+                sale_code: scheduleData?.schedule_data?.for_sale_code,
+                sale_name: scheduleData?.schedule_data?.for_user,
+                id: scheduleData?.schedule_data?.sale_id
             }
         }
-        return null
+        return for_user
     }
 
     const getDefaultWorkType = () => {
@@ -58,86 +58,50 @@ const CreateScheduleScreen = (props) => {
         return moment().valueOf()
     }
 
-    const getDefaultEndtime = () => {
-        if (isEdit) {
-            return (scheduleData?.end_ts ?? 0) * 1000
-        }
-        return moment().valueOf()
-    }
     const dispatch = useDispatch();
     const [isLoading, setLoading] = useState(false)
     const [name, setName] = useState(getDefaultName())
     const [work_type, setWorkType] = useState(getDefaultWorkType())
     const [start_ts, setStartTime] = useState(getDefaultStartTime())
-    const [end_ts, setEndTime] = useState(getDefaultEndtime())
     const [for_user, setForUser] = useState(getDefaultForUser())
-    const [dataUserUnderControl, setDataUserUnderControl] = useState([])
     const account = useSelector((state) => {
         return state?.user?.account ?? {}
     })
 
-    useEffect(() => {
-        setLoading(true)
-        const paramUserUnderControl = {
-            submit: 1,
-            start_ts: Math.round(DateTimeUtil.getStartOfYear()) / 1000,
-            end_ts: Math.round(DateTimeUtil.getEndOfDay(moment().valueOf() + 30 * 24 * 60 * 60 * 1000)) / 1000,
-        }
-        API.getUserUnderControl(paramUserUnderControl)
-            .then(res => {
-                if (res?.data?.success) {
-                    const data = res?.data.result
-                    const dataPretty = data.map(item => {
-                        return {
-                            label: item.name,
-                            value: item.user_id
-                        }
-                    })
-                    const myAccount = {
-                        label: account?.name,
-                        value: account?.user_id
-                    }
-                    setDataUserUnderControl([myAccount, ...dataPretty])
-                    setForUser(myAccount)
-                }
-
-            })
-            .catch(err => {
-                console.log(err)
-            })
-            .finally(() => {
-                setLoading(false)
-            })
-    }, [])
-
     const createSchedule = () => {
-
+        if (!for_user) {
+            Alert.alert('Thông báo', 'Vui lòng chọn người thực hiện.')
+            return
+        }
         setLoading(true)
         const params = {
+            sale_code: for_user.sale_code,
+            start_ts: Math.round(start_ts / 1000),
+            end_ts: Math.round(DateTimeUtil.getEndOfDay(start_ts) / 1000),
+            submit: 1,
             schedule_data: {
                 name,
-                work_type: work_type.id,
-                for_user: for_user?.label,
-                from_user: account?.name,
+                for_user: for_user?.sale_name,
+                from_user: account.name,
                 from_user_id: account?.user_id,
+                for_sale_code: for_user?.sale_code,
+                sale_id: for_user?.id,
+                work_type: work_type.id,
             },
-            user_id: for_user?.value,
-            start_ts: Math.round(start_ts / 1000),
-            end_ts: Math.round(end_ts / 1000),
-            status: isEdit ? scheduleData?.status : ScheduleStatus.pending,
-            submit: 1
+
         }
         if (isEdit) {
             params.id = scheduleData?.id
             params._method = "put"
         }
-        API.createSchedule(isEdit, params).then(res => {
+        API.createSaleSchedule(isEdit, params).then(res => {
             navigation.goBack()
             callback && callback()
-            utils.showBeautyAlert("success", `${isEdit ? "Cập nhật" : "Tạo"} kế hoạch thành công`)
-            dispatch(refresh([ScreenName.schedule], moment().valueOf()))
+            utils.showBeautyAlert("success", `${isEdit ? "Cập nhật" : "Tạo"} lịch thành công`)
+            dispatch(refresh([ScreenName.ScheduleSaleComponent], moment().valueOf()))
+
         }).catch(err => {
-            utils.showBeautyAlert("fail", `${isEdit ? "Cập nhật" : "Tạo"} kế hoạch thất bại`)
+            utils.showBeautyAlert("fail", `${isEdit ? "Cập nhật" : "Tạo"} lịch thất bại`)
         }).finally(() => {
             setLoading(false)
         })
@@ -152,16 +116,8 @@ const CreateScheduleScreen = (props) => {
         setStartTime(date)
     }
 
-    const onChangeDateTimeEnd = (date) => {
-        setEndTime(date)
-    }
-
     const onChangeValueWorkType = (item) => {
         setWorkType(item)
-    }
-
-    const onChangeUser = (item) => {
-        setForUser(item)
     }
 
     const checkEditAbleTime = () => {
@@ -176,21 +132,35 @@ const CreateScheduleScreen = (props) => {
         <KeyboardAwareScrollView style={AppStyles.container}>
             <NavigationBar
                 isBack
-                onLeftPress={() => Alert.alert("Chú ý", "Bạn sẽ thoát mà không tạo kế hoạch?", [
+                onLeftPress={() => Alert.alert("Chú ý", "Bạn sẽ thoát mà không tạo lịch?", [
                     { text: "Không", onPress: () => { } },
                     { text: "Đồng ý", onPress: () => navigation.goBack() }
                 ])}
-                centerTitle={isEdit ? "Sửa kế hoạch" : "Tạo kế hoạch"} />
+                centerTitle={isEdit ? "Sửa lịch" : "Tạo lịch"} />
 
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', marginBottom: AppSizes.padding, }}>
-                <Text style={[AppStyles.boldTextGray, { marginRight: AppSizes.padding }]}>Người thực hiện: </Text>
-                <DropdownComponent
-                    containerStyle={{ width: '50%' }}
-                    data={dataUserUnderControl}
-                    onSelect={(item) => onChangeUser(item)}
-                    defaultValue={dataUserUnderControl[0]}
-                />
-            </View>
+            <SelectBoxComponent
+                containerStyle={{ marginVertical: AppSizes.padding }}
+                action={() => {
+                    navigation.navigate(RouterName.select, {
+                        selectedItem: for_user,
+                        callback: (item) => {
+                            setForUser(item)
+                        },
+                        title: "Chọn nhân viên",
+                        propId: 'id',
+                        propName: 'sale_name',
+                        transformer: (res) => res?.data?.result?.sale_info ?? [],
+                        source: () => {
+                            const params = {
+                                submit: 1,
+                                ad_code: account.code,
+                            }
+                            return API.getSaleInfo(params)
+                        }
+                    })
+                }}
+                label="Người thực hiện"
+                value={for_user?.sale_name} />
 
             <SelectBoxComponent
                 action={() => {
@@ -205,19 +175,11 @@ const CreateScheduleScreen = (props) => {
             <DateTimePickerComponent
                 enable={checkEditAbleTime()}
                 value={start_ts}
-                dateTimeFomat="DD/MM/YYYY HH:mm"
-                mode="datetime"
-                label="Bắt đầu"
+                dateTimeFomat="DD/MM/YYYY"
+                mode="date"
+                label="Thời gian"
                 onChangeDateTime={onChangeDateTimeStart}
                 containerStyle={{ marginVertical: AppSizes.padding }} />
-            <DateTimePickerComponent
-                enable={checkEditAbleTime()}
-                value={end_ts}
-                dateTimeFomat="DD/MM/YYYY HH:mm"
-                mode="datetime"
-                label="Kết thúc"
-                onChangeDateTime={onChangeDateTimeEnd}
-                containerStyle={{ marginBottom: AppSizes.padding }} />
 
             <TextInput
                 underlineColorAndroid="transparent"
@@ -227,7 +189,7 @@ const CreateScheduleScreen = (props) => {
                 keyboardType="default"
                 onChangeText={onChangeTextName}
                 value={name}
-                style={[AppStyles.textInput, { marginBottom: AppSizes.padding, height: 90, textAlignVertical: "top", }]} />
+                style={[AppStyles.textInput, { marginBottom: AppSizes.padding, height: 180, textAlignVertical: "top", }]} />
 
             <ButtonComponent
                 containerStyle={styles.button}
@@ -248,4 +210,4 @@ const styles = StyleSheet.create({
         marginTop: AppSizes.padding
     },
 });
-export default CreateScheduleScreen;
+export default CreateScheduleSaleScreen;

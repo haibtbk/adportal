@@ -10,7 +10,7 @@ import { useSelector } from "react-redux";
 import _ from "lodash";
 import { API } from "@network"
 import { getMonthParams, } from '../Helper'
-import { dividedTen, percent } from './dataType'
+import { dividedHundred, dividedTen, percent } from './dataType'
 
 const KPIScreen = (props) => {
     const account = useSelector((state) => {
@@ -154,7 +154,7 @@ const KPIScreen = (props) => {
 
     const getNangSuat = () => {
         const num = kpiData?.kpi_info?.[10]?.month_statistic ?? 0
-        return Math.round(num * 10) / 100
+        return Math.round(num * 10) / 1000
     }
 
     const getNangSuatPercent = () => {
@@ -172,6 +172,10 @@ const KPIScreen = (props) => {
 
     const decimal = (num) => {
         return Math.round(num * 10) / 100
+    }
+
+    const dividedByHundred = (num) => {
+        return Math.round(num * 10) / 1000
     }
 
     const getDataUserUnderControl = () => {
@@ -269,17 +273,21 @@ const KPIScreen = (props) => {
                                             let v2Data = item?.month_3_average ?? 0
                                             let v3Data = item?.quarter_average ?? 0
                                             let v5Data = item?.country_average ?? 0
-
-                                            if (dividedTen.includes(criteria_code)) {
-                                                v1Data = decimal(v1Data)
-                                                v2Data = decimal(v2Data)
-                                                v3Data = decimal(v3Data)
-                                                v5Data = decimal(v5Data)
+                                            if (dividedHundred.includes(criteria_code)) {
+                                                v1Data = dividedByHundred(v1Data) || ""
+                                                v2Data = dividedByHundred(v2Data) || ""
+                                                v3Data = dividedByHundred(v3Data) || ""
+                                                v5Data = dividedByHundred(v5Data) || ""
+                                            } else if (dividedTen.includes(criteria_code)) {
+                                                v1Data = decimal(v1Data) || ""
+                                                v2Data = decimal(v2Data) || ""
+                                                v3Data = decimal(v3Data) || ""
+                                                v5Data = decimal(v5Data) || ""
                                             } else if (percent.includes(criteria_code)) {
-                                                v1Data = `${v1Data}%`
-                                                v2Data = `${v2Data}%`
-                                                v3Data = `${v3Data}%`
-                                                v5Data = `${v5Data}%`
+                                                v1Data = v1Data ? `${v1Data}%` : ""
+                                                v2Data = v2Data ? `${v2Data}%` : ""
+                                                v3Data = v3Data ? `${v3Data}%` : ""
+                                                v5Data = v5Data ? `${v5Data}%` : ""
                                             }
 
                                             return (

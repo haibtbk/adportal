@@ -63,6 +63,10 @@ import PersonalStrongAndWeakPointScreen from './src/container/home/personalBoard
 import ScheduleReportCommentScreen from './src/container/schedule/ScheduleReportCommentScreen';
 import PersonalQuarterTargetScreen from './src/container/home/personalBoard/PersonalQuarterTargetScreen';
 import PersonalRevenueWarningScreen from './src/container/home/personalBoard/PersonalRevenueWarningScreen';
+import ResultViewScreen from './src/container/home/personalBoard/ResultViewScreen';
+import CreateScheduleSaleScreen from './src/container/home/personalBoard/CreateScheduleSaleScreen';
+import SelectScreen from './src/container/component/SelectScreen';
+import DetailScheduleSaleScreen from './src/container/home/personalBoard/DetailScheduleSaleScreen';
 const Tab = createBottomTabNavigator();
 const HomeStack = createStackNavigator();
 const NewsStack = createStackNavigator();
@@ -104,6 +108,9 @@ function RootTabs() {
             <HomeStack.Screen name={RouterName.personalStrongAndWeakPoint} component={PersonalStrongAndWeakPointScreen} />
             <HomeStack.Screen name={RouterName.personalQuarterTarget} component={PersonalQuarterTargetScreen} />
             <HomeStack.Screen name={RouterName.personalRevenueWarning} component={PersonalRevenueWarningScreen} />
+            <HomeStack.Screen name={RouterName.resultView} component={ResultViewScreen} />
+            <HomeStack.Screen name={RouterName.createScheduleSale} component={CreateScheduleSaleScreen} />
+            <Stack.Screen name={RouterName.detailScheduleSale} component={DetailScheduleSaleScreen} />
           </HomeStack.Navigator>
         )}
       </Tab.Screen>
@@ -260,7 +267,7 @@ export default App = (props) => {
             <Stack.Screen name={RouterName.workTypes} component={WorkTypesScreen} />
             <Stack.Screen options={{ gestureEnabled: false }} name="UpdateGuide" component={UpdateGuideScreen} />
             <Stack.Screen name={RouterName.zoomImage} component={ZoomImageScreen} />
-
+            <Stack.Screen name={RouterName.select} component={SelectScreen} />
           </RootStack.Navigator>
           <FabButton ref={fabRef} navigationRef={navigationRef} />
           <MessageBarSimple ref={ref => {

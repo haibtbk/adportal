@@ -204,6 +204,22 @@ API.updateExtraInfo = (params) => {
 API.getKPI = (params) => {
     return API.instance.get(Endpoint.getKPI, { params })
 }
+API.getScheduleSale = (params) => {
+    return API.instance.get(Endpoint.getScheduleSale, { params })
+}
+
+API.createSaleSchedule = (isEdit, params) => {
+    const url = isEdit ? Endpoint.updateSaleSchedule : Endpoint.createSaleSchedule
+    return API.instance.post(url, params)
+}
+
+API.deleteSaleSchedule = (params) => {
+    return API.instance.post(Endpoint.deleteSaleSchedule, params)
+}
+
+API.getSaleInfo = (params) => {
+    return API.instance.get(Endpoint.getSaleInfo, { params })
+}
 
 
 /* Export Component ==================================================================== */
